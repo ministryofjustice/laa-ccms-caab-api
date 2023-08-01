@@ -1,0 +1,4 @@
+rootProject.name = 'laa-ccms-caab-api'
+
+include 'caab-api'
+include 'caab-service'
