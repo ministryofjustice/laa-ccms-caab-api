@@ -24,6 +24,7 @@ public class ApplicationService {
         auditTrail.setCreatedBy(caabUserLoginId);
         auditTrail.setModifiedBy(caabUserLoginId);
 
+        //todo add null checks for audit trails
         application.setAuditTrail(auditTrail);
         application.getCorrespondenceAddress().setAuditTrail(auditTrail);
         application.getCosts().setAuditTrail(auditTrail);

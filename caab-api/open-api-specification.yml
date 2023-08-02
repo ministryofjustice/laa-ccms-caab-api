@@ -136,11 +136,11 @@ components:
             type: 'object'
             properties:
               default_cost_limitation:
-                type: 'integer'
+                type: 'number'
               granted_cost_limitation:
-                type: 'integer'
+                type: 'number'
               requested_cost_limitation:
-                type: 'integer'
+                type: 'number'
       required:
         - case_reference_number
         - provider
