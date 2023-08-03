@@ -94,8 +94,10 @@ public class Application implements Serializable {
     @Column(name = "APPLICATION_TYPE_DISPLAY_VALUE", length = 35)
     private String applicationTypeDisplayValue;
 
+    @Convert(converter = StringCharacterConverter.class)
     @Column(name = "DEVOLVED_POWERS_USED", length = 5)
     private String devolvedPowersUsed;
+
     @Column(name = "DATE_DEVOLVED_POWERS_USED", length = 5)
     private Date dateDevolvedPowersUsed;
     @Column(name = "DEVOLVED_POWERS_CONTRACT_FLAG", length = 30)

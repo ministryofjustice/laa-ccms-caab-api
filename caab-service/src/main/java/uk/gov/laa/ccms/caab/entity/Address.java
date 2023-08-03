@@ -18,8 +18,6 @@ public class Address implements Serializable {
     @GeneratedValue(generator = "XXCCMS_ADDRESS_S")
     private Long id;
 
-
-
     @Column(name = "NO_FIXED_ABODE")
     private Boolean noFixedAbode = false;
 
@@ -53,6 +51,10 @@ public class Address implements Serializable {
 
 
     @Embedded
-    private AuditTrail auditTrail = new AuditTrail();
+    private AuditTrail auditTrail;
+
+    public Address(AuditTrail auditTrail){
+        this.auditTrail = auditTrail;
+    }
 
 }

@@ -41,4 +41,9 @@ public class AuditTrail {
      */
     @Column(name = "CREATED_BY")
     private String createdBy;
+
+    public AuditTrail(String modifiedBy, String createdBy){
+        this.modifiedBy = modifiedBy;
+        this.createdBy = createdBy;
+    }
 }

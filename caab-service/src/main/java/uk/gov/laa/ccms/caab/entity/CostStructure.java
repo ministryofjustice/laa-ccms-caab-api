@@ -19,16 +19,20 @@ public class CostStructure implements Serializable {
     private Long id;
 
     @Column(name = "DEFAULT_COST_LIMITATION", precision = 10, scale = 2)
-    private BigDecimal defaultCostLimitation;
+    private BigDecimal defaultCostLimitation = new BigDecimal(0);
 
     @Column(name = "REQUESTED_COST_LIMITATION", precision = 10, scale = 2)
-    private BigDecimal requestedCostLimitation;
+    private BigDecimal requestedCostLimitation = new BigDecimal(0);
 
     @Column(name = "GRANTED_COST_LIMITATION", precision = 10, scale = 2)
-    private BigDecimal grantedCostLimitation;
+    private BigDecimal grantedCostLimitation = new BigDecimal(0);
 
     @Embedded
-    private AuditTrail auditTrail = new AuditTrail();
+    private AuditTrail auditTrail;
+
+    public CostStructure(AuditTrail auditTrail){
+        this.auditTrail = auditTrail;
+    }
 
 
 }
