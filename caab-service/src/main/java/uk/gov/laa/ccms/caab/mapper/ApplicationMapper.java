@@ -44,7 +44,6 @@ public interface ApplicationMapper {
     @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged")
     Application toApplication(ApplicationDetail applicationDetail);
 
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "auditTrail", ignore = true)
     @Mapping(target = "postCode", source = "postcode")

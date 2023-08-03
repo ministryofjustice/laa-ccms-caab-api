@@ -1,6 +1,7 @@
 package uk.gov.laa.ccms.caab.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.entity.Address;
 import uk.gov.laa.ccms.caab.entity.Application;
@@ -12,13 +13,14 @@ import uk.gov.laa.ccms.caab.repository.ApplicationRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
 
     private final ApplicationMapper applicationMapper;
 
-    public void createApplication(final String caabUserLoginId, final ApplicationDetail applicationDetail){
+    public String createApplication(final String caabUserLoginId, final ApplicationDetail applicationDetail){
 
         AuditTrail auditTrail = new AuditTrail();
         auditTrail.setCreatedBy(caabUserLoginId);
@@ -44,5 +46,7 @@ public class ApplicationService {
         }
 
         applicationRepository.save(application);
+
+        return application.getLscCaseReference();
     }
 }

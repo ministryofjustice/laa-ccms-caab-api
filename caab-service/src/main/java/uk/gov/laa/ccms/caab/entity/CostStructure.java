@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @SequenceGenerator(allocationSize = 1, sequenceName = "XXCCMS_GENERATED_ID_S", name = "XXCCMS_COST_STRUCTURE_S")
+@RequiredArgsConstructor
 public class CostStructure implements Serializable {
 
     @Id

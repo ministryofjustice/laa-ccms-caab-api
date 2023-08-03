@@ -16,7 +16,6 @@ import java.util.Date;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 public class Application implements Serializable {
 
     @Id
@@ -75,7 +74,6 @@ public class Application implements Serializable {
     private String displayStatus;
     @Column(name = "ACTUAL_STATUS", length = 50)
     private String actualStatus;
-
 
     //client
     @Column(name = "CLIENT_FIRSTNAME", length = 50)

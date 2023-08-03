@@ -2,17 +2,15 @@ package uk.gov.laa.ccms.caab.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
 @Embeddable
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class AuditTrail {
 

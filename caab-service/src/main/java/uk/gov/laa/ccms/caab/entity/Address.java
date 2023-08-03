@@ -3,6 +3,7 @@ package uk.gov.laa.ccms.caab.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 @Setter
 @Getter
 @SequenceGenerator(allocationSize = 1, sequenceName = "XXCCMS_GENERATED_ID_S", name = "XXCCMS_ADDRESS_S")
+@RequiredArgsConstructor
 public class Address implements Serializable {
 
     @Id
