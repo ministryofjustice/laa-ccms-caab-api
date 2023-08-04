@@ -4,11 +4,14 @@ package uk.gov.laa.ccms.data.api.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.CacheAnnotationParser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import uk.gov.laa.ccms.api.CAABApplication;
+import uk.gov.laa.ccms.api.entity.Address;
 import uk.gov.laa.ccms.api.entity.Application;
 import uk.gov.laa.ccms.api.entity.AuditTrail;
+import uk.gov.laa.ccms.api.entity.CostStructure;
 import uk.gov.laa.ccms.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.data.api.AbstractIntegrationTest;
 
@@ -32,8 +35,6 @@ public class ApplicationRepositoryIntegrationTest extends AbstractIntegrationTes
 
     @Autowired
     private ApplicationRepository applicationRepository;
-
-    private final Long id = 1L;
     private final String lscCaseReference = "LSC001";
     private final String providerId = "PRD001";
     private final String providerCaseReference = "PRD_CASE_REF_001";
@@ -71,6 +72,23 @@ public class ApplicationRepositoryIntegrationTest extends AbstractIntegrationTes
     private final String createdBy = "Test User";
     private final String modifiedBy = "Test User";
 
+    //cost structure
+    private final BigDecimal defaultCostLimitation = BigDecimal.valueOf(11111.11);
+    private final BigDecimal grantedCostLimitation = BigDecimal.valueOf(22222.22);
+    private final BigDecimal requestedCostLimitation = BigDecimal.valueOf(33333.33);
+
+    //Address
+    private final boolean noFixedAbode = false;
+    private final String postCode = "SW1A 1AA";
+    private final String houseNameNumber = "10";
+    private final String addressLine1 = "Downing Street";
+    private final String addressLine2 = "Westminster";
+    private final String city = "London";
+    private final String county = "Greater London";
+    private final String country = "GBR";
+    private final String careOf = "Prime Minister's Office";
+    private final String preferredAddress = "PROVIDER";
+
     @Test
     public void testSaveApplication_requiredFields(){
         Application application = buildRequiredApplication();
@@ -90,6 +108,8 @@ public class ApplicationRepositoryIntegrationTest extends AbstractIntegrationTes
         assertEquals(categoryOfLaw, fetchedApplication.getCategoryOfLaw());
         assertEquals(clientReference, fetchedApplication.getClientReference());
     }
+
+
 
     @Test
     public void testSaveApplication_allFields(){
@@ -151,6 +171,69 @@ public class ApplicationRepositoryIntegrationTest extends AbstractIntegrationTes
 
     }
 
+    @Test
+    public void testSaveApplication_costStructure(){
+        Application application = buildRequiredApplication();
+        application.setCosts(buildCosts());
+
+        Application savedApplication = applicationRepository.save(application);
+
+        // Assert that the saved application has been assigned an ID
+        assertNotNull(savedApplication.getId());
+
+        // Fetch the saved application from the database
+        Application fetchedApplication = applicationRepository.findById(savedApplication.getId()).orElse(null);
+
+        // Assert that the fetched application is not null and has the expected values
+        assertNotNull(fetchedApplication);
+        assertNotNull(fetchedApplication.getCosts());
+        assertEquals(defaultCostLimitation, fetchedApplication.getCosts().getDefaultCostLimitation());
+        assertEquals(grantedCostLimitation, fetchedApplication.getCosts().getGrantedCostLimitation());
+        assertEquals(requestedCostLimitation, fetchedApplication.getCosts().getRequestedCostLimitation());
+
+        assertEquals(modifiedBy, fetchedApplication.getCosts().getAuditTrail().getModifiedBy());
+        assertEquals(createdBy, fetchedApplication.getCosts().getAuditTrail().getCreatedBy());
+        assertNotNull(fetchedApplication.getCosts().getAuditTrail().getCreated());
+        assertNotNull(fetchedApplication.getCosts().getAuditTrail().getModified());
+    }
+
+    @Test
+    public void testSaveApplication_address(){
+        Application application = buildRequiredApplication();
+        application.setCorrespondenceAddress(buildAddress());
+
+        Application savedApplication = applicationRepository.save(application);
+
+        // Assert that the saved application has been assigned an ID
+        assertNotNull(savedApplication.getId());
+
+        // Fetch the saved application from the database
+        Application fetchedApplication = applicationRepository.findById(savedApplication.getId()).orElse(null);
+
+        // Assert that the fetched application is not null and has the expected values
+        assertNotNull(fetchedApplication);
+        assertNotNull(fetchedApplication.getCorrespondenceAddress());
+
+        // Assert the properties of the correspondence address
+        assertEquals(noFixedAbode, fetchedApplication.getCorrespondenceAddress().getNoFixedAbode());
+        assertEquals(postCode, fetchedApplication.getCorrespondenceAddress().getPostCode());
+        assertEquals(houseNameNumber, fetchedApplication.getCorrespondenceAddress().getHouseNameNumber());
+        assertEquals(addressLine1, fetchedApplication.getCorrespondenceAddress().getAddressLine1());
+        assertEquals(addressLine2, fetchedApplication.getCorrespondenceAddress().getAddressLine2());
+        assertEquals(city, fetchedApplication.getCorrespondenceAddress().getCity());
+        assertEquals(county, fetchedApplication.getCorrespondenceAddress().getCounty());
+        assertEquals(country, fetchedApplication.getCorrespondenceAddress().getCountry());
+        assertEquals(careOf, fetchedApplication.getCorrespondenceAddress().getCareOf());
+        assertEquals(preferredAddress, fetchedApplication.getCorrespondenceAddress().getPreferredAddress());
+
+        // Audit Trail asserts for the address
+        assertEquals(modifiedBy, fetchedApplication.getCorrespondenceAddress().getAuditTrail().getModifiedBy());
+        assertEquals(createdBy, fetchedApplication.getCorrespondenceAddress().getAuditTrail().getCreatedBy());
+        assertNotNull(fetchedApplication.getCorrespondenceAddress().getAuditTrail().getCreated());
+        assertNotNull(fetchedApplication.getCorrespondenceAddress().getAuditTrail().getModified());
+
+    }
+
     private Application buildRequiredApplication() {
         Application application = new Application();
         application.setLscCaseReference(lscCaseReference);
@@ -202,12 +285,41 @@ public class ApplicationRepositoryIntegrationTest extends AbstractIntegrationTes
         application.setLarScopeFlag(larScopeFlag);
         application.setLeadProceedingChangedOpaInput(leadProceedingChanged);
 
-        AuditTrail auditTrail = new AuditTrail(modifiedBy, createdBy);
-
-        application.setAuditTrail(auditTrail);
+        application.setAuditTrail(buildAuditTrail());
 
         return application;
     }
+
+    private AuditTrail buildAuditTrail(){
+        return new AuditTrail(modifiedBy, createdBy);
+    }
+
+    private CostStructure buildCosts(){
+        CostStructure costs = new CostStructure(buildAuditTrail());
+
+        costs.setDefaultCostLimitation(defaultCostLimitation);
+        costs.setGrantedCostLimitation(grantedCostLimitation);
+        costs.setRequestedCostLimitation(requestedCostLimitation);
+
+        return costs;
+    }
+
+    private Address buildAddress(){
+        Address address = new Address(buildAuditTrail());
+        address.setNoFixedAbode(noFixedAbode);
+        address.setPostCode(postCode);
+        address.setHouseNameNumber(houseNameNumber);
+        address.setAddressLine1(addressLine1);
+        address.setAddressLine2(addressLine2);
+        address.setCity(city);
+        address.setCounty(county);
+        address.setCountry(country);
+        address.setCareOf(careOf);
+        address.setPreferredAddress(preferredAddress);
+        return address;
+    }
+
+
 
 
 }
