@@ -1,15 +1,15 @@
-package uk.gov.laa.ccms.caab.service;
+package uk.gov.laa.ccms.api.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.laa.ccms.caab.entity.Address;
-import uk.gov.laa.ccms.caab.entity.Application;
-import uk.gov.laa.ccms.caab.entity.AuditTrail;
-import uk.gov.laa.ccms.caab.entity.CostStructure;
-import uk.gov.laa.ccms.caab.mapper.ApplicationMapper;
+import uk.gov.laa.ccms.api.entity.Address;
+import uk.gov.laa.ccms.api.entity.Application;
+import uk.gov.laa.ccms.api.entity.AuditTrail;
+import uk.gov.laa.ccms.api.entity.CostStructure;
+import uk.gov.laa.ccms.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-import uk.gov.laa.ccms.caab.repository.ApplicationRepository;
+import uk.gov.laa.ccms.api.repository.ApplicationRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class ApplicationService {
 
     private final ApplicationMapper applicationMapper;
 
-    public String createApplication(final String caabUserLoginId, final ApplicationDetail applicationDetail){
+    public Long createApplication(final String caabUserLoginId, final ApplicationDetail applicationDetail){
 
         AuditTrail auditTrail = new AuditTrail();
         auditTrail.setCreatedBy(caabUserLoginId);
@@ -47,6 +47,6 @@ public class ApplicationService {
 
         applicationRepository.save(application);
 
-        return application.getLscCaseReference();
+        return application.getId();
     }
 }

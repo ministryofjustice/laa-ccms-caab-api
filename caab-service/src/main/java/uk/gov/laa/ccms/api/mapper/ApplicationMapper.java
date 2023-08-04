@@ -1,10 +1,10 @@
-package uk.gov.laa.ccms.caab.mapper;
+package uk.gov.laa.ccms.api.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uk.gov.laa.ccms.caab.entity.Address;
-import uk.gov.laa.ccms.caab.entity.Application;
-import uk.gov.laa.ccms.caab.entity.CostStructure;
+import uk.gov.laa.ccms.api.entity.Address;
+import uk.gov.laa.ccms.api.entity.CostStructure;
+import uk.gov.laa.ccms.api.entity.Application;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailCorrespondenceAddress;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailCosts;

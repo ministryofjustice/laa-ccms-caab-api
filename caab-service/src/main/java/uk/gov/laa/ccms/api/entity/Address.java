@@ -1,4 +1,4 @@
-package uk.gov.laa.ccms.caab.entity;
+package uk.gov.laa.ccms.api.entity;
 
 
 import jakarta.persistence.*;

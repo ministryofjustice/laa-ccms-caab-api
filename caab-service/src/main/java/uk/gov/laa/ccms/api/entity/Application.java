@@ -1,10 +1,9 @@
-package uk.gov.laa.ccms.caab.entity;
+package uk.gov.laa.ccms.api.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

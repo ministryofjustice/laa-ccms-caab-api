@@ -1,10 +1,11 @@
 package uk.gov.laa.ccms.caab.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-import uk.gov.laa.ccms.caab.entity.Address;
-import uk.gov.laa.ccms.caab.entity.Application;
-import uk.gov.laa.ccms.caab.entity.CostStructure;
+import uk.gov.laa.ccms.api.entity.Address;
+import uk.gov.laa.ccms.api.entity.Application;
+import uk.gov.laa.ccms.api.entity.CostStructure;
+import uk.gov.laa.ccms.api.mapper.ApplicationMapper;
+import uk.gov.laa.ccms.api.mapper.ApplicationMapperImpl;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailCorrespondenceAddress;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailCosts;
@@ -25,7 +26,6 @@ public class ApplicationMapperTest {
         // Construct ApplicationDetail
         ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("caseRef123");
-        // Other fields...
         detail.setProvider(new ApplicationDetailProvider().id("providerId").displayValue("providerDisp").caseReference("providerCase"));
         detail.setOffice(new IntDisplayValue().id(1).displayValue("officeDisp"));
         detail.setSupervisor(new StringDisplayValue().id("supervisorId").displayValue("supervisorDisp"));
@@ -41,10 +41,8 @@ public class ApplicationMapperTest {
         // Convert ApplicationDetail to Application
         Application application = mapper.toApplication(detail);
 
-        // Assertions
         assertNull(application.getId()); // ID should be ignored and not set
         assertEquals("caseRef123", application.getLscCaseReference());
-        // Other fields...
         assertEquals("providerId", application.getProviderId());
         assertEquals("providerDisp", application.getProviderDisplayValue());
         assertEquals("providerCase", application.getProviderCaseReference());
@@ -68,7 +66,7 @@ public class ApplicationMapperTest {
 
     }
 
-
+    @Test
     public void testAddressMapping() {
         // Construct ApplicationDetailCorrespondenceAddress
         ApplicationDetailCorrespondenceAddress detailAddress = new ApplicationDetailCorrespondenceAddress();

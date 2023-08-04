@@ -10,11 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.laa.ccms.api.controller.ApplicationController;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailClient;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailProvider;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
-import uk.gov.laa.ccms.caab.service.ApplicationService;
+import uk.gov.laa.ccms.api.service.ApplicationService;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +50,7 @@ class ApplicationControllerTest {
         String categoryOfLawId = "TEST";
         String providerId = "12345";
         String clientRef = "clientRef";
+        Long id = 1L;
 
         ApplicationDetailProvider provider = new ApplicationDetailProvider(providerId);
 
@@ -64,13 +66,13 @@ class ApplicationControllerTest {
                 .client(client)
                 .categoryOfLaw(categoryOfLaw);
 
-        when(applicationService.createApplication(loginId, applicationDetail)).thenReturn(caseReferenceNumber);
+        when(applicationService.createApplication(loginId, applicationDetail)).thenReturn(id);
 
         this.mockMvc.perform(post("/applications")
                         .header("Caab-user-Login-Id", loginId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(applicationDetail)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/applications/" + caseReferenceNumber));
+                .andExpect(header().string("Location", "http://localhost/applications/" + id));
     }
 }

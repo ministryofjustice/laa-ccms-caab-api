@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.entity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.laa.ccms.api.entity.AuditTrail;
 
 import static org.junit.jupiter.api.Assertions.*;
 
