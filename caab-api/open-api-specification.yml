@@ -42,7 +42,7 @@ components:
           type: 'string'
         provider:
           allOf:
-            - $ref: "#/components/schemas/stringDisplayValue"
+            - $ref: "#/components/schemas/intDisplayValue"
           type: 'object'
           properties:
             case_reference:

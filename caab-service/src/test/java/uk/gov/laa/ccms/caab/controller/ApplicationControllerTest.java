@@ -48,7 +48,7 @@ class ApplicationControllerTest {
         String loginId = "test";
         String caseReferenceNumber = "30001234";
         String categoryOfLawId = "TEST";
-        String providerId = "12345";
+        int providerId = 12345;
         String clientRef = "clientRef";
         Long id = 1L;
 
