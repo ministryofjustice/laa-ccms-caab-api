@@ -1,6 +1,11 @@
 plugins {
     id 'org.springframework.boot' version '3.1.0'
     id 'jacoco'
+    id 'checkstyle'
+}
+
+ext {
+    checkstyleVersion = '10.12.2'
 }
 
 sourceSets {
@@ -60,7 +65,7 @@ jacocoTestReport {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/CAABApplication.class'])
+            fileTree(dir: it, exclude: ['**/Application.class'])
         }))
     }
 
@@ -71,7 +76,7 @@ jacocoTestCoverageVerification {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/CAABApplication.class'])
+            fileTree(dir: it, exclude: ['**/Application.class'])
         }))
     }
 
@@ -84,6 +89,13 @@ jacocoTestCoverageVerification {
     }
 
     dependsOn tasks['test']
+}
+
+checkstyle {
+    maxWarnings = 0
+    toolVersion = "${checkstyleVersion}"
+    sourceSets = [sourceSets.main]
+    showViolations = true
 }
 
 

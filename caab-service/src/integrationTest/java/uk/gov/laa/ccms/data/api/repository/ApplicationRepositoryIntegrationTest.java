@@ -4,10 +4,8 @@ package uk.gov.laa.ccms.data.api.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.annotation.CacheAnnotationParser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
-import uk.gov.laa.ccms.api.CAABApplication;
 import uk.gov.laa.ccms.api.entity.Address;
 import uk.gov.laa.ccms.api.entity.Application;
 import uk.gov.laa.ccms.api.entity.AuditTrail;
@@ -27,7 +25,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
-@SpringBootTest(classes = CAABApplication.class)
+@SpringBootTest(classes = uk.gov.laa.ccms.api.Application.class)
 @SqlMergeMode(MERGE)
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
