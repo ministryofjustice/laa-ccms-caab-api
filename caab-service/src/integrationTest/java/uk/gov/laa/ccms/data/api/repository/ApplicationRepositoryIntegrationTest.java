@@ -4,7 +4,6 @@ package uk.gov.laa.ccms.data.api.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.annotation.CacheAnnotationParser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import uk.gov.laa.ccms.api.CAABApplication;
