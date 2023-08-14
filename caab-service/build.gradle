@@ -65,7 +65,7 @@ jacocoTestReport {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/Application.class'])
+            fileTree(dir: it, exclude: ['**/CaabApiApplication.class'])
         }))
     }
 
@@ -76,7 +76,7 @@ jacocoTestCoverageVerification {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/Application.class'])
+            fileTree(dir: it, exclude: ['**/CaabApiApplication.class'])
         }))
     }
 

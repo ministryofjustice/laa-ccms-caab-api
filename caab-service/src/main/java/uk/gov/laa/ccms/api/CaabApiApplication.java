@@ -10,9 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * for the full lifecycle management of the CAAB system components and services.</p>
  */
 @SpringBootApplication
-public class Application {
+public class CaabApiApplication {
   public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+    SpringApplication.run(CaabApiApplication.class, args);
   }
 
 }

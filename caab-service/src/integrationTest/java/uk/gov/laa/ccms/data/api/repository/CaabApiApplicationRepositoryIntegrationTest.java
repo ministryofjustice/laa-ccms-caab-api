@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
+import uk.gov.laa.ccms.api.CaabApiApplication;
 import uk.gov.laa.ccms.api.entity.Address;
 import uk.gov.laa.ccms.api.entity.Application;
 import uk.gov.laa.ccms.api.entity.AuditTrail;
@@ -25,11 +26,11 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
-@SpringBootTest(classes = uk.gov.laa.ccms.api.Application.class)
+@SpringBootTest(classes = CaabApiApplication.class)
 @SqlMergeMode(MERGE)
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
-public class ApplicationRepositoryIntegrationTest extends AbstractIntegrationTest {
+public class CaabApiApplicationRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private ApplicationRepository applicationRepository;
