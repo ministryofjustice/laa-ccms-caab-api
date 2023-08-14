@@ -37,7 +37,7 @@ class ApplicationServiceTest {
      */
     @Test
     void createApplication_createsApplicationWithCorrespondenceAddressAndCosts() {
-        ApplicationDetail applicationDetail = new ApplicationDetail();
+        ApplicationDetail applicationDetail = new ApplicationDetail(null,null,null,null);
         Application application = new Application();
 
         mockMapperAndRepository(applicationDetail, application);
