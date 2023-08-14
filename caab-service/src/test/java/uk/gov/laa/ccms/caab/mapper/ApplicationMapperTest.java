@@ -26,7 +26,7 @@ public class ApplicationMapperTest {
         // Construct ApplicationDetail
         ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("caseRef123");
-        detail.setProvider(new ApplicationDetailProvider().id("providerId").displayValue("providerDisp").caseReference("providerCase"));
+        detail.setProvider(new ApplicationDetailProvider().id(1234).displayValue("providerDisp").caseReference("providerCase"));
         detail.setOffice(new IntDisplayValue().id(1).displayValue("officeDisp"));
         detail.setSupervisor(new StringDisplayValue().id("supervisorId").displayValue("supervisorDisp"));
         detail.setFeeEarner(new StringDisplayValue().id("feeEarnerId").displayValue("feeEarnerDisp"));
@@ -43,7 +43,7 @@ public class ApplicationMapperTest {
 
         assertNull(application.getId()); // ID should be ignored and not set
         assertEquals("caseRef123", application.getLscCaseReference());
-        assertEquals("providerId", application.getProviderId());
+        assertEquals(1234, Integer.parseInt(application.getProviderId()));
         assertEquals("providerDisp", application.getProviderDisplayValue());
         assertEquals("providerCase", application.getProviderCaseReference());
         assertEquals(1, application.getOfficeId());
@@ -122,7 +122,7 @@ public class ApplicationMapperTest {
         ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("CASE-001");
         detail.setProvider(new ApplicationDetailProvider());
-        detail.getProvider().setId("PROV-001");
+        detail.getProvider().setId(1234);
         detail.getProvider().setDisplayValue("Provider Display");
         detail.getProvider().setCaseReference("CASE-001");
         detail.setOffice(new IntDisplayValue().id(1).displayValue("Office 1"));
@@ -134,7 +134,7 @@ public class ApplicationMapperTest {
 
         // Assertions
         assertEquals("CASE-001", application.getLscCaseReference());
-        assertEquals("PROV-001", application.getProviderId());
+        assertEquals(1234, Integer.parseInt(application.getProviderId()));
         assertEquals("Provider Display", application.getProviderDisplayValue());
         assertEquals("CASE-001", application.getProviderCaseReference());
         assertEquals(1L, application.getOfficeId());
