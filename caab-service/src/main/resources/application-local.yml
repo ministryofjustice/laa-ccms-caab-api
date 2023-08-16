@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: ${CAAB_DATASOURCE_URL}
+    url: jdbc:oracle:thin:@localhost:1521:CCMSPUI
     driver-class-name: oracle.jdbc.OracleDriver
-    username: ${CAAB_DATASOURCE_USERNAME}
-    password: ${CAAB_DATASOURCE_PASSWORD}
+    username: XXCCMS_PUI
+    password: XXCCMS_PUI
 
   jpa:
     database-platform: org.hibernate.dialect.OracleDialect
