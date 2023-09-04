@@ -9,6 +9,3 @@ spring:
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
       ddl-auto: none
-
-server:
-  port: 8005
