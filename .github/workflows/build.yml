@@ -89,8 +89,8 @@ jobs:
       - name: ecr login
         uses: aws-actions/configure-aws-credentials@v2
         with:
-        role-to-assume: ${{ secrets.DEV_ECR_ROLE_TO_ASSUME }}
-        aws-region: ${{ vars.DEV_ECR_REGION }}
+          role-to-assume: ${{ secrets.DEV_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.DEV_ECR_REGION }}
       # Login to container repo
       - uses: aws-actions/amazon-ecr-login@v1
         id: login-ecr
