@@ -110,11 +110,6 @@ jobs:
         with:
           name: caab-api-jar
 
-      - name: delete artifact
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: caab-api-jar
-
   update-helm-chart:
     needs: [ ecr, define-image-tag ]
     runs-on: ubuntu-latest
