@@ -75,7 +75,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   ecr:
-    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
     needs: [build-test-publish, define-image-tag]
     runs-on: ubuntu-latest
     permissions:
@@ -111,18 +110,10 @@ jobs:
         with:
           name: caab-api-jar
 
-  delete-artifact:
-    if: github.ref != 'main'
-    needs: build-test-publish
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-        - name: delete artifact
-          uses: geekyeggo/delete-artifact@v2
-          with:
-            name: caab-api-jar
+      - name: delete artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: caab-api-jar
 
   update-helm-chart:
     needs: [ ecr, define-image-tag ]
