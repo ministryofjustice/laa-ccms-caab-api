@@ -17,8 +17,8 @@ permissions:
   packages: write
 
 jobs:
-  if: github.event.pull_request.merged == true
   define-image-tag:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     # map a step output to job output
     outputs:
