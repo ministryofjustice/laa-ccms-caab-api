@@ -35,6 +35,22 @@ paths:
           description: 'Internal server error'
 components:
   schemas:
+    costEntry:
+      type: 'object'
+      properties:
+        requested_costs:
+          type: 'number'
+        cost_category:
+          type: 'string'
+        ebs_id:
+          type: 'string'
+        new_entry:
+          type: 'boolean'
+          default: true
+        lsc_resource_id:
+          type: 'string'
+        resource_name:
+          type: 'string'
     applicationDetail:
       type: 'object'
       properties:
@@ -141,6 +157,10 @@ components:
                 type: 'number'
               requested_cost_limitation:
                 type: 'number'
+              cost_entries:
+                type: 'array'
+                items:
+                  $ref: "#/components/schemas/costEntry"
       required:
         - case_reference_number
         - provider
