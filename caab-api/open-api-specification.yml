@@ -815,7 +815,7 @@ components:
           type: 'array'
           items:
             $ref: "#/components/schemas/opponent"
-        certificate_type:
+        certificate:
           $ref: "#/components/schemas/stringDisplayValue"
         date_created:
           type: 'string'
