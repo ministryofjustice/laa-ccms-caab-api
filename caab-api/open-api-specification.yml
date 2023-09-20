@@ -72,6 +72,8 @@ components:
     costEntry:
       type: 'object'
       properties:
+        amount_billed:
+          type: 'number'
         requested_costs:
           type: 'number'
         cost_category:
@@ -85,6 +87,8 @@ components:
           type: 'string'
         resource_name:
           type: 'string'
+        submitted:
+          type: 'boolean'
     client:
       type: 'object'
       properties:
