@@ -69,6 +69,8 @@ components:
           type: 'array'
           items:
             $ref: "#/components/schemas/costEntry"
+        current_provider_billed_amount:
+          type: 'number'
     costEntry:
       type: 'object'
       properties:
