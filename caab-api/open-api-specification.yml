@@ -35,6 +35,40 @@ paths:
           description: 'Internal server error'
 components:
   schemas:
+    intDisplayValue:
+      type: 'object'
+      properties:
+        id:
+          type: 'integer'
+        display_value:
+          type: 'string'
+    stringDisplayValue:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        display_value:
+          type: 'string'
+    booleanDisplayValue:
+      type: 'object'
+      properties:
+        flag:
+          type: 'string'
+        display_value:
+          type: 'string'
+    costStructure:
+      type: 'object'
+      properties:
+        default_cost_limitation:
+          type: 'number'
+        granted_cost_limitation:
+          type: 'number'
+        requested_cost_limitation:
+          type: 'number'
+        cost_entries:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/costEntry"
     costEntry:
       type: 'object'
       properties:
@@ -51,20 +85,661 @@ components:
           type: 'string'
         resource_name:
           type: 'string'
+    client:
+      type: 'object'
+      properties:
+        first_name:
+          type: 'string'
+        surname:
+          type: 'string'
+        reference:
+          type: 'string'
+          required:
+            - reference
+    costLimit:
+      type: 'object'
+      properties:
+        changed:
+          type: 'boolean'
+        at_time_of_merits:
+          type: 'integer'
+    devolvedPowers:
+      type: 'object'
+      properties:
+        used:
+          type: 'boolean'
+        date_used:
+          type: 'string'
+          format: 'date'
+        contract_flag:
+          type: 'string'
+    address:
+      type: 'object'
+      properties:
+        no_fixed_abode:
+          type: 'boolean'
+        postcode:
+          type: 'string'
+        house_name_or_number:
+          type: 'string'
+        address_line_1:
+          type: 'string'
+        address_line_2:
+          type: 'string'
+        city:
+          type: 'string'
+        county:
+          type: 'string'
+        country:
+          type: 'string'
+        care_of:
+          type: 'string'
+        preferred_address:
+          type: 'string'
+    scopeLimitation:
+      type: 'object'
+      properties:
+        scope_limitation:
+          $ref: "#/components/schemas/stringDisplayValue"
+        ebs_id:
+          type: 'string'
+        scope_limitation_wording:
+          $ref: "#/components/schemas/stringDisplayValue"
+        default_ind:
+          type: 'boolean'
+        delegated_func_apply_ind:
+          $ref: "#/components/schemas/booleanDisplayValue"
+        non_default_wording_reqd:
+          type: 'boolean'
+        stage:
+          type: 'string'
+    proceedingOutcome:
+      type: 'object'
+      properties:
+        date_of_issue:
+          type: 'string'
+          format: 'date'
+        stage_end:
+          $ref: "#/components/schemas/stringDisplayValue"
+        resolution_method:
+          type: 'string'
+        date_of_final_work:
+          type: 'string'
+          format: 'date'
+        result:
+          $ref: "#/components/schemas/stringDisplayValue"
+        result_info:
+          type: 'string'
+        alternative_resolution:
+          type: 'string'
+        adr_info:
+          type: 'string'
+        wider_benefits:
+          type: 'string'
+        court_code:
+          type: 'string'
+        court_name:
+          type: 'string'
+        description:
+          type: 'string'
+        proceeding_case_id:
+          type: 'string'
+        outcome_court_case_no:
+          type: 'string'
+        proceeding_type:
+          $ref: "#/components/schemas/stringDisplayValue"
+        matter_type:
+          $ref: "#/components/schemas/stringDisplayValue"
+    proceeding:
+      type: 'object'
+      properties:
+        ebs_id:
+          type: 'string'
+        matter_type:
+          $ref: "#/components/schemas/stringDisplayValue"
+        proceeding_type:
+          $ref: "#/components/schemas/stringDisplayValue"
+        level_of_service:
+          $ref: "#/components/schemas/stringDisplayValue"
+        client_involvement:
+          $ref: "#/components/schemas/stringDisplayValue"
+        type_of_order:
+          $ref: "#/components/schemas/stringDisplayValue"
+        cost_limitation:
+          type: 'number'
+        status:
+          $ref: "#/components/schemas/stringDisplayValue"
+        description:
+          type: 'string'
+        date_granted:
+          type: 'string'
+          format: 'date'
+        date_costs_valid:
+          type: 'string'
+          format: 'date'
+        edited:
+          type: 'boolean'
+        scope_limitations:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/scopeLimitation"
+        default_scope_limitation:
+          type: 'string'
+        stage:
+          type: 'string'
+        lead_proceeding_ind:
+          type: 'boolean'
+          default: false
+        lar_scope:
+          type: 'string'
+        granted_using_devolved_powers:
+          type: 'string'
+        date_devolved_powers_used:
+          type: 'string'
+          format: 'date'
+        proceeding_case_id:
+          type: 'string'
+        outcome:
+          $ref: "#/components/schemas/proceedingOutcome"
+        order_type_req_flag:
+          type: 'boolean'
+        order_type_display_flag:
+          type: 'boolean'
+        delete_scope_limitation_flag:
+          type: 'boolean'
+        available_functions:
+          type: 'array'
+          items:
+            type: 'string'
+    linkedCase:
+      type: 'object'
+      properties:
+        lsc_case_reference:
+          type: 'string'
+        relation_to_case:
+          type: 'string'
+        client:
+          $ref: "#/components/schemas/client"
+        provider_case_reference:
+          type: 'string'
+        category_of_law:
+          type: 'string'
+        fee_earner:
+          type: 'string'
+        status:
+          type: 'string'
+        client_reference:
+          type: 'string'
+        client_first_name:
+          type: 'string'
+        client_surname:
+          type: 'string'
+    priorAuthority:
+      type: 'object'
+      properties:
+        ebs_id:
+          type: 'string'
+        status:
+          type: 'string'
+        type:
+          $ref: "#/components/schemas/stringDisplayValue"
+        summary:
+          type: 'string'
+        justification:
+          type: 'string'
+        value_required:
+          type: 'boolean'
+        amount_requested:
+          type: 'number'
+        items:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/referenceDataItem"
+    referenceDataItem:
+      type: 'object'
+      properties:
+        code:
+          $ref: "#/components/schemas/stringDisplayValue"
+        type:
+          type: 'string'
+        mandatory:
+          type: 'boolean'
+        lov_look_up:
+          type: 'string'
+        value:
+          $ref: "#/components/schemas/stringDisplayValue"
+    opponent:
+      type: 'object'
+      properties:
+        ebs_id:
+          type: 'string'
+        type:
+          type: 'string'
+        title:
+          type: 'string'
+        first_name:
+          type: 'string'
+        middle_names:
+          type: 'string'
+        surname:
+          type: 'string'
+        date_of_birth:
+          type: 'string'
+          format: 'date'
+        national_insurance_number:
+          type: 'string'
+        address:
+          $ref: "#/components/schemas/address"
+        relationship_to_case:
+          type: 'string'
+        relationship_to_client:
+          type: 'string'
+        telephone_home:
+          type: 'string'
+        telephone_work:
+          type: 'string'
+        telephone_mobile:
+          type: 'string'
+        fax_number:
+          type: 'string'
+        email_address:
+          type: 'string'
+        other_information:
+          type: 'string'
+        employment_status:
+          type: 'string'
+        employer_name:
+          type: 'string'
+        employment_address:
+          type: 'string'
+        legal_aided:
+          type: 'boolean'
+        certificate_number:
+          type: 'string'
+        court_ordered_means_assessment:
+          type: 'string'
+        assessed_income:
+          type: 'number'
+        assessed_income_frequency:
+          type: 'string'
+        assessed_assets:
+          type: 'number'
+        assessment_date:
+          type: 'string'
+          format: 'date'
+        organisation_name:
+          type: 'string'
+        organisation_type:
+          $ref: "#/components/schemas/stringDisplayValue"
+        currently_trading:
+          type: 'string'
+        contact_name_role:
+          type: 'string'
+        confirmed:
+          type: 'boolean'
+        app_mode:
+          type: 'boolean'
+          default: true
+        amendment:
+          type: 'boolean'
+        award:
+          type: 'boolean'
+        public_funding_applied:
+          type: 'boolean'
+        shared_ind:
+          type: 'boolean'
+        delete_ind:
+          type: 'boolean'
+        display_name:
+          type: 'string'
+        display_address:
+          type: 'string'
+        party_id:
+          type: 'string'
+    recovery:
+      type: 'object'
+      properties:
+        award_amount:
+          type: 'number'
+          default: 0.00
+        solicitor_recovery_amount:
+          type: 'number'
+          default: 0.00
+        solicitor_recovery_date:
+          type: 'string'
+          format: 'date'
+        solicitor_amount_paid_to_lsc:
+          type: 'number'
+          default: 0.00
+        court_recovery_amount:
+          type: 'number'
+          default: 0.00
+        court_recovery_date:
+          type: 'string'
+          format: 'date'
+        court_amount_paid_to_lsc:
+          type: 'number'
+          default: 0.00
+        recovered_amount:
+          type: 'number'
+          default: 0.00
+        client_recovery_date:
+          type: 'string'
+          format: 'date'
+        client_amount_paid_to_lsc:
+          type: 'number'
+          default: 0.00
+        client_recovery_amount:
+          type: 'number'
+          default: 0.00
+        unrecovered_amount:
+          type: 'number'
+          default: 0.00
+        leave_of_court_required_ind:
+          type: 'string'
+        offered_amount:
+          type: 'number'
+          default: 0.00
+        conditions_of_offer:
+          type: 'string'
+        details_of_offer:
+          type: 'string'
+        award_type:
+          type: 'string'
+        description:
+          type: 'string'
+    timeRecovery:
+      type: 'object'
+      properties:
+        award_type:
+          type: 'string'
+        description:
+          type: 'string'
+        award_amount:
+          type: 'number'
+          default: 0.00
+        triggering_event:
+          type: 'string'
+        effective_date:
+          type: 'string'
+          format: 'date'
+        time_related_recovery_details:
+          type: 'string'
+    costAward:
+      type: 'object'
+      properties:
+        court_assessment_status:
+          type: 'string'
+        pre_certificate_lsc_cost:
+          type: 'number'
+          default: 0.00
+        pre_certificate_other_cost:
+          type: 'number'
+          default: 0.00
+        certificate_cost_lsc:
+          type: 'number'
+          default: 0.00
+        total_cert_costs_awarded:
+          type: 'number'
+          default: 0.00
+        certificate_cost_rate_market:
+          type: 'number'
+          default: 0.00
+        interest_awarded_rate:
+          type: 'number'
+          default: 0.00
+        order_served_date:
+          type: 'string'
+          format: 'date'
+        interest_start_date:
+          type: 'string'
+          format: 'date'
+        other_details:
+          type: 'string'
+        address_line_1:
+          type: 'string'
+        address_line_2:
+          type: 'string'
+        address_line_3:
+          type: 'string'
+        recovery:
+          $ref: "#/components/schemas/recovery"
+    financialAward:
+      type: 'object'
+      properties:
+        interim_award:
+          type: 'string'
+        amount:
+          type: 'number'
+          default: 0.00
+        award_justifications:
+          type: 'string'
+        order_served_date:
+          type: 'string'
+          format: 'date'
+        statutory_charge_exemption_reason:
+          type: 'string'
+        other_details:
+          type: 'string'
+        address_line_1:
+          type: 'string'
+        address_line_2:
+          type: 'string'
+        address_line_3:
+          type: 'string'
+        recovery:
+          $ref: "#/components/schemas/recovery"
+    landAward:
+      type: 'object'
+      properties:
+        description:
+          type: 'string'
+        title_no:
+          type: 'string'
+        valuation_amount:
+          type: 'number'
+          default: 0.00
+        valuation_criteria:
+          type: 'string'
+        valuation_date:
+          type: 'string'
+          format: 'date'
+        disputed_percentage:
+          type: 'number'
+          default: 0.00
+        awarded_percentage:
+          type: 'number'
+          default: 0.00
+        mortgage_amount_due:
+          type: 'number'
+          default: 0.00
+        equity:
+          type: 'number'
+          default: 0.00
+        recovery:
+          type: 'string'
+        no_recovery_details:
+          type: 'string'
+        stat_charge_exempt_reason:
+          type: 'string'
+        land_charge_registration:
+          type: 'string'
+        registration_ref:
+          type: 'string'
+        recovery_of_award_time_related:
+          type: 'string'
+        address_line_1:
+          type: 'string'
+        address_line_2:
+          type: 'string'
+        address_line_3:
+          type: 'string'
+        time_recovery:
+          $ref: "#/components/schemas/timeRecovery"
+    otherAssetAward:
+      type: 'object'
+      properties:
+        description:
+          type: 'string'
+        valuation_amount:
+          type: 'number'
+          default: 0.00
+        valuation_criteria:
+          type: 'string'
+        valuation_date:
+          type: 'string'
+          format: 'date'
+        disputed_percentage:
+          type: 'number'
+        awarded_percentage:
+          type: 'number'
+        recovered_amount:
+          type: 'number'
+        disputed_amount:
+          type: 'number'
+        awarded_amount:
+          type: 'number'
+        recovered_percentage:
+          type: 'number'
+        recovery:
+          type: 'string'
+        no_recovery_details:
+          type: 'string'
+        stat_charge_exempt_reason:
+          type: 'string'
+        recovery_of_award_time_related:
+          type: 'string'
+        time_recovery:
+          $ref: "#/components/schemas/timeRecovery"
+    caseOutcome:
+      type: 'object'
+      properties:
+        case_reference_number:
+          type: 'string'
+        cost_awards:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/costAward"
+        financial_awards:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/financialAward"
+        land_awards:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/landAward"
+        other_asset_awards:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/otherAssetAward"
+        proceeding_outcomes:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/proceedingOutcome"
+        pre_certificate_costs:
+          type: 'number'
+          default: 0.00
+        legal_costs:
+          type: 'number'
+          default: 0.00
+        discharge_reason:
+          type: 'string'
+        discharge_case_ind:
+          type: 'string'
+        client_continue_ind:
+          type: 'string'
+        other_details:
+          type: 'string'
+        office_code:
+          type: 'string'
+        unique_file_no:
+          type: 'string'
+        provider_id:
+          type: 'string'
+    assessmentResult:
+      type: object
+      properties:
+        assessment_id:
+          type: 'string'
+        default_ind:
+          type: 'boolean'
+        date:
+          type: 'string'
+          format: date
+        results:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/opaGoal'
+        assessment_details:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/assessmentScreen'
+    opaGoal:
+      type: 'object'
+      properties:
+        attribute:
+          type: 'string'
+        attribute_value:
+          type: 'string'
+    assessmentScreen:
+      type: 'object'
+      properties:
+        screen_name:
+          type: 'string'
+        caption:
+          type: 'string'
+        entity:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/opaEntity'
+    opaEntity:
+      type: 'object'
+      properties:
+        sequence_number:
+          type: 'integer'
+        entity_name:
+          type: 'string'
+        caption:
+          type: 'string'
+        instances:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/opaInstance'
+    opaInstance:
+      type: 'object'
+      properties:
+        instance_label:
+          type: 'string'
+        caption:
+          type: 'string'
+        attributes:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/opaAttribute'
+    opaAttribute:
+      type: 'object'
+      properties:
+        attribute:
+          type: 'string'
+        caption:
+          type: 'string'
+        response_type:
+          type: 'string'
+        response_value:
+          type: 'string'
+        response_text:
+          type: 'string'
+        user_defined_ind:
+          type: 'boolean'
     applicationDetail:
       type: 'object'
       properties:
         case_reference_number:
           type: 'string'
+        provider_case_reference:
+          type: 'string'
         provider:
-          allOf:
-            - $ref: "#/components/schemas/intDisplayValue"
-          type: 'object'
-          properties:
-            case_reference:
-              type: 'string'
-          required:
-            - id
+          $ref: "#/components/schemas/intDisplayValue"
         office:
           $ref: "#/components/schemas/intDisplayValue"
         supervisor:
@@ -75,8 +750,6 @@ components:
           $ref: "#/components/schemas/stringDisplayValue"
         category_of_law:
           $ref: "#/components/schemas/stringDisplayValue"
-          required:
-            - id
         relation_to_linked_case:
           type: 'string'
         opponent_applied_for_funding:
@@ -84,16 +757,7 @@ components:
         status:
           $ref: "#/components/schemas/stringDisplayValue"
         client:
-          type: 'object'
-          properties:
-            first_name:
-              type: 'string'
-            surname:
-              type: 'string'
-            reference:
-              type: 'string'
-              required:
-                - reference
+          $ref: "#/components/schemas/client"
         amendment:
           type: 'boolean'
         means_assessment_amended:
@@ -101,82 +765,86 @@ components:
         merits_assessment_amended:
           type: 'boolean'
         cost_limit:
-          type: 'object'
-          properties:
-            changed:
-              type: 'boolean'
-            at_time_of_merits:
-              type: 'integer'
+          $ref: "#/components/schemas/costLimit"
+        cost_limit_changed:
+          type: 'boolean'
+        cost_limit_at_time_of_merits:
+          type: 'number'
         application_type:
           $ref: "#/components/schemas/stringDisplayValue"
         devolved_powers:
-          type: 'object'
-          properties:
-            used:
-              type: 'boolean'
-            date_used:
-              type: 'string'
-              format: 'date'
-            contract_flag:
-              type: 'string'
+          $ref: "#/components/schemas/devolvedPowers"
         merits_reassessment_required:
             type: 'boolean'
-        lar_scope_flag:
-            type: 'string'
-        lead_proceeding_changed:
-            type: 'boolean'
         correspondence_address:
-          type: 'object'
-          properties:
-            no_fixed_abode:
-              type: 'boolean'
-            postcode:
-              type: 'string'
-            house_name_or_number:
-              type: 'string'
-            address_line_1:
-              type: 'string'
-            address_line_2:
-              type: 'string'
-            city:
-              type: 'string'
-            county:
-              type: 'string'
-            country:
-              type: 'string'
-            care_of:
-              type: 'string'
-            preferred_address:
-              type: 'string'
+          $ref: "#/components/schemas/address"
         costs:
-            type: 'object'
-            properties:
-              default_cost_limitation:
-                type: 'number'
-              granted_cost_limitation:
-                type: 'number'
-              requested_cost_limitation:
-                type: 'number'
-              cost_entries:
-                type: 'array'
-                items:
-                  $ref: "#/components/schemas/costEntry"
+          $ref: "#/components/schemas/costStructure"
+        proceedings:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/proceeding"
+        lead_proceeding_changed:
+          type: 'boolean'
+        app_mode:
+          type: 'boolean'
+          default: true
+        award:
+          type: 'boolean'
+          default: false
+        opponent_mode:
+          type: 'string'
+          default: "application"
+        means_assessment_status:
+          type: 'string'
+        merits_assessment_status:
+          type: 'string'
+        all_sections_complete:
+          type: 'boolean'
+        quick_edit_type:
+          type: 'string'
+        linked_cases:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/linkedCase"
+        prior_authorities:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/priorAuthority"
+        opponents:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/opponent"
+        certificate_type:
+          $ref: "#/components/schemas/stringDisplayValue"
+        date_created:
+          type: 'string'
+          format: 'date'
+        amendment_proceedings_in_ebs:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/proceeding"
+        available_functions:
+          type: 'array'
+          items:
+            type: 'string'
+        case_outcome:
+          $ref: "#/components/schemas/caseOutcome"
+        means_assessment:
+          $ref: "#/components/schemas/assessmentResult"
+        merits_assessment:
+          $ref: "#/components/schemas/assessmentResult"
+        edit_proceedings_and_costs_allowed:
+          type: 'boolean'
+          default: true
+        devolved_powers_contract_flag:
+          type: 'string'
+        lar_scope_flag:
+          type: 'boolean'
+        submitted:
+          type: 'boolean'
       required:
         - case_reference_number
         - provider
         - category_of_law
         - client
-    intDisplayValue:
-      type: 'object'
-      properties:
-        id:
-          type: 'integer'
-        display_value:
-          type: 'string'
-    stringDisplayValue:
-      type: 'object'
-      properties:
-        id:
-          type: 'string'
-        display_value:
-          type: 'string'

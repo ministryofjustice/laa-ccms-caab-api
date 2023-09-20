@@ -1,5 +1,11 @@
 package uk.gov.laa.ccms.caab.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,17 +17,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.api.controller.ApplicationController;
-import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailClient;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailProvider;
-import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 import uk.gov.laa.ccms.api.service.ApplicationService;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.Client;
+import uk.gov.laa.ccms.caab.model.IntDisplayValue;
+import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -52,10 +52,9 @@ class ApplicationControllerTest {
         String clientRef = "clientRef";
         Long id = 1L;
 
-        ApplicationDetailProvider provider = new ApplicationDetailProvider(providerId);
+        IntDisplayValue provider = new IntDisplayValue().id(providerId);
 
-        ApplicationDetailClient client = new ApplicationDetailClient()
-                .reference(clientRef);
+        Client client = new Client().reference(clientRef);
 
         StringDisplayValue categoryOfLaw = new StringDisplayValue()
                 .id(categoryOfLawId);

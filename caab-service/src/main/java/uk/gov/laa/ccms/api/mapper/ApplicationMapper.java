@@ -6,8 +6,6 @@ import uk.gov.laa.ccms.api.entity.Address;
 import uk.gov.laa.ccms.api.entity.Application;
 import uk.gov.laa.ccms.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailCorrespondenceAddress;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailCosts;
 
 /**
  * Interface responsible for mapping and transforming objects related
@@ -22,7 +20,6 @@ public interface ApplicationMapper {
   @Mapping(target = "lscCaseReference", source = "caseReferenceNumber")
   @Mapping(target = "providerId", source = "provider.id")
   @Mapping(target = "providerDisplayValue", source = "provider.displayValue")
-  @Mapping(target = "providerCaseReference", source = "provider.caseReference")
   @Mapping(target = "officeId", source = "office.id")
   @Mapping(target = "officeDisplayValue", source = "office.displayValue")
   @Mapping(target = "supervisor", source = "supervisor.id")
@@ -53,11 +50,11 @@ public interface ApplicationMapper {
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "postCode", source = "postcode")
   @Mapping(target = "houseNameNumber", source = "houseNameOrNumber")
-  Address toAddress(ApplicationDetailCorrespondenceAddress address);
+  Address toAddress(uk.gov.laa.ccms.caab.model.Address address);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  CostStructure toCostStructure(ApplicationDetailCosts costs);
+  CostStructure toCostStructure(uk.gov.laa.ccms.caab.model.CostStructure costs);
 
 
 }
