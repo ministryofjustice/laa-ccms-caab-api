@@ -1,5 +1,6 @@
 package uk.gov.laa.ccms.api.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import uk.gov.laa.ccms.api.entity.CostStructure;
 import uk.gov.laa.ccms.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-
 
 /**
  * Service responsible for handling application-related operations.
@@ -73,5 +73,18 @@ public class ApplicationService {
     applicationRepository.save(application);
 
     return application.getId();
+  }
+
+  /**
+   * Gets an application.
+   *
+   * @param id the TDS id for the application.
+   * @return the application details.
+   */
+  public ApplicationDetail getApplication(Long id) {
+    Optional<Application> application =  applicationRepository.findById(id);
+
+    return application.map(applicationMapper::toApplicationDetail)
+        .orElse(null);
   }
 }

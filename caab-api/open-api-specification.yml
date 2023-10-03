@@ -33,6 +33,35 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /applications/{id}:
+    get:
+      tags:
+        - applications
+      summary: 'Get Application'
+      operationId: 'getApplication'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/applicationDetail"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
 components:
   schemas:
     applicationDetail:
@@ -141,11 +170,49 @@ components:
                 type: 'number'
               requested_cost_limitation:
                 type: 'number'
+              auditTrail:
+                $ref: "#/components/schemas/auditDetail"
+        proceedings:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/proceedingDetail"
+        priorAuthorities:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/priorAuthorityDetail"
+        opponents:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/opponentDetail"
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
       required:
         - case_reference_number
         - provider
         - category_of_law
         - client
+
+    proceedingDetail:
+      type: 'object'
+      properties:
+        stage:
+          type: 'string'
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
+    priorAuthorityDetail:
+      type: 'object'
+      properties:
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
+    opponentDetail:
+      type: 'object'
+      properties:
+        relationship_to_case:
+          type: 'string'
+        type:
+          type: 'string'
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
     intDisplayValue:
       type: 'object'
       properties:
@@ -159,4 +226,17 @@ components:
         id:
           type: 'string'
         display_value:
+          type: 'string'
+    auditDetail:
+      type: 'object'
+      properties:
+        created:
+          type: 'string'
+          format: 'date'
+        created_by:
+          type: 'string'
+        last_saved:
+          type: 'string'
+          format: 'date'
+        last_saved_by:
           type: 'string'

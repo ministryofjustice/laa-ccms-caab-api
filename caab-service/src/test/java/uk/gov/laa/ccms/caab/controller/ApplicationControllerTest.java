@@ -1,5 +1,13 @@
 package uk.gov.laa.ccms.caab.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,17 +19,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.api.controller.ApplicationController;
+import uk.gov.laa.ccms.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailClient;
 import uk.gov.laa.ccms.caab.model.ApplicationDetailProvider;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
-import uk.gov.laa.ccms.api.service.ApplicationService;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -74,5 +76,16 @@ class ApplicationControllerTest {
                         .content(objectMapper.writeValueAsString(applicationDetail)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "http://localhost/applications/" + id));
+    }
+
+    @Test
+    public void getApplication() throws Exception {
+        Long id = 123456L;
+
+        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
+
+        this.mockMvc.perform(get("/applications/{id}", id))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

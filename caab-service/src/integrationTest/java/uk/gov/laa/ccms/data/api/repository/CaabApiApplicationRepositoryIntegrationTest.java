@@ -1,6 +1,18 @@
 package uk.gov.laa.ccms.data.api.repository;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,18 +25,6 @@ import uk.gov.laa.ccms.api.entity.AuditTrail;
 import uk.gov.laa.ccms.api.entity.CostStructure;
 import uk.gov.laa.ccms.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.data.api.AbstractIntegrationTest;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
-import java.util.TimeZone;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
 @SpringBootTest(classes = CaabApiApplication.class)
 @SqlMergeMode(MERGE)
@@ -107,8 +107,6 @@ public class CaabApiApplicationRepositoryIntegrationTest extends AbstractIntegra
         assertEquals(categoryOfLaw, fetchedApplication.getCategoryOfLaw());
         assertEquals(clientReference, fetchedApplication.getClientReference());
     }
-
-
 
     @Test
     public void testSaveApplication_allFields(){
@@ -231,6 +229,54 @@ public class CaabApiApplicationRepositoryIntegrationTest extends AbstractIntegra
         assertNotNull(fetchedApplication.getCorrespondenceAddress().getAuditTrail().getCreated());
         assertNotNull(fetchedApplication.getCorrespondenceAddress().getAuditTrail().getModified());
 
+    }
+
+    @Test
+    @Sql(scripts = "/sql/application_insert.sql")
+    public void testGetApplication() {
+        Long applicationId = 24L;
+
+        // Call the service method
+        Application result = applicationRepository.findById(applicationId).orElse(null);
+
+        // Assert the result
+        assertNotNull(result);
+
+        assertEquals("300001644517", result.getLscCaseReference());
+        assertEquals("26517", result.getProviderId());
+        assertEquals("329635", result.getProviderCaseReference());
+        assertEquals("SWITALSKI'S SOLICITORS LTD", result.getProviderDisplayValue());
+        assertEquals(145512, result.getOfficeId());
+        assertEquals("SWITALSKI'S SOLICITORS LTD-2L847Q", result.getOfficeDisplayValue());
+        assertEquals("2854148", result.getSupervisor());
+        assertEquals("David Greenwood", result.getSupervisorDisplayValue());
+        assertEquals("2027148", result.getFeeEarner());
+        assertEquals("Carole Spencer", result.getFeeEarnerDisplayValue());
+        assertEquals("2027079", result.getProviderContact());
+        assertEquals("CAROLE.SPENCER@SWITALSKIS.COM", result.getProviderContactDisplayValue());
+        assertEquals("AAP", result.getCategoryOfLaw());
+        assertEquals("Claim Against Public Authority", result.getCategoryOfLawDisplayValue());
+        assertNull(result.getRelationToLinkedCase());
+        assertNull(result.getOpponentAppliedForFunding());
+        assertEquals("Unsubmitted", result.getDisplayStatus());
+        assertEquals("UNSUBMITTED", result.getActualStatus());
+        assertEquals("Phil", result.getClientFirstName());
+        assertEquals("Payne", result.getClientSurname());
+        assertEquals("PhilTest", result.getClientReference());
+        assertEquals("ECF", result.getApplicationType());
+        assertEquals("Exceptional Case Funding", result.getApplicationTypeDisplayValue());
+    }
+
+    @Test
+    @Sql(scripts = "/sql/application_insert.sql")
+    public void testGetApplication_noData() {
+        Long applicationId = 999L;
+
+        // Call the service method
+        Application result = applicationRepository.findById(applicationId).orElse(null);
+
+        // Assert the result
+        assertNull(result);
     }
 
     private Application buildRequiredApplication() {
