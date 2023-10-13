@@ -178,8 +178,10 @@ public class Application implements Serializable {
   @Access(AccessType.PROPERTY)
   private List<PriorAuthority> priorAuthorities;
 
-  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-  @LazyCollection(LazyCollectionOption.FALSE)
+  @OneToMany(mappedBy = "application",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
   @OrderBy("id asc")
   @Access(AccessType.PROPERTY)
   private List<Opponent> opponents;
