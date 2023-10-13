@@ -1,5 +1,10 @@
 package uk.gov.laa.ccms.caab.mapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import uk.gov.laa.ccms.api.entity.Address;
 import uk.gov.laa.ccms.api.entity.Application;
@@ -7,15 +12,9 @@ import uk.gov.laa.ccms.api.entity.CostStructure;
 import uk.gov.laa.ccms.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.api.mapper.ApplicationMapperImpl;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailCorrespondenceAddress;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailCosts;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailProvider;
+import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailClient;
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationMapperTest {
 
@@ -26,14 +25,15 @@ public class ApplicationMapperTest {
         // Construct ApplicationDetail
         ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("caseRef123");
-        detail.setProvider(new ApplicationDetailProvider().id(1234).displayValue("providerDisp").caseReference("providerCase"));
+        detail.setProviderCaseReference("providerCase");
+        detail.setProvider(new IntDisplayValue().id(1234).displayValue("providerDisp"));
         detail.setOffice(new IntDisplayValue().id(1).displayValue("officeDisp"));
         detail.setSupervisor(new StringDisplayValue().id("supervisorId").displayValue("supervisorDisp"));
         detail.setFeeEarner(new StringDisplayValue().id("feeEarnerId").displayValue("feeEarnerDisp"));
         detail.setProviderContact(new StringDisplayValue().id("providerContactId").displayValue("providerContactDisp"));
         detail.setCategoryOfLaw(new StringDisplayValue().id("categoryLawId").displayValue("categoryLawDisp"));
         detail.setStatus(new StringDisplayValue().id("statusId").displayValue("statusDisp"));
-        detail.setClient(new ApplicationDetailClient().firstName("clientFirst").surname("clientSurname").reference("clientRef"));
+        detail.setClient(new Client().firstName("clientFirst").surname("clientSurname").reference("clientRef"));
         detail.setApplicationType(new StringDisplayValue().id("appTypeId").displayValue("appTypeDisp"));
         detail.setMeritsReassessmentRequired(true);
         detail.setLeadProceedingChanged(true);
@@ -69,7 +69,7 @@ public class ApplicationMapperTest {
     @Test
     public void testAddressMapping() {
         // Construct ApplicationDetailCorrespondenceAddress
-        ApplicationDetailCorrespondenceAddress detailAddress = new ApplicationDetailCorrespondenceAddress();
+        uk.gov.laa.ccms.caab.model.Address detailAddress = new uk.gov.laa.ccms.caab.model.Address();
         detailAddress.setNoFixedAbode(true);
         detailAddress.setPostcode("12345");
         detailAddress.setHouseNameOrNumber("House 123");
@@ -101,7 +101,8 @@ public class ApplicationMapperTest {
     @Test
     public void testCostStructureMapping() {
         // Construct ApplicationDetailCosts
-        ApplicationDetailCosts detailCosts = new ApplicationDetailCosts();
+        uk.gov.laa.ccms.caab.model.CostStructure detailCosts =
+            new uk.gov.laa.ccms.caab.model.CostStructure();
         detailCosts.setDefaultCostLimitation(new BigDecimal("100.00"));
         detailCosts.setGrantedCostLimitation(new BigDecimal("200.00"));
         detailCosts.setRequestedCostLimitation(new BigDecimal("300.00"));
@@ -121,10 +122,8 @@ public class ApplicationMapperTest {
         // Construct ApplicationDetail
         ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("CASE-001");
-        detail.setProvider(new ApplicationDetailProvider());
-        detail.getProvider().setId(1234);
-        detail.getProvider().setDisplayValue("Provider Display");
-        detail.getProvider().setCaseReference("CASE-001");
+        detail.setProviderCaseReference("CASE-001");
+        detail.setProvider(new IntDisplayValue().id(1234).displayValue("Provider Display"));
         detail.setOffice(new IntDisplayValue().id(1).displayValue("Office 1"));
         detail.setSupervisor(new StringDisplayValue().id("Supervisor").displayValue("Supervisor Display"));
         detail.setFeeEarner(new StringDisplayValue().id("Fee Earner").displayValue("Fee Earner Display"));
@@ -144,7 +143,8 @@ public class ApplicationMapperTest {
     @Test
     public void testToAddressWithNullValues() {
         // Construct ApplicationDetailCorrespondenceAddress with null values
-        ApplicationDetailCorrespondenceAddress detailAddress = new ApplicationDetailCorrespondenceAddress();
+        uk.gov.laa.ccms.caab.model.Address detailAddress =
+            new uk.gov.laa.ccms.caab.model.Address();
 
         // Convert ApplicationDetailCorrespondenceAddress to Address
         Address address = mapper.toAddress(detailAddress);
@@ -157,7 +157,8 @@ public class ApplicationMapperTest {
     @Test
     public void testToCostStructureWithZeroValues() {
         // Construct ApplicationDetailCosts with zero values
-        ApplicationDetailCosts detailCosts = new ApplicationDetailCosts();
+        uk.gov.laa.ccms.caab.model.CostStructure detailCosts =
+            new uk.gov.laa.ccms.caab.model.CostStructure();
         detailCosts.setDefaultCostLimitation(new BigDecimal("0.00"));
         detailCosts.setGrantedCostLimitation(new BigDecimal("0.00"));
         detailCosts.setRequestedCostLimitation(new BigDecimal("0.00"));
