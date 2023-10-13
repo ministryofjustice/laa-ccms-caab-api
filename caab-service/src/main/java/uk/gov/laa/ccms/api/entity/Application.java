@@ -9,18 +9,24 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  * Represents an application entity from the "XXCCMS_APPLICATION" table.
@@ -155,6 +161,30 @@ public class Application implements Serializable {
   @JoinColumn(name = "FK_CORRESPONDENCE_ADDRESS")
   @Access(AccessType.PROPERTY)
   private Address correspondenceAddress;
+
+  @OneToMany(mappedBy = "application",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
+  @OrderBy("id asc")
+  @Access(AccessType.PROPERTY)
+  private List<Proceeding> proceedings;
+
+  @OneToMany(mappedBy = "application",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
+  @OrderBy("id asc")
+  @Access(AccessType.PROPERTY)
+  private List<PriorAuthority> priorAuthorities;
+
+  @OneToMany(mappedBy = "application",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
+  @OrderBy("id asc")
+  @Access(AccessType.PROPERTY)
+  private List<Opponent> opponents;
 
   @Embedded
   private AuditTrail auditTrail = new AuditTrail();

@@ -1,7 +1,9 @@
 package uk.gov.laa.ccms.caab.controller;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -73,5 +75,16 @@ class ApplicationControllerTest {
                         .content(objectMapper.writeValueAsString(applicationDetail)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "http://localhost/applications/" + id));
+    }
+
+    @Test
+    public void getApplication() throws Exception {
+        Long id = 123456L;
+
+        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
+
+        this.mockMvc.perform(get("/applications/{id}", id))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

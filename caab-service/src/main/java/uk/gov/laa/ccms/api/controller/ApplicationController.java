@@ -41,4 +41,13 @@ public class ApplicationController implements ApplicationsApi {
 
     return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
   }
+
+  @Override
+  public ResponseEntity<ApplicationDetail> getApplication(Long id) {
+
+    ApplicationDetail application = applicationService.getApplication(id);
+
+    return new ResponseEntity<ApplicationDetail>(application, HttpStatus.OK);
+  }
+
 }

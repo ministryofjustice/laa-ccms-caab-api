@@ -1,5 +1,6 @@
 package uk.gov.laa.ccms.caab.service;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import uk.gov.laa.ccms.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.api.repository.ApplicationRepository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -62,6 +64,39 @@ class ApplicationServiceTest {
 
         verifyInteractionsWithMocks(applicationDetail, application);
         verifyAuditTrailSetOnEntities(application);
+    }
+
+    /**
+     * Test case get an application returns data.
+     */
+    @Test
+    void getApplication_returnsData() {
+        Application application = new Application();
+        ApplicationDetail expectedResponse = new ApplicationDetail();
+
+        when(applicationMapper.toApplicationDetail(application)).thenReturn(expectedResponse);
+        when(applicationRepository.findById(any())).thenReturn(Optional.of(application));
+
+        ApplicationDetail response = applicationService.getApplication(1L);
+
+        verify(applicationMapper).toApplicationDetail(application);
+        verify(applicationRepository).findById(1L);
+
+        assertEquals(response, expectedResponse);
+    }
+
+    /**
+     * Test case get an application returns null.
+     */
+    @Test
+    void getApplication_returnsNull() {
+        when(applicationRepository.findById(any())).thenReturn(Optional.empty());
+
+        ApplicationDetail response = applicationService.getApplication(1L);
+
+        verify(applicationRepository).findById(1L);
+
+        assertEquals(response, null);
     }
 
     /**
