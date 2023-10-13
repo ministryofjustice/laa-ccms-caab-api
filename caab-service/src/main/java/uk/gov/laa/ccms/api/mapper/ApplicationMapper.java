@@ -11,19 +11,14 @@ import uk.gov.laa.ccms.api.entity.Opponent;
 import uk.gov.laa.ccms.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailCorrespondenceAddress;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailCosts;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
-import uk.gov.laa.ccms.caab.model.OpponentDetail;
-import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
-import uk.gov.laa.ccms.caab.model.ProceedingDetail;
 
 /**
  * Interface responsible for mapping and transforming objects related
  * to the application domain. It bridges the gap between the data model
  * and the service or API layers, ensuring consistent object translation.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", config = IgnoreUnmappedMapperConfig.class)
 public interface ApplicationMapper {
 
   @Mapping(target = "id", ignore = true)
@@ -31,7 +26,6 @@ public interface ApplicationMapper {
   @Mapping(target = "lscCaseReference", source = "caseReferenceNumber")
   @Mapping(target = "providerId", source = "provider.id")
   @Mapping(target = "providerDisplayValue", source = "provider.displayValue")
-  @Mapping(target = "providerCaseReference", source = "provider.caseReference")
   @Mapping(target = "officeId", source = "office.id")
   @Mapping(target = "officeDisplayValue", source = "office.displayValue")
   @Mapping(target = "supervisor", source = "supervisor.id")
@@ -65,16 +59,23 @@ public interface ApplicationMapper {
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "postCode", source = "postcode")
   @Mapping(target = "houseNameNumber", source = "houseNameOrNumber")
-  Address toAddress(ApplicationDetailCorrespondenceAddress address);
+  Address toAddress(uk.gov.laa.ccms.caab.model.Address address);
+
+  @Mapping(target = "postcode", source = "postCode")
+  @Mapping(target = "houseNameOrNumber", source = "houseNameNumber")
+  uk.gov.laa.ccms.caab.model.Address toAddress(Address address);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  CostStructure toCostStructure(ApplicationDetailCosts costs);
+  CostStructure toCostStructure(uk.gov.laa.ccms.caab.model.CostStructure costs);
+
+  @Mapping(target = "auditTrail", source = "auditTrail",
+      qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.CostStructure toCostStructure(CostStructure costs);
 
   @Mapping(target = "caseReferenceNumber", source = "lscCaseReference")
   @Mapping(target = "provider.id", source = "providerId")
   @Mapping(target = "provider.displayValue", source = "providerDisplayValue")
-  @Mapping(target = "provider.caseReference", source = "providerCaseReference")
   @Mapping(target = "office.id", source = "officeId")
   @Mapping(target = "office.displayValue", source = "officeDisplayValue")
   @Mapping(target = "supervisor.id", source = "supervisor")
@@ -103,25 +104,17 @@ public interface ApplicationMapper {
       qualifiedByName = "toAuditDetail")
   ApplicationDetail toApplicationDetail(Application application);
 
-  @Mapping(target = "postcode", source = "postCode")
-  @Mapping(target = "houseNameOrNumber", source = "houseNameNumber")
-  ApplicationDetailCorrespondenceAddress toApplicationDetailCorrespondenceAddress(Address address);
+  @Mapping(target = "auditTrail", source = "auditTrail",
+      qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.Proceeding toProceeding(Proceeding proceeding);
 
   @Mapping(target = "auditTrail", source = "auditTrail",
       qualifiedByName = "toAuditDetail")
-  ApplicationDetailCosts toApplicationDetailCosts(CostStructure costs);
+  uk.gov.laa.ccms.caab.model.PriorAuthority toPriorAuthority(PriorAuthority priorAuthority);
 
   @Mapping(target = "auditTrail", source = "auditTrail",
       qualifiedByName = "toAuditDetail")
-  ProceedingDetail toProceedingDetail(Proceeding proceeding);
-
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  PriorAuthorityDetail toPriorAuthorityDetail(PriorAuthority priorAuthority);
-
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  OpponentDetail toOpponentDetail(Opponent opponent);
+  uk.gov.laa.ccms.caab.model.Opponent toOpponent(Opponent opponent);
 
   @Mapping(target = "lastSaved", source = "modified")
   @Mapping(target = "lastSavedBy", source = "modifiedBy")

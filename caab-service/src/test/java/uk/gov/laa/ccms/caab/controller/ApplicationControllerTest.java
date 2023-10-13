@@ -1,9 +1,7 @@
 package uk.gov.laa.ccms.caab.controller;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -21,8 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.api.controller.ApplicationController;
 import uk.gov.laa.ccms.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailClient;
-import uk.gov.laa.ccms.caab.model.ApplicationDetailProvider;
+import uk.gov.laa.ccms.caab.model.Client;
+import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 @ExtendWith(SpringExtension.class)
@@ -54,10 +52,9 @@ class ApplicationControllerTest {
         String clientRef = "clientRef";
         Long id = 1L;
 
-        ApplicationDetailProvider provider = new ApplicationDetailProvider(providerId);
+        IntDisplayValue provider = new IntDisplayValue().id(providerId);
 
-        ApplicationDetailClient client = new ApplicationDetailClient()
-                .reference(clientRef);
+        Client client = new Client().reference(clientRef);
 
         StringDisplayValue categoryOfLaw = new StringDisplayValue()
                 .id(categoryOfLawId);
