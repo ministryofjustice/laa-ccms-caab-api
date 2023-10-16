@@ -62,11 +62,11 @@ public class CaabApiApplicationRepositoryIntegrationTest extends AbstractIntegra
     private final BigDecimal costLimitAtTimeOfMerits = BigDecimal.valueOf(10000);
     private final String applicationType = "Application Type";
     private final String applicationTypeDisplayValue = "Application Type Display";
-    private final String devolvedPowersUsed = "false";
+    private final Boolean devolvedPowersUsed = false;
     private final Date dateDevolvedPowersUsed = Date.from(Instant.now());
     private final String devolvedPowersContractFlag = "Devolved Powers Contract Flag";
     private final Boolean meritsReassessmentReqdInd = false;
-    private final String larScopeFlag = "Y";
+    private final Boolean larScopeFlag = true;
     private final Boolean leadProceedingChanged = false;
     private final String createdBy = "Test User";
     private final String modifiedBy = "Test User";
