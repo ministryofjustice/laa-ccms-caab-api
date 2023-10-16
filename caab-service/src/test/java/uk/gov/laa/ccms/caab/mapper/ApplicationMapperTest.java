@@ -354,10 +354,10 @@ public class ApplicationMapperTest {
         application.setAmendment(true);
         application.setApplicationType("Application Type");
         application.setApplicationTypeDisplayValue("Application Type Display Value");
-        application.setDevolvedPowersUsed("Yes");
+        application.setDevolvedPowersUsed(true);
         application.setDateDevolvedPowersUsed(new Date());
         application.setDevolvedPowersContractFlag("Contract Flag");
-        application.setLarScopeFlag("Scope Flag");
+        application.setLarScopeFlag(true);
         application.setMeansAssessmentAmended(true);
         application.setMeritsAssessmentAmended(true);
         application.setCostLimitChanged(true);

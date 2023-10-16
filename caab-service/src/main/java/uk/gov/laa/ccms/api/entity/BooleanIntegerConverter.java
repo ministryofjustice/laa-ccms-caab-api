@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * AttributeConverter class to handle the conversion to/from a Boolean value and 1 or 0.
  */
-@Converter(autoApply = true)
+@Converter
 public class BooleanIntegerConverter implements AttributeConverter<Boolean, Integer> {
 
   /**

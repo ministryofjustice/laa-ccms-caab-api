@@ -3,6 +3,7 @@ package uk.gov.laa.ccms.api.entity;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +36,7 @@ public class Address implements Serializable {
   @GeneratedValue(generator = "XXCCMS_ADDRESS_S")
   private Long id;
 
+  @Convert(converter = BooleanIntegerConverter.class)
   @Column(name = "NO_FIXED_ABODE")
   private Boolean noFixedAbode = false;
 

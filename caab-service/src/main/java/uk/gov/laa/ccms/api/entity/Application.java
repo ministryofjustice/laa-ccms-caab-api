@@ -7,6 +7,7 @@ import jakarta.persistence.AccessType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Converter;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -119,17 +120,18 @@ public class Application implements Serializable {
   @Column(name = "APPLICATION_TYPE_DISPLAY_VALUE", length = 35)
   private String applicationTypeDisplayValue;
 
-  @Convert(converter = StringCharacterConverter.class)
+  @Convert(converter = BooleanConverter.class)
   @Column(name = "DEVOLVED_POWERS_USED", length = 5)
-  private String devolvedPowersUsed;
+  private Boolean devolvedPowersUsed;
 
   @Column(name = "DATE_DEVOLVED_POWERS_USED", length = 5)
   private Date dateDevolvedPowersUsed;
   @Column(name = "DEVOLVED_POWERS_CONTRACT_FLAG", length = 30)
   private String devolvedPowersContractFlag;
 
+  @Convert(converter = BooleanConverter.class)
   @Column(name = "LAR_SCOPE_FLAG", length = 5)
-  private String larScopeFlag;
+  private Boolean larScopeFlag;
 
   @Column(name = "MEANS_ASSESSMENT_AMENDED")
   private boolean meansAssessmentAmended = false;
