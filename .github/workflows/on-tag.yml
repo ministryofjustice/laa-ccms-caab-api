@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: caab-api-jar
-          path: caab-service/build/libs/caab-service-0.0.1-SNAPSHOT.jar
+          path: caab-service/build/libs/caab-service-${{ steps.capture_version.outputs.app_version }}.jar
 
   ecr:
     needs: [build-test-publish, define-image-tag]
