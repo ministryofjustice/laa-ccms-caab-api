@@ -181,7 +181,7 @@ components:
         ebs_id:
           type: 'string'
         scope_limitation_wording:
-          $ref: "#/components/schemas/stringDisplayValue"
+          type: 'string'
         default_ind:
           type: 'boolean'
         delegated_func_apply_ind:

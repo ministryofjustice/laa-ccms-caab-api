@@ -1,6 +1,12 @@
 FROM eclipse-temurin:17
+
+# Use a build argument for version
+ARG app_version=0.0.1-SNAPSHOT
+
 VOLUME /tmp
-COPY caab-service-0.0.1-SNAPSHOT.jar caab-service.jar
+
+COPY caab-service-${app_version}.jar caab-service.jar
+
 EXPOSE 8080
 RUN addgroup --system --gid 800 customgroup \
     && adduser --system --uid 800 --ingroup customgroup --shell /bin/sh customuser
