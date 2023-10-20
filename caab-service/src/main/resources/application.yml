@@ -9,3 +9,4 @@ spring:
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
       ddl-auto: none
+    open-in-view: false

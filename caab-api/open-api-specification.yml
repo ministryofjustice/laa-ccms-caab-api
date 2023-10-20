@@ -62,6 +62,71 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /applications/{id}/application-type:
+    get:
+      tags:
+        - applications
+      summary: 'get application type'
+      operationId: 'getApplicationType'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/applicationType"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    patch:
+      tags:
+        - applications
+      summary: 'patch application type'
+      operationId: 'patchApplicationType'
+      requestBody:
+        description: patch an application's application type
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/applicationType'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+        - name: 'Caab-user-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'MARILYN@DESORANDCO.CO.UK'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
 components:
   schemas:
     intDisplayValue:
@@ -78,6 +143,13 @@ components:
           type: 'string'
         display_value:
           type: 'string'
+    applicationType:
+      allOf:
+        - $ref: "#/components/schemas/stringDisplayValue"
+      type: 'object'
+      properties:
+        devolved_powers:
+            $ref: "#/components/schemas/devolvedPowers"
     booleanDisplayValue:
       type: 'object'
       properties:
@@ -809,14 +881,8 @@ components:
           type: 'boolean'
         cost_limit:
           $ref: "#/components/schemas/costLimit"
-        cost_limit_changed:
-          type: 'boolean'
-        cost_limit_at_time_of_merits:
-          type: 'number'
         application_type:
-          $ref: "#/components/schemas/stringDisplayValue"
-        devolved_powers:
-          $ref: "#/components/schemas/devolvedPowers"
+          $ref: "#/components/schemas/applicationType"
         merits_reassessment_required:
             type: 'boolean'
         correspondence_address:
@@ -880,8 +946,6 @@ components:
         edit_proceedings_and_costs_allowed:
           type: 'boolean'
           default: true
-        devolved_powers_contract_flag:
-          type: 'string'
         lar_scope_flag:
           type: 'boolean'
         submitted:
