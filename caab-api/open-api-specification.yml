@@ -479,7 +479,7 @@ components:
           type: 'number'
           default: 0.00
         leave_of_court_required_ind:
-          type: 'string'
+          type: 'boolean'
         offered_amount:
           type: 'number'
           default: 0.00
