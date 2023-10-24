@@ -551,7 +551,7 @@ components:
           type: 'number'
           default: 0.00
         leave_of_court_required_ind:
-          type: 'string'
+          type: 'boolean'
         offered_amount:
           type: 'number'
           default: 0.00
@@ -580,7 +580,64 @@ components:
           format: 'date'
         time_related_recovery_details:
           type: 'string'
+    liableParty:
+      type: 'object'
+      properties:
+        award_type:
+          type: 'string'
+        opponent_id:
+          type: 'string'
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
+    baseAward:
+      type: 'object'
+      discriminator:
+        propertyName: 'discriminator'
+      properties:
+        award_type:
+          type: 'string'
+        date_of_order:
+          type: 'string'
+          format: 'date'
+        awarded_by:
+          type: 'string'
+        description:
+          type: 'string'
+        award_amount:
+          type: 'number'
+        update_allowed:
+          type: 'boolean'
+        delete_allowed:
+          type: 'boolean'
+          default: true
+        ebs_id:
+          type: 'string'
+        award_code:
+          type: 'string'
+        triggering_event:
+          type: 'string'
+        effective_date:
+          type: 'string'
+          format: 'date'
+        time_related_recovery_details:
+          type: 'string'
+        cost_or_financial:
+          type: 'boolean'
+          default: false
+        opponents_to_select:
+          type: 'boolean'
+          default: false
+        opponent_id:
+          type: 'string'
+        liable_parties:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/liableParty'
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
     costAward:
+      allOf:
+        - $ref: '#/components/schemas/baseAward'
       type: 'object'
       properties:
         court_assessment_status:
@@ -620,6 +677,8 @@ components:
         recovery:
           $ref: "#/components/schemas/recovery"
     financialAward:
+      allOf:
+        - $ref: '#/components/schemas/baseAward'
       type: 'object'
       properties:
         interim_award:
@@ -645,6 +704,8 @@ components:
         recovery:
           $ref: "#/components/schemas/recovery"
     landAward:
+      allOf:
+        - $ref: '#/components/schemas/baseAward'
       type: 'object'
       properties:
         description:
@@ -692,6 +753,8 @@ components:
         time_recovery:
           $ref: "#/components/schemas/timeRecovery"
     otherAssetAward:
+      allOf:
+        - $ref: '#/components/schemas/baseAward'
       type: 'object'
       properties:
         description:
