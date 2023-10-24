@@ -15,7 +15,7 @@ public class AbstractIntegrationTest {
     public static OracleContainer oracleDB;
 
     static {
-        oracleDB = new OracleContainer("gvenzl/oracle-xe:21-slim");
+        oracleDB = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart");
         oracleDB.start();
     }
 

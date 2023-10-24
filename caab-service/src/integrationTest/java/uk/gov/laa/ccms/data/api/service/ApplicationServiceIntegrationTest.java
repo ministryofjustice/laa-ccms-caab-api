@@ -16,6 +16,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.CostLimit;
@@ -330,6 +333,76 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         assertNotNull(result);
         assertEquals(amendedApplicationTypeId, result.getApplicationType());
         assertEquals(amendedApplicationTypeDisplay, result.getApplicationTypeDisplayValue());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "24, NewProviderCaseRef1, New Provider Display1, 12345, 67890, FeeEarnerId1, SupervisorId1, ProviderContactId1, TestUser",
+        "21, NewProviderCaseRef2, New Provider Display2, 54321, 98760, FeeEarnerId2, SupervisorId2, ProviderContactId2, AnotherUser",
+        "41, NewProviderCaseRef3, New Provider Display3, 13579, 24680, FeeEarnerId3, SupervisorId3, ProviderContactId3, ThirdUser"
+    })
+    @Sql(scripts = "/sql/application_insert.sql")
+    public void testPatchProviderDetails(
+        Long applicationId,
+        String newProviderCaseReference,
+        String newProviderDisplayValue,
+        Integer newProviderId,
+        Integer newOfficeId,
+        String newFeeEarnerId,
+        String newSupervisorId,
+        String newProviderContactId,
+        String caabUserLoginId) {
+
+        // Create an ApplicationProviderDetails instance with the provided values
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+        IntDisplayValue provider = new IntDisplayValue().id(newProviderId).displayValue(newProviderDisplayValue);
+        IntDisplayValue office = new IntDisplayValue().id(newOfficeId);
+        StringDisplayValue feeEarner = new StringDisplayValue().id(newFeeEarnerId);
+        StringDisplayValue supervisor = new StringDisplayValue().id(newSupervisorId);
+        StringDisplayValue providerContact = new StringDisplayValue().id(newProviderContactId);
+
+        providerDetails.setProvider(provider);
+        providerDetails.setProviderCaseReference(newProviderCaseReference);
+        providerDetails.setOffice(office);
+        providerDetails.setFeeEarner(feeEarner);
+        providerDetails.setSupervisor(supervisor);
+        providerDetails.setProviderContact(providerContact);
+
+        // Call the patchProviderDetails method
+        applicationService.patchProviderDetails(applicationId, caabUserLoginId, providerDetails);
+
+        // Fetch the application from the database after the update
+        Application updatedApplication = applicationRepository.findById(applicationId).orElse(null);
+
+        // Assert that the updated application has the expected provider details
+        assertNotNull(updatedApplication);
+        assertEquals(newProviderCaseReference, updatedApplication.getProviderCaseReference());
+        assertEquals(newProviderDisplayValue, updatedApplication.getProviderDisplayValue());
+
+        // Assert for other provider details
+        assertEquals(provider.getId().toString(), updatedApplication.getProviderId());
+        assertEquals(office.getId().toString(), updatedApplication.getOfficeId().toString());
+        assertEquals(feeEarner.getId(), updatedApplication.getFeeEarner());
+        assertEquals(supervisor.getId(), updatedApplication.getSupervisor());
+        assertEquals(providerContact.getId(), updatedApplication.getProviderContact());
+    }
+
+    @Test
+    @Sql(scripts = "/sql/application_insert.sql")
+    public void testPatchProviderDetails_ApplicationNotFound() {
+        Long nonExistentApplicationId = 999L;
+
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+
+        // Use assertThrows to check if the method throws the expected exception
+        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
+            applicationService.patchProviderDetails(nonExistentApplicationId, "TestUser", providerDetails);
+        });
+
+        assertEquals(
+            String.format("Application with id %s not found", nonExistentApplicationId),
+            exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
 
 

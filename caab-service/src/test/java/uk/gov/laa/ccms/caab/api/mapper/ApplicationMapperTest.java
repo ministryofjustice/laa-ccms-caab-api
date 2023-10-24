@@ -19,6 +19,7 @@ import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
 import uk.gov.laa.ccms.caab.model.Client;
@@ -536,5 +537,98 @@ public class ApplicationMapperTest {
         return application;
     }
 
+    @Test
+    public void testToApplicationType() {
+        Application application = new Application();
+        application.setApplicationType("AppType123");
+        application.setApplicationTypeDisplayValue("Application Type Display");
 
+        application.setDevolvedPowersUsed(true);
+        application.setDateDevolvedPowersUsed(new Date());
+        application.setDevolvedPowersContractFlag("ContractFlag123");
+
+        ApplicationType result = mapper.toApplicationType(application);
+
+        assertNotNull(result);
+        assertEquals("AppType123", result.getId());
+        assertEquals("Application Type Display", result.getDisplayValue());
+
+        assertNotNull(result.getDevolvedPowers());
+        assertEquals(true, result.getDevolvedPowers().getUsed());
+        assertNotNull(result.getDevolvedPowers().getDateUsed());
+        assertEquals("ContractFlag123", result.getDevolvedPowers().getContractFlag());
+
+    }
+
+    @Test
+    public void testAddProviderDetailsWithNullDetails() {
+        Application application = new Application();
+        ApplicationProviderDetails providerDetails = null;
+        String caabUserLoginId = "user123";
+
+        mapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+
+        assertNull(application.getProviderId());
+        assertNull(application.getProviderDisplayValue());
+        assertNull(application.getOfficeId());
+        assertNull(application.getOfficeDisplayValue());
+        assertNull(application.getSupervisor());
+        assertNull(application.getSupervisorDisplayValue());
+        assertNull(application.getFeeEarner());
+        assertNull(application.getFeeEarnerDisplayValue());
+        assertNull(application.getProviderContact());
+        assertNull(application.getProviderContactDisplayValue());
+        assertEquals("user123", application.getAuditTrail().getModifiedBy());
+    }
+
+    @Test
+    public void testAddProviderDetails() {
+        Application application = new Application();
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+        providerDetails.setProvider(new IntDisplayValue().id(123).displayValue("Provider Display"));
+        providerDetails.setOffice(new IntDisplayValue().id(1).displayValue("Office 1"));
+        providerDetails.setSupervisor(new StringDisplayValue().id("Supervisor").displayValue("Supervisor Display Value"));
+        providerDetails.setFeeEarner(new StringDisplayValue().id("FeeEarner").displayValue("Fee Earner Display Value"));
+        providerDetails.setProviderContact(new StringDisplayValue().id("ProviderContact").displayValue("Provider Contact Display Value"));
+        String caabUserLoginId = "user123";
+
+        mapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+
+        assertEquals("123", application.getProviderId());
+        assertEquals("Provider Display", application.getProviderDisplayValue());
+        assertEquals(1, application.getOfficeId().intValue());
+        assertEquals("Office 1", application.getOfficeDisplayValue());
+        assertEquals("Supervisor", application.getSupervisor());
+        assertEquals("Supervisor Display Value", application.getSupervisorDisplayValue());
+        assertEquals("FeeEarner", application.getFeeEarner());
+        assertEquals("Fee Earner Display Value", application.getFeeEarnerDisplayValue());
+        assertEquals("ProviderContact", application.getProviderContact());
+        assertEquals("Provider Contact Display Value", application.getProviderContactDisplayValue());
+        assertEquals("user123", application.getAuditTrail().getModifiedBy());
+    }
+
+    @Test
+    public void testToProviderDetails() {
+        Application application = new Application();
+        application.setProviderId("123");
+        application.setProviderDisplayValue("Provider Display Value");
+        application.setOfficeId(1L);
+        application.setOfficeDisplayValue("Office 1");
+        application.setSupervisorDisplayValue("Supervisor Display Value");
+        application.setFeeEarnerDisplayValue("Fee Earner Display Value");
+        application.setProviderContactDisplayValue("Provider Contact Display Value");
+        application.setProviderCaseReference("ProviderCase123");
+
+        ApplicationProviderDetails result = mapper.toProviderDetails(application);
+
+        assertNotNull(result);
+        assertEquals(123, result.getProvider().getId());
+        assertEquals("Provider Display Value", result.getProvider().getDisplayValue());
+        assertEquals(1, result.getOffice().getId());
+        assertEquals("Office 1", result.getOffice().getDisplayValue());
+        assertEquals("Supervisor Display Value", result.getSupervisor().getDisplayValue());
+        assertEquals("Fee Earner Display Value", result.getFeeEarner().getDisplayValue());
+        assertEquals("Provider Contact Display Value", result.getProviderContact().getDisplayValue());
+        assertEquals("ProviderCase123", result.getProviderCaseReference());
+    }
 }
