@@ -127,6 +127,71 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /applications/{id}/provider-details:
+    get:
+      tags:
+        - applications
+      summary: 'get an applications provider details'
+      operationId: 'getApplicationProviderDetails'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/applicationProviderDetails"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    patch:
+      tags:
+        - applications
+      summary: 'patch an applications provider details'
+      operationId: 'patchApplicationProviderDetails'
+      requestBody:
+        description: patch an application's application type
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/applicationProviderDetails'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+        - name: 'Caab-user-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'MARILYN@DESORANDCO.CO.UK'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
 components:
   schemas:
     intDisplayValue:
@@ -682,7 +747,7 @@ components:
         registration_ref:
           type: 'string'
         recovery_of_award_time_related:
-          type: 'string'
+          type: 'boolean'
         address_line_1:
           type: 'string'
         address_line_2:
@@ -847,22 +912,12 @@ components:
         user_defined_ind:
           type: 'boolean'
     applicationDetail:
+      allOf:
+        - $ref: "#/components/schemas/applicationProviderDetails"
       type: 'object'
       properties:
         case_reference_number:
           type: 'string'
-        provider_case_reference:
-          type: 'string'
-        provider:
-          $ref: "#/components/schemas/intDisplayValue"
-        office:
-          $ref: "#/components/schemas/intDisplayValue"
-        supervisor:
-          $ref: "#/components/schemas/stringDisplayValue"
-        fee_earner:
-          $ref: "#/components/schemas/stringDisplayValue"
-        provider_contact:
-          $ref: "#/components/schemas/stringDisplayValue"
         category_of_law:
           $ref: "#/components/schemas/stringDisplayValue"
         relation_to_linked_case:
@@ -957,6 +1012,21 @@ components:
         - provider
         - category_of_law
         - client
+    applicationProviderDetails:
+      type: 'object'
+      properties:
+        provider:
+          $ref: "#/components/schemas/intDisplayValue"
+        office:
+          $ref: "#/components/schemas/intDisplayValue"
+        fee_earner:
+          $ref: "#/components/schemas/stringDisplayValue"
+        supervisor:
+          $ref: "#/components/schemas/stringDisplayValue"
+        provider_contact:
+          $ref: "#/components/schemas/stringDisplayValue"
+        provider_case_reference:
+          type: 'string'
     auditDetail:
       type: 'object'
       properties:

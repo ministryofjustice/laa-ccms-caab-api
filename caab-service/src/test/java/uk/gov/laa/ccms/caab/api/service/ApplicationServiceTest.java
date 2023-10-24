@@ -16,6 +16,7 @@ import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -181,6 +182,75 @@ class ApplicationServiceTest {
         verify(applicationRepository).findById(id);
 
         // Optionally, you can check the exception message and HTTP status code
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void getApplicationProviderDetails_whenExists_returnsProviderDetails() {
+        Long id = 1L;
+        ApplicationProviderDetails expectedProviderDetails = new ApplicationProviderDetails();
+        Application application = new Application();
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
+        when(applicationMapper.toProviderDetails(application)).thenReturn(expectedProviderDetails);
+
+        ApplicationProviderDetails result = applicationService.getApplicationProviderDetails(id);
+
+        verify(applicationRepository).findById(id);
+        verify(applicationMapper).toProviderDetails(application);
+
+        assertEquals(expectedProviderDetails, result);
+    }
+
+    @Test
+    void getApplicationProviderDetails_whenNotExists_throwsException() {
+        Long id = 1L;
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+
+        // Use assertThrows to check if the method throws the expected exception
+        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
+            applicationService.getApplicationProviderDetails(id);
+        });
+
+        verify(applicationRepository).findById(id);
+
+        // Optionally, you can check the exception message and HTTP status code
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void patchProviderDetails_whenExists_updatesProviderDetails() {
+        Long id = 1L;
+        String caabUserLoginId = "testUser";
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+        Application application = new Application();
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
+
+        applicationService.patchProviderDetails(id, caabUserLoginId, providerDetails);
+
+        verify(applicationRepository).findById(id);
+        verify(applicationMapper).addProviderDetails(application, providerDetails, caabUserLoginId);
+        verify(applicationRepository).save(application);
+    }
+
+    @Test
+    void patchProviderDetails_whenNotExists_throwsException() {
+        Long id = 1L;
+        String caabUserLoginId = "testUser";
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
+            applicationService.patchProviderDetails(id, caabUserLoginId, providerDetails);
+        });
+
+        verify(applicationRepository).findById(id);
+
         assertEquals("Application with id 1 not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }

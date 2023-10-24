@@ -13,6 +13,7 @@ import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 
 /**
@@ -93,6 +94,19 @@ public class ApplicationService {
   }
 
   /**
+   * Gets an applications provider details.
+   *
+   * @param id the TDS id for the application.
+   * @return the applications provider details.
+   */
+  public ApplicationProviderDetails getApplicationProviderDetails(final Long id) {
+    return applicationRepository.findById(id)
+        .map(applicationMapper::toProviderDetails)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+  }
+
+  /**
    * Gets an applications application type.
    *
    * @param id the TDS id for the application.
@@ -104,6 +118,26 @@ public class ApplicationService {
         .map(applicationMapper::toApplicationType)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+  }
+
+  /**
+   * Patch an application with new provider details.
+   *
+   * @param id the TDS id for the application.
+   * @param caabUserLoginId the CAAB user login ID responsible for the application creation.
+   * @param providerDetails the new application provider details to update the application with
+   */
+  public void patchProviderDetails(
+      final Long id,
+      final String caabUserLoginId,
+      final ApplicationProviderDetails providerDetails) {
+
+    Application application = applicationRepository.findById(id)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+
+    applicationMapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+    applicationRepository.save(application);
   }
 
   /**
