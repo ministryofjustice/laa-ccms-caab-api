@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.laa.ccms.caab.api.ApplicationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 
 /**
@@ -53,12 +54,32 @@ public class ApplicationController implements ApplicationsApi {
   }
 
   @Override
+  public ResponseEntity<ApplicationProviderDetails> getApplicationProviderDetails(Long id) {
+
+    ApplicationProviderDetails applicationProviderDetails =
+        applicationService.getApplicationProviderDetails(id);
+
+    return new ResponseEntity<>(applicationProviderDetails, HttpStatus.OK);
+  }
+
+  @Override
   public ResponseEntity<ApplicationType> getApplicationType(
       final Long id) {
 
     ApplicationType applicationType = applicationService.getApplicationType(id);
 
     return new ResponseEntity<>(applicationType, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> patchApplicationProviderDetails(
+      Long id,
+      String caabUserLoginId,
+      ApplicationProviderDetails applicationProviderDetails) {
+
+    applicationService.patchProviderDetails(id, caabUserLoginId, applicationProviderDetails);
+
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @Override

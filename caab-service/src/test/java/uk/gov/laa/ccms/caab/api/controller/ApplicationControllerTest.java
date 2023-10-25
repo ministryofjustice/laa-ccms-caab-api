@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.controller.ApplicationController;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
@@ -118,7 +119,34 @@ class ApplicationControllerTest {
                 .content(objectMapper.writeValueAsString(applicationType)))
             .andExpect(status().isNoContent());
 
-        // Verify that the service method was called with the correct arguments
         verify(applicationService).patchApplicationType(id, caabUserLoginId, applicationType);
+    }
+
+    @Test
+    public void getApplicationProviderDetails() throws Exception {
+        Long id = 123L;
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+
+        when(applicationService.getApplicationProviderDetails(id)).thenReturn(providerDetails);
+
+        this.mockMvc.perform(get("/applications/{id}/provider-details", id))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void patchApplicationProviderDetails() throws Exception {
+        Long id = 123L;
+        String caabUserLoginId = "test";
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+
+        doNothing().when(applicationService).patchProviderDetails(id, caabUserLoginId, providerDetails);
+
+        this.mockMvc.perform(patch("/applications/{id}/provider-details", id)
+                .header("Caab-user-Login-Id", caabUserLoginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(providerDetails)))
+            .andExpect(status().isNoContent());
+
+        verify(applicationService).patchProviderDetails(id, caabUserLoginId, providerDetails);
     }
 }

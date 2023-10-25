@@ -12,6 +12,7 @@ import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
 
@@ -73,6 +74,24 @@ public interface ApplicationMapper {
                                  ApplicationType applicationType,
                                  String caabUserLoginId);
 
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "providerId", source = "providerDetails.provider.id")
+  @Mapping(target = "providerDisplayValue", source = "providerDetails.provider.displayValue")
+  @Mapping(target = "officeId", source = "providerDetails.office.id")
+  @Mapping(target = "officeDisplayValue", source = "providerDetails.office.displayValue")
+  @Mapping(target = "supervisor", source = "providerDetails.supervisor.id")
+  @Mapping(target = "supervisorDisplayValue", source = "providerDetails.supervisor.displayValue")
+  @Mapping(target = "feeEarner", source = "providerDetails.feeEarner.id")
+  @Mapping(target = "feeEarnerDisplayValue", source = "providerDetails.feeEarner.displayValue")
+  @Mapping(target = "providerContact", source = "providerDetails.providerContact.id")
+  @Mapping(target = "providerContactDisplayValue",
+      source = "providerDetails.providerContact.displayValue")
+  @Mapping(target = "auditTrail.modifiedBy",
+      source = "caabUserLoginId")
+  void addProviderDetails(@MappingTarget Application application,
+                          ApplicationProviderDetails providerDetails,
+                          String caabUserLoginId);
+
   @Mapping(target = "id", source = "applicationType")
   @Mapping(target = "displayValue", source = "applicationTypeDisplayValue")
   @Mapping(target = "devolvedPowers.used", source = "devolvedPowersUsed")
@@ -81,6 +100,18 @@ public interface ApplicationMapper {
   @Mapping(target = "devolvedPowers.contractFlag",
       source = "devolvedPowersContractFlag")
   ApplicationType toApplicationType(Application application);
+
+  @Mapping(target = "provider.id", source = "providerId")
+  @Mapping(target = "provider.displayValue", source = "providerDisplayValue")
+  @Mapping(target = "office.id", source = "officeId")
+  @Mapping(target = "office.displayValue", source = "officeDisplayValue")
+  @Mapping(target = "supervisor.id", source = "supervisor")
+  @Mapping(target = "supervisor.displayValue", source = "supervisorDisplayValue")
+  @Mapping(target = "feeEarner.id", source = "feeEarner")
+  @Mapping(target = "feeEarner.displayValue", source = "feeEarnerDisplayValue")
+  @Mapping(target = "providerContact.id", source = "providerContact")
+  @Mapping(target = "providerContact.displayValue", source = "providerContactDisplayValue")
+  ApplicationProviderDetails toProviderDetails(Application application);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
