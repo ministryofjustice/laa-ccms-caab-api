@@ -450,6 +450,8 @@ components:
           type: 'string'
         client_surname:
           type: 'string'
+        auditTrail:
+          $ref: "#/components/schemas/auditDetail"
     priorAuthority:
       type: 'object'
       properties:
@@ -679,21 +681,15 @@ components:
           type: 'string'
         award_code:
           type: 'string'
-        triggering_event:
-          type: 'string'
         effective_date:
           type: 'string'
           format: 'date'
-        time_related_recovery_details:
-          type: 'string'
         cost_or_financial:
           type: 'boolean'
           default: false
         opponents_to_select:
           type: 'boolean'
           default: false
-        opponent_id:
-          type: 'string'
         liable_parties:
           type: 'array'
           items:
