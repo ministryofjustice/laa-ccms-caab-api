@@ -886,7 +886,7 @@ components:
         discharge_case_ind:
           type: 'string'
         client_continue_ind:
-          type: 'string'
+          type: 'boolean'
         other_details:
           type: 'string'
         office_code:
