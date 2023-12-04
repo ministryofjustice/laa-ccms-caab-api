@@ -219,7 +219,7 @@ components:
       type: 'object'
       properties:
         flag:
-          type: 'string'
+          type: 'boolean'
         display_value:
           type: 'string'
     costStructure:
