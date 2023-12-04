@@ -537,7 +537,7 @@ components:
         certificate_number:
           type: 'string'
         court_ordered_means_assessment:
-          type: 'string'
+          type: 'boolean'
         assessed_income:
           type: 'number'
         assessed_income_frequency:
