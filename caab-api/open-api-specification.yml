@@ -715,7 +715,7 @@ components:
         total_cert_costs_awarded:
           type: 'number'
           default: 0.00
-        certificate_cost_rate_market:
+        certificate_cost_market:
           type: 'number'
           default: 0.00
         interest_awarded_rate:
