@@ -467,7 +467,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         application.setMeritsAssessmentAmended(meritsAssessmentAmended);
         CostLimit costLimitObj = new CostLimit()
             .changed(costLimitChanged)
-            .atTimeOfMerits(Integer.valueOf(String.valueOf(costLimitAtTimeOfMerits)));
+            .limitAtTimeOfMerits(costLimitAtTimeOfMerits);
         application.setCostLimit(costLimitObj);
 
         DevolvedPowers devolvedPowersObj = new DevolvedPowers()

@@ -1,7 +1,6 @@
 package uk.gov.laa.ccms.caab.api.entity;
 
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -12,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -168,6 +169,11 @@ public class Application implements Serializable {
   @OneToMany(mappedBy = "application")
   @OrderBy("id asc")
   private List<Opponent> opponents;
+
+  @OneToMany(mappedBy = "application")
+  @OrderBy("id asc")
+  private List<LinkedCase> linkedCases;
+
 
   @Embedded
   private AuditTrail auditTrail = new AuditTrail();

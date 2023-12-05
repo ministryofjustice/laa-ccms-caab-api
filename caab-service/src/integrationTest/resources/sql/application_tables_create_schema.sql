@@ -20,6 +20,24 @@ CREATE TABLE XXCCMS_ADDRESS (
 
 CREATE UNIQUE INDEX "SYS_C0010978" ON "XXCCMS_ADDRESS" ("ID");
 
+create table XXCCMS_COST_ENTRY (
+       ID number(19,0) not null,
+       EBS_ID varchar2(15 char),
+       RESOURCE_NAME varchar2(300 char),
+       LSC_RESOURCE_ID varchar2(15 char),
+       COST_CATEGORY varchar2(50 char),
+       REQUESTED_COSTS number(10,2),
+       FK_COST_STRUCTURE number(19,0) not null,
+       CREATED timestamp,
+       CREATED_BY varchar2(50 char),
+       MODIFIED timestamp,
+       MODIFIED_BY varchar2(50 char),
+       NEW_ENTRY NUMBER(1),
+       primary key (ID)
+);
+
+
+
 CREATE TABLE XXCCMS_COST_STRUCTURE (
        "ID" NUMBER(19,0) NOT NULL ENABLE,
        "DEFAULT_COST_LIMITATION" NUMBER(10,2),
@@ -32,6 +50,27 @@ CREATE TABLE XXCCMS_COST_STRUCTURE (
 );
 
 CREATE UNIQUE INDEX "SYS_C0011003" ON "XXCCMS_COST_STRUCTURE" ("ID");
+
+CREATE INDEX XXCCMS_COST_ENTRY_I1 on XXCCMS_COST_ENTRY (FK_COST_STRUCTURE);
+
+CREATE TABLE XXCCMS_LINKED_CASE (
+        ID number(19,0) not null,
+        LSC_CASE_REFERENCE varchar2(35 char),
+        PROVIDER_CASE_REFERENCE varchar2(35 char),
+        FEE_EARNER varchar2(300 char),
+        CLIENT_FIRST_NAME varchar2(35 char),
+        CLIENT_SURNAME varchar2(35 char),
+        CLIENT_REFERENCE varchar2(30 char),
+        CATEGORY_OF_LAW varchar2(50 char) not null,
+        RELATION_TO_LINKED_CASE varchar2(50 char),
+        STATUS varchar2(50 char),
+        FK_APPLICATION number(19,0) not null,
+        CREATED timestamp,
+        CREATED_BY varchar2(50 char),
+        MODIFIED timestamp,
+        MODIFIED_BY varchar2(50 char),
+        primary key (ID)
+);
 
 CREATE TABLE XXCCMS_APPLICATION (
         "ID" NUMBER(19,0) NOT NULL ENABLE,

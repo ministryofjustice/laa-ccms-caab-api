@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 
 
 import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -65,7 +66,7 @@ public class Address implements Serializable {
   private String careOf;
 
   @Column(name = "PREFERRED_ADDRESS", length = 50)
-  @Access(jakarta.persistence.AccessType.PROPERTY)
+  @Access(AccessType.PROPERTY)
   private String preferredAddress;
 
 

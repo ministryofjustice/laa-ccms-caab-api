@@ -1,5 +1,7 @@
 package uk.gov.laa.ccms.caab.api.mapper;
 
+import lombok.Generated;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -8,9 +10,12 @@ import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
+import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
 import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.Proceeding;
+import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
+import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
@@ -21,6 +26,7 @@ import uk.gov.laa.ccms.caab.model.AuditDetail;
  * to the application domain. It bridges the gap between the data model
  * and the service or API layers, ensuring consistent object translation.
  */
+
 @Mapper(componentModel = "spring", config = IgnoreUnmappedMapperConfig.class)
 public interface ApplicationMapper {
 
@@ -45,7 +51,7 @@ public interface ApplicationMapper {
   @Mapping(target = "clientSurname", source = "client.surname")
   @Mapping(target = "clientReference", source = "client.reference")
   @Mapping(target = "costLimitChanged", source = "costLimit.changed")
-  @Mapping(target = "costLimitAtTimeOfMerits", source = "costLimit.atTimeOfMerits")
+  @Mapping(target = "costLimitAtTimeOfMerits", source = "costLimit.limitAtTimeOfMerits")
   @Mapping(target = "applicationType", source = "applicationType.id")
   @Mapping(target = "applicationTypeDisplayValue", source = "applicationType.displayValue")
   @Mapping(target = "devolvedPowersUsed", source = "applicationType.devolvedPowers.used")
@@ -55,10 +61,91 @@ public interface ApplicationMapper {
       source = "applicationType.devolvedPowers.contractFlag")
   @Mapping(target = "meritsReassessmentReqdInd", source = "meritsReassessmentRequired")
   @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged")
-  @Mapping(target = "proceedings", ignore = true)
-  @Mapping(target = "priorAuthorities", ignore = true)
-  @Mapping(target = "opponents", ignore = true)
   Application toApplication(ApplicationDetail applicationDetail);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail", qualifiedByName = "toAuditDetail")
+  ApplicationDetail toApplicationDetail(Application application);
+
+  @Mapping(target = "matterType", source = "matterType.id")
+  @Mapping(target = "matterTypeDisplayValue", source = "matterType.displayValue")
+  @Mapping(target = "proceedingType", source = "proceedingType.id")
+  @Mapping(target = "proceedingTypeDisplayValue", source = "proceedingType.displayValue")
+  @Mapping(target = "levelOfService", source = "levelOfService.id")
+  @Mapping(target = "levelOfServiceDisplayValue", source = "levelOfService.displayValue")
+  @Mapping(target = "clientInvolvement", source = "clientInvolvement.id")
+  @Mapping(target = "clientInvolvementDisplayValue", source = "clientInvolvement.displayValue")
+  @Mapping(target = "status", source = "status.id")
+  @Mapping(target = "displayStatus", source = "status.displayValue")
+  @Mapping(target = "typeOfOrder", source = "typeOfOrder.id")
+  Proceeding toProceeding(uk.gov.laa.ccms.caab.model.Proceeding proceeding);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail", qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.Proceeding toProceedingModel(Proceeding proceeding);
+
+  @Mapping(target = "type", source = "type.id")
+  @Mapping(target = "typeDisplayValue", source = "type.displayValue")
+  PriorAuthority toPriorAuthority(uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthority);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail", qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.PriorAuthority toPriorAuthorityModel(PriorAuthority priorAuthority);
+
+  @Mapping(target = "code", source = "code.id")
+  @Mapping(target = "label", source = "code.displayValue")
+  @Mapping(target = "value", source = "value.id")
+  @Mapping(target = "displayValue", source = "value.displayValue")
+  ReferenceDataItem toReferenceDataItem(
+      uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItem);
+
+  @InheritInverseConfiguration
+  uk.gov.laa.ccms.caab.model.ReferenceDataItem toReferenceDataItemModel(
+      ReferenceDataItem referenceDataItem);
+
+  @Mapping(target = "scopeLimitation", source = "scopeLimitation.id")
+  @Mapping(target = "scopeLimitationDisplayValue", source = "scopeLimitation.displayValue")
+  @Mapping(target = "delegatedFuncApplyInd", source = "delegatedFuncApplyInd.flag")
+  ScopeLimitation toScopeLimitation(uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail", qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.ScopeLimitation toScopeLimitationModel(
+      ScopeLimitation scopeLimitation);
+
+  @Mapping(target = "organisationType", source = "organisationType.id")
+  Opponent toOpponent(uk.gov.laa.ccms.caab.model.Opponent opponent);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail", qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.Opponent toOpponentModel(Opponent opponent);
+
+  LinkedCase toLinkedCase(uk.gov.laa.ccms.caab.model.LinkedCase linkedCase);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail",
+      qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.LinkedCase toLinkedCaseModel(LinkedCase linkedCase);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "postCode", source = "postcode")
+  @Mapping(target = "houseNameNumber", source = "houseNameOrNumber")
+  Address toAddress(uk.gov.laa.ccms.caab.model.Address address);
+
+  @InheritInverseConfiguration
+  uk.gov.laa.ccms.caab.model.Address toAddressModel(Address address);
+
+  CostStructure toCostStructure(uk.gov.laa.ccms.caab.model.CostStructure costs);
+
+  @InheritInverseConfiguration
+  @Mapping(target = "auditTrail", source = "auditTrail", qualifiedByName = "toAuditDetail")
+  uk.gov.laa.ccms.caab.model.CostStructure toCostStructureModel(CostStructure costs);
+
+  @Mapping(target = "lastSaved", source = "modified")
+  @Mapping(target = "lastSavedBy", source = "modifiedBy")
+  @Named("toAuditDetail")
+  AuditDetail toAuditDetail(AuditTrail auditTrail);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "applicationType", source = "applicationType.id")
@@ -71,8 +158,17 @@ public interface ApplicationMapper {
   @Mapping(target = "auditTrail.modifiedBy",
       source = "caabUserLoginId")
   void addApplicationType(@MappingTarget Application application,
-                                 ApplicationType applicationType,
-                                 String caabUserLoginId);
+                          ApplicationType applicationType,
+                          String caabUserLoginId);
+
+  @Mapping(target = "id", source = "applicationType")
+  @Mapping(target = "displayValue", source = "applicationTypeDisplayValue")
+  @Mapping(target = "devolvedPowers.used", source = "devolvedPowersUsed")
+  @Mapping(target = "devolvedPowers.dateUsed",
+      source = "dateDevolvedPowersUsed")
+  @Mapping(target = "devolvedPowers.contractFlag",
+      source = "devolvedPowersContractFlag")
+  ApplicationType toApplicationType(Application application);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "providerId", source = "providerDetails.provider.id")
@@ -92,15 +188,6 @@ public interface ApplicationMapper {
                           ApplicationProviderDetails providerDetails,
                           String caabUserLoginId);
 
-  @Mapping(target = "id", source = "applicationType")
-  @Mapping(target = "displayValue", source = "applicationTypeDisplayValue")
-  @Mapping(target = "devolvedPowers.used", source = "devolvedPowersUsed")
-  @Mapping(target = "devolvedPowers.dateUsed",
-      source = "dateDevolvedPowersUsed")
-  @Mapping(target = "devolvedPowers.contractFlag",
-      source = "devolvedPowersContractFlag")
-  ApplicationType toApplicationType(Application application);
-
   @Mapping(target = "provider.id", source = "providerId")
   @Mapping(target = "provider.displayValue", source = "providerDisplayValue")
   @Mapping(target = "office.id", source = "officeId")
@@ -112,73 +199,5 @@ public interface ApplicationMapper {
   @Mapping(target = "providerContact.id", source = "providerContact")
   @Mapping(target = "providerContact.displayValue", source = "providerContactDisplayValue")
   ApplicationProviderDetails toProviderDetails(Application application);
-
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "auditTrail", ignore = true)
-  @Mapping(target = "postCode", source = "postcode")
-  @Mapping(target = "houseNameNumber", source = "houseNameOrNumber")
-  Address toAddress(uk.gov.laa.ccms.caab.model.Address address);
-
-  @Mapping(target = "postcode", source = "postCode")
-  @Mapping(target = "houseNameOrNumber", source = "houseNameNumber")
-  uk.gov.laa.ccms.caab.model.Address toAddress(Address address);
-
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "auditTrail", ignore = true)
-  CostStructure toCostStructure(uk.gov.laa.ccms.caab.model.CostStructure costs);
-
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  uk.gov.laa.ccms.caab.model.CostStructure toCostStructure(CostStructure costs);
-
-  @Mapping(target = "caseReferenceNumber", source = "lscCaseReference")
-  @Mapping(target = "provider.id", source = "providerId")
-  @Mapping(target = "provider.displayValue", source = "providerDisplayValue")
-  @Mapping(target = "office.id", source = "officeId")
-  @Mapping(target = "office.displayValue", source = "officeDisplayValue")
-  @Mapping(target = "supervisor.id", source = "supervisor")
-  @Mapping(target = "supervisor.displayValue", source = "supervisorDisplayValue")
-  @Mapping(target = "feeEarner.id", source = "feeEarner")
-  @Mapping(target = "feeEarner.displayValue", source = "feeEarnerDisplayValue")
-  @Mapping(target = "providerContact.id", source = "providerContact")
-  @Mapping(target = "providerContact.displayValue", source = "providerContactDisplayValue")
-  @Mapping(target = "categoryOfLaw.id", source = "categoryOfLaw")
-  @Mapping(target = "categoryOfLaw.displayValue", source = "categoryOfLawDisplayValue")
-  @Mapping(target = "status.displayValue", source = "displayStatus")
-  @Mapping(target = "status.id", source = "actualStatus")
-  @Mapping(target = "client.firstName", source = "clientFirstName")
-  @Mapping(target = "client.surname", source = "clientSurname")
-  @Mapping(target = "client.reference", source = "clientReference")
-  @Mapping(target = "costLimit.changed", source = "costLimitChanged")
-  @Mapping(target = "costLimit.atTimeOfMerits", source = "costLimitAtTimeOfMerits")
-  @Mapping(target = "applicationType.id", source = "applicationType")
-  @Mapping(target = "applicationType.displayValue", source = "applicationTypeDisplayValue")
-  @Mapping(target = "applicationType.devolvedPowers.used", source = "devolvedPowersUsed")
-  @Mapping(target = "applicationType.devolvedPowers.dateUsed",
-      source = "dateDevolvedPowersUsed")
-  @Mapping(target = "applicationType.devolvedPowers.contractFlag",
-      source = "devolvedPowersContractFlag")
-  @Mapping(target = "meritsReassessmentRequired", source = "meritsReassessmentReqdInd")
-  @Mapping(target = "leadProceedingChanged", source = "leadProceedingChangedOpaInput")
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  ApplicationDetail toApplicationDetail(Application application);
-
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  uk.gov.laa.ccms.caab.model.Proceeding toProceeding(Proceeding proceeding);
-
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  uk.gov.laa.ccms.caab.model.PriorAuthority toPriorAuthority(PriorAuthority priorAuthority);
-
-  @Mapping(target = "auditTrail", source = "auditTrail",
-      qualifiedByName = "toAuditDetail")
-  uk.gov.laa.ccms.caab.model.Opponent toOpponent(Opponent opponent);
-
-  @Mapping(target = "lastSaved", source = "modified")
-  @Mapping(target = "lastSavedBy", source = "modifiedBy")
-  @Named("toAuditDetail")
-  AuditDetail toAuditDetail(AuditTrail auditTrail);
 
 }
