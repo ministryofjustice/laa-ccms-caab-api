@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 /**
  * Represents an audit trail for various entities within the CCMS system.
@@ -21,7 +23,6 @@ import org.hibernate.annotations.UpdateTimestamp;
  */
 @Embeddable
 @Data
-@NoArgsConstructor
 public class AuditTrail {
 
   /**
@@ -36,22 +37,20 @@ public class AuditTrail {
    */
   @Column(name = "MODIFIED")
   @UpdateTimestamp
-  private Date modified;
+  private Date lastSaved;
 
   /**
    * modified by.
    */
+  @LastModifiedBy
   @Column(name = "MODIFIED_BY")
-  private String modifiedBy;
+  private String lastSavedBy;
 
   /**
    * created by.
    */
+  @CreatedBy
   @Column(name = "CREATED_BY", updatable = false)
   private String createdBy;
 
-  public AuditTrail(String modifiedBy, String createdBy) {
-    this.modifiedBy = modifiedBy;
-    this.createdBy = createdBy;
-  }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a linked case entity associated with the "XXCCMS_LINKED_CASE" table.
@@ -24,6 +26,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.</p>
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_LINKED_CASE")
 @SequenceGenerator(
     allocationSize = 1,
@@ -44,7 +47,7 @@ public class LinkedCase implements Serializable {
   private Long id;
 
   @Embedded
-  private AuditTrail auditTrail;
+  private AuditTrail auditTrail = new AuditTrail();
 
   @ManyToOne
   @JoinColumn(name = "FK_APPLICATION", nullable = false)
@@ -67,6 +70,12 @@ public class LinkedCase implements Serializable {
    */
   @Column(name = "PROVIDER_CASE_REFERENCE", length = 35)
   private String providerCaseReference;
+
+  /**
+   * category of law.
+   */
+  @Column(name = "CATEGORY_OF_LAW", length = 50, nullable = false)
+  private String categoryOfLaw;
 
   /**
    * feeEarner.

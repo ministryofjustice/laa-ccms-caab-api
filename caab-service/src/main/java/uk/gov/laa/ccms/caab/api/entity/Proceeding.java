@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -19,6 +20,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a proceeding entity associated with the "XXCCMS_PROCEEDING" table.
@@ -28,6 +30,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.</p>
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_PROCEEDING")
 @SequenceGenerator(
     allocationSize = 1,
@@ -43,7 +46,7 @@ public class Proceeding implements Serializable {
   private Long id;
 
   @Embedded
-  private AuditTrail auditTrail;
+  private AuditTrail auditTrail = new AuditTrail();
 
   @Column(name = "EBS_ID", length = 50)
   private String ebsId;

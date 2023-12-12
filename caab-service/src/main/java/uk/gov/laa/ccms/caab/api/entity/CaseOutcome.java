@@ -3,6 +3,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a case outcome entity associated with the "XXCCMS_CASE_OUTCOME" table.
@@ -20,6 +22,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.</p>
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_CASE_OUTCOME")
 @SequenceGenerator(
     allocationSize = 1,
@@ -37,7 +40,7 @@ public class CaseOutcome {
    * audit trail info.
    */
   @Embedded
-  private AuditTrail auditTrail;
+  private AuditTrail auditTrail = new AuditTrail();
 
   @Column(name = "LSC_CASE_REFERENCE", length = 50, nullable = false)
   private String lscCaseReference;

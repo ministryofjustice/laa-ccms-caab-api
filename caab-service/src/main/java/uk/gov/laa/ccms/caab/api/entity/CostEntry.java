@@ -3,6 +3,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a cost entry entity associated with the "XXCCMS_COST_ENTRY" table.
@@ -23,6 +25,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.</p>
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_COST_ENTRY")
 @SequenceGenerator(
     allocationSize = 1,
@@ -84,5 +87,5 @@ public class CostEntry implements Serializable {
   private CostStructure costStructure;
 
   @Embedded
-  private AuditTrail auditTrail;
+  private AuditTrail auditTrail = new AuditTrail();
 }

@@ -193,6 +193,39 @@ create table XXCCMS_PROCEEDING_OUTCOME (
        primary key (ID)
 );
 
+create table XXCCMS_REFERENCE_DATA_ITEM (
+    ID number(19,0) not null,
+    CODE varchar2(50 char),
+    LABEL varchar2(150 char),
+    TYPE varchar2(5 char),
+    MANDATORY varchar2(5 char),
+    LOV_LOOKUP varchar2(200 char),
+    VALUE varchar2(200 char),
+    DISPLAY_VALUE varchar2(200 char),
+    FK_PRIOR_AUTHORITY number(19,0) not null,
+    primary key (ID)
+);
+
+create index XXCCMS_DATA_ITEM_I1 on XXCCMS_REFERENCE_DATA_ITEM (FK_PRIOR_AUTHORITY);
+
+create table XXCCMS_SCOPE_LIMITATION (
+     ID number(19,0) not null,
+     EBS_ID varchar2(50 char),
+     SCOPE_LIMITATION varchar2(50 char),
+     SCOPE_LIMITATION_DISPLAY_VALUE varchar2(100 char),
+     SCOPE_LIMITATION_WORDING varchar2(1000 char),
+     DEFAULT_IND number(1,0),
+     DELEGATED_FUNC_APPLY_IND number(1,0),
+     FK_PROCEEDING number(19,0),
+     CREATED timestamp,
+     CREATED_BY varchar2(50 char),
+     MODIFIED timestamp,
+     MODIFIED_BY varchar2(50 char),
+     primary key (ID)
+);
+
+create index XXCCMS_SCOPE_LIMITATION_I1 on XXCCMS_SCOPE_LIMITATION (FK_PROCEEDING);
+
 create table XXCCMS_OPPONENT (
          "ID" NUMBER(19,0) NOT NULL ENABLE,
          EBS_ID varchar(50),

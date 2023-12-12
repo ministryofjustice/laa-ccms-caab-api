@@ -259,6 +259,8 @@ components:
           type: 'string'
         submitted:
           type: 'boolean'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     client:
       type: 'object'
       properties:
@@ -310,6 +312,8 @@ components:
           type: 'string'
         preferred_address:
           type: 'string'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     scopeLimitation:
       type: 'object'
       properties:
@@ -446,12 +450,6 @@ components:
           type: 'string'
         status:
           type: 'string'
-        client_reference:
-          type: 'string'
-        client_first_name:
-          type: 'string'
-        client_surname:
-          type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
     priorAuthority:
@@ -532,7 +530,7 @@ components:
           type: 'string'
         employer_name:
           type: 'string'
-        employment_address:
+        employer_address:
           type: 'string'
         legal_aided:
           type: 'boolean'

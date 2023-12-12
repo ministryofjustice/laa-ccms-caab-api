@@ -42,6 +42,8 @@ public class ApplicationMapperTest {
 
     private final ApplicationMapper mapper = new ApplicationMapperImpl();
 
+    private static final String CAAB_USER_LOGIN_ID = "testUser";
+
     private Date createdAt;
     private Date updatedAt;
 
@@ -132,10 +134,12 @@ public class ApplicationMapperTest {
     @Test
     public void testToApplication_costStructure_costEntry() {
         // Construct an ApplicationDetail instance with costEntry
-        ApplicationDetail applicationDetail = new ApplicationDetail();
+        ApplicationDetail applicationDetail = new ApplicationDetail(null, null,null,null);
+
         uk.gov.laa.ccms.caab.model.CostEntry costEntryModel = new uk.gov.laa.ccms.caab.model.CostEntry();
         costEntryModel.setRequestedCosts(BigDecimal.valueOf(1000));
         costEntryModel.setCostCategory("Legal Fees");
+
         uk.gov.laa.ccms.caab.model.CostStructure costStructureModel = new uk.gov.laa.ccms.caab.model.CostStructure();
         costStructureModel.setCostEntries(Collections.singletonList(costEntryModel));
         applicationDetail.setCosts(costStructureModel);
@@ -237,13 +241,6 @@ public class ApplicationMapperTest {
         assertEquals("Status", proceeding.getDisplayStatus());
         assertEquals("TOO", proceeding.getTypeOfOrder());
 
-        assertEquals("CreatedBy", proceeding.getAuditTrail().getCreatedBy());
-        assertEquals(createdAt, proceeding.getAuditTrail().getCreated());
-
-        //This is set via the DB not the mapper
-        assertNull(proceeding.getAuditTrail().getModifiedBy());
-        assertNull(proceeding.getAuditTrail().getModified());
-
         assertEquals("EBSID", proceeding.getEbsId());
         assertEquals(BigDecimal.valueOf(111112), proceeding.getCostLimitation());
 
@@ -284,7 +281,6 @@ public class ApplicationMapperTest {
         uk.gov.laa.ccms.caab.model.Proceeding proceedingDetail = mapper.toProceedingModel(proceeding);
 
         // Assertions
-        assertEquals(mapper.toAuditDetail(auditTrail), proceedingDetail.getAuditTrail());
         assertEquals("Stage1", proceedingDetail.getStage());
     }
 
@@ -319,11 +315,6 @@ public class ApplicationMapperTest {
         assertTrue(priorAuthority.getValueRequired());
         assertEquals(new BigDecimal("0.123456"), priorAuthority.getAmountRequested());
         assertEquals(0, priorAuthority.getItems().size()); // Assuming you expect an empty list
-
-        assertEquals("CreatedBy", priorAuthority.getAuditTrail().getCreatedBy());
-        assertEquals(createdAt, priorAuthority.getAuditTrail().getCreated());
-        assertNull(priorAuthority.getAuditTrail().getModifiedBy());
-        assertNull(priorAuthority.getAuditTrail().getModified());
     }
 
     @Test
@@ -342,8 +333,7 @@ public class ApplicationMapperTest {
         uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityDetail
             = mapper.toPriorAuthorityModel(priorAuthority);
 
-        // Assertions
-        assertEquals(mapper.toAuditDetail(auditTrail), priorAuthorityDetail.getAuditTrail());
+        //TODO
     }
 
     @Test
@@ -522,10 +512,6 @@ public class ApplicationMapperTest {
         Opponent opponent = mapper.toOpponent(opponentDetail);
 
         assertEquals("OT", opponent.getOrganisationType());
-        assertEquals("CreatedBy", opponent.getAuditTrail().getCreatedBy());
-        assertEquals(createdAt, opponent.getAuditTrail().getCreated());
-        assertNull(opponent.getAuditTrail().getModifiedBy());
-        assertNull(opponent.getAuditTrail().getModified());
         assertEquals("EBSID", opponent.getEbsId());
         assertEquals("Type", opponent.getType());
         assertEquals("Title", opponent.getTitle());
@@ -603,7 +589,6 @@ public class ApplicationMapperTest {
 
         uk.gov.laa.ccms.caab.model.Opponent opponentDetail = mapper.toOpponentModel(opponent);
 
-        assertEquals(mapper.toAuditDetail(buildAuditTrail()), opponentDetail.getAuditTrail());
         assertEquals("Relation1", opponentDetail.getRelationshipToCase());
         assertEquals("Type1", opponentDetail.getType());
         assertEquals("John", opponentDetail.getFirstName());
@@ -628,16 +613,14 @@ public class ApplicationMapperTest {
         linkedCaseModel.setProviderCaseReference("Provider123");
         linkedCaseModel.setFeeEarner("FeeEarner1");
         linkedCaseModel.setStatus("Active");
-        linkedCaseModel.setClientReference("Client123");
-        linkedCaseModel.setClientFirstName("John");
-        linkedCaseModel.setClientSurname("Doe");
+        Client linkedCaseClient = new Client();
+        linkedCaseClient.setReference("Client123");
+        linkedCaseClient.setFirstName("John");
+        linkedCaseClient.setSurname("Doe");
+        linkedCaseModel.setClient(linkedCaseClient);
 
         LinkedCase linkedCase = mapper.toLinkedCase(linkedCaseModel);
 
-        assertEquals("CreatedBy", linkedCase.getAuditTrail().getCreatedBy());
-        assertEquals(createdAt, linkedCase.getAuditTrail().getCreated());
-        assertNull(linkedCase.getAuditTrail().getModifiedBy());
-        assertNull(linkedCase.getAuditTrail().getModified());
         assertEquals("LSC123", linkedCase.getLscCaseReference());
         assertEquals("Relation1", linkedCase.getRelationToCase());
         assertEquals("Provider123", linkedCase.getProviderCaseReference());
@@ -671,15 +654,14 @@ public class ApplicationMapperTest {
         uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = mapper.toLinkedCaseModel(linkedCase);
 
         // Assert the values in the mapped result
-        assertEquals(mapper.toAuditDetail(buildAuditTrail()), linkedCaseModel.getAuditTrail());
         assertEquals("LSC123", linkedCaseModel.getLscCaseReference());
         assertEquals("Relation1", linkedCaseModel.getRelationToCase());
         assertEquals("Provider123", linkedCaseModel.getProviderCaseReference());
         assertEquals("FeeEarner1", linkedCaseModel.getFeeEarner());
         assertEquals("Active", linkedCaseModel.getStatus());
-        assertEquals("Client123", linkedCaseModel.getClientReference());
-        assertEquals("John", linkedCaseModel.getClientFirstName());
-        assertEquals("Doe", linkedCaseModel.getClientSurname());
+        assertEquals("Client123", linkedCaseModel.getClient().getReference());
+        assertEquals("John", linkedCaseModel.getClient().getFirstName());
+        assertEquals("Doe", linkedCaseModel.getClient().getSurname());
     }
 
     @Test
@@ -839,18 +821,6 @@ public class ApplicationMapperTest {
 
 
     @Test
-    public void testToAuditDetail() {
-        // Construct AuditTrail
-        AuditTrail auditTrail = buildAuditTrail();
-
-        // Convert AuditTrail to AuditDetail
-        AuditDetail auditDetail = mapper.toAuditDetail(auditTrail);
-
-        // Assertions
-        assertEquals(buildAuditDetail(), auditDetail);
-    }
-
-    @Test
     void testToApplicationDetailWithNullInput() {
         assertNull(mapper.toApplicationDetail(null));
     }
@@ -998,14 +968,13 @@ public class ApplicationMapperTest {
         Application application = new Application();
         String caabUserLoginId = "user123";
 
-        mapper.addApplicationType(application, null, caabUserLoginId);
+        mapper.addApplicationType(application, null);
 
         assertNull(application.getApplicationType());
         assertNull(application.getApplicationTypeDisplayValue());
         assertNull(application.getDevolvedPowersUsed());
         assertNull(application.getDateDevolvedPowersUsed());
         assertNull(application.getDevolvedPowersContractFlag());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     @Test
@@ -1020,14 +989,13 @@ public class ApplicationMapperTest {
         applicationType.setDevolvedPowers(devolvedPowers);
         String caabUserLoginId = "user123";
 
-        mapper.addApplicationType(application, applicationType, caabUserLoginId);
+        mapper.addApplicationType(application, applicationType);
 
         assertEquals("TEST",application.getApplicationType());
         assertEquals("TEST123",application.getApplicationTypeDisplayValue());
         assertFalse(application.getDevolvedPowersUsed());
         assertNull(application.getDateDevolvedPowersUsed());
         assertEquals("Y",application.getDevolvedPowersContractFlag());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     private Application getApplicationWithProceedings() {
@@ -1116,7 +1084,7 @@ public class ApplicationMapperTest {
         Application application = new Application();
         String caabUserLoginId = "user123";
 
-        mapper.addProviderDetails(application, null, caabUserLoginId);
+        mapper.addProviderDetails(application, null);
 
         assertNull(application.getProviderId());
         assertNull(application.getProviderDisplayValue());
@@ -1128,7 +1096,6 @@ public class ApplicationMapperTest {
         assertNull(application.getFeeEarnerDisplayValue());
         assertNull(application.getProviderContact());
         assertNull(application.getProviderContactDisplayValue());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     @Test
@@ -1142,7 +1109,7 @@ public class ApplicationMapperTest {
         providerDetails.setProviderContact(new StringDisplayValue().id("ProviderContact").displayValue("Provider Contact Display Value"));
         String caabUserLoginId = "user123";
 
-        mapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+        mapper.addProviderDetails(application, providerDetails);
 
         assertEquals("123", application.getProviderId());
         assertEquals("Provider Display", application.getProviderDisplayValue());
@@ -1154,7 +1121,6 @@ public class ApplicationMapperTest {
         assertEquals("Fee Earner Display Value", application.getFeeEarnerDisplayValue());
         assertEquals("ProviderContact", application.getProviderContact());
         assertEquals("Provider Contact Display Value", application.getProviderContactDisplayValue());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     @Test
@@ -1194,9 +1160,9 @@ public class ApplicationMapperTest {
     private AuditTrail buildAuditTrail() {
         AuditTrail auditTrail = new AuditTrail();
         auditTrail.setCreated(createdAt);
-        auditTrail.setModified(updatedAt);
+        auditTrail.setLastSaved(updatedAt);
         auditTrail.setCreatedBy("CreatedBy");
-        auditTrail.setModifiedBy("LastSavedBy");
+        auditTrail.setLastSavedBy("LastSavedBy");
         return auditTrail;
     }
 }

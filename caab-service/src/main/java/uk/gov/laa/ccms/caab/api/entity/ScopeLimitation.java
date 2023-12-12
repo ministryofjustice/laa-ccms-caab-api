@@ -3,6 +3,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a scope limitation entity associated with the "XXCCMS_SCOPE_LIMITATION" table.
@@ -23,6 +25,7 @@ import org.hibernate.annotations.LazyToOneOption;
  * sequence for generating unique identifiers.</p>
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_SCOPE_LIMITATION")
 @SequenceGenerator(
     allocationSize = 1,
@@ -53,7 +56,7 @@ public class ScopeLimitation {
    * audit trail info.
    */
   @Embedded
-  private AuditTrail auditTrail;
+  private AuditTrail auditTrail = new AuditTrail();
 
   @Column(name = "SCOPE_LIMITATION", length = 50)
   private String scopeLimitation;

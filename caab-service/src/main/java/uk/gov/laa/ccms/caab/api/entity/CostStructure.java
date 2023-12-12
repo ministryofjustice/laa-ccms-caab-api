@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -16,6 +17,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a cost structure entity associated with the "XXCCMS_COST_STRUCTURE" table.
@@ -25,6 +27,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.</p>
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_COST_STRUCTURE")
 @Getter
 @Setter
@@ -53,11 +56,7 @@ public class CostStructure implements Serializable {
   private List<CostEntry> costEntries;
 
   @Embedded
-  private AuditTrail auditTrail;
-
-  public CostStructure(AuditTrail auditTrail) {
-    this.auditTrail = auditTrail;
-  }
+  private AuditTrail auditTrail = new AuditTrail();
 
 
 }

@@ -12,13 +12,13 @@ class AuditTrailTest {
 
     @BeforeEach
     public void setUp() {
-        auditTrail = new AuditTrail("modifiedByUser", "createdByUser");
+        auditTrail = new AuditTrail();
     }
 
     @Test
     public void testAuditTrailConstructor() {
-        assertEquals("modifiedByUser", auditTrail.getModifiedBy());
-        assertEquals("createdByUser", auditTrail.getCreatedBy());
+        assertNull(auditTrail.getLastSavedBy());
+        assertNull(auditTrail.getCreatedBy());
     }
 
 

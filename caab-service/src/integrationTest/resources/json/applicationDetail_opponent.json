@@ -1,0 +1,102 @@
+{
+  "provider": {
+    "id": 26517,
+    "display_value": "SWITALSKI'S SOLICITORS LTD"
+  },
+  "provider_case_reference": "329635",
+  "office": {
+    "id": 145512,
+    "display_value": "SWITALSKI'S SOLICITORS LTD-2L847Q"
+  },
+  "supervisor": {
+    "id":"2854148",
+    "display_value": "David Greenwood"
+  },
+  "fee_earner": {
+    "id":"2027148",
+    "display_value": "Carole Spencer"
+  },
+  "provider_contact": {
+    "id":"2027079",
+    "display_value": "CAROLE.SPENCER@SWITALSKIS.COM"
+  },
+  "category_of_law": {
+    "id":"AAP",
+    "display_value": "Claim Against Public Authority"
+  },
+  "relation_to_linked_case": null,
+  "opponent_applied_for_funding": null,
+  "status": {
+    "id":"UNSUBMITTED",
+    "display_value": "Unsubmitted"
+  },
+  "client": {
+    "first_name":"Phil",
+    "surname": "Payne",
+    "reference": "PhilTest"
+  },
+  "amendment": false,
+  "means_assessment_amended": false,
+  "merits_assessment_amended": false,
+  "cost_limit": {
+    "changed": false,
+    "limit_at_time_of_merits": 1350
+  },
+  "application_type": {
+    "id": "ECF",
+    "display_value": "Exceptional Case Funding",
+    "devolved_powers": {
+      "used": false,
+      "date_used": "null",
+      "contract_flag": "Yes - Excluding JR Proceedings"
+    }
+  },
+  "merits_reassessment_required": false,
+  "lar_scope_flag": "true",
+  "lead_proceeding_changed": false,
+  "linked_cases": [],
+  "prior_authorities": [],
+  "opponents": [{
+    "ebs_id": "EBS123456",
+    "type": "Type Example",
+    "title": "Mr.",
+    "first_name": "John",
+    "middle_names": "Albert",
+    "surname": "Doe",
+    "date_of_birth": null,
+    "national_insurance_number": "AB123456C",
+    "address": null,
+    "relationship_to_case": "Relationship to Case Example",
+    "relationship_to_client": "Relationship to Client Example",
+    "telephone_home": "0123456789",
+    "telephone_work": "9876543210",
+    "telephone_mobile": "1122334455",
+    "fax_number": "1234567890",
+    "email_address": "example@email.com",
+    "other_information": "Other relevant information",
+    "employment_status": "Employed",
+    "employer_name": "Employer Inc.",
+    "employer_address": "Employer Address",
+    "legal_aided": true,
+    "certificate_number": "CERT123456",
+    "court_ordered_means_assessment": false,
+    "assessed_income": 30000,
+    "assessed_income_frequency": "Annual",
+    "assessed_assets": 50000,
+    "assessment_date": null,
+    "organisation_name": "Organisation Name",
+    "organisation_type": {
+      "id": "Org"
+    },
+    "currently_trading": true,
+    "contact_name_role": "Contact Role",
+    "confirmed": true,
+    "app_mode": true,
+    "amendment": false,
+    "award": true,
+    "public_funding_applied": false,
+    "shared_ind": false,
+    "delete_ind": true
+  }],
+  "proceedings": []
+}

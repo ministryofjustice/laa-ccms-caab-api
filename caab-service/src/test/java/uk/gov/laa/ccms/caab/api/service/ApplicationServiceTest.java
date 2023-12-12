@@ -49,10 +49,9 @@ class ApplicationServiceTest {
 
         mockMapperAndRepository(applicationDetail, application);
 
-        applicationService.createApplication(CAAB_USER_LOGIN_ID, applicationDetail);
+        applicationService.createApplication(applicationDetail);
 
         verifyInteractionsWithMocks(applicationDetail, application);
-        verifyAuditTrailSetOnEntities(application);
     }
 
     /**
@@ -60,15 +59,14 @@ class ApplicationServiceTest {
      */
     @Test
     void createApplication_updatesExistingAddressAndCosts() {
-        ApplicationDetail applicationDetail = new ApplicationDetail();
+        ApplicationDetail applicationDetail = new ApplicationDetail(null,null,null,null);
         Application application = createApplicationWithExistingAddressAndCosts();
 
         mockMapperAndRepository(applicationDetail, application);
 
-        applicationService.createApplication(CAAB_USER_LOGIN_ID, applicationDetail);
+        applicationService.createApplication(applicationDetail);
 
         verifyInteractionsWithMocks(applicationDetail, application);
-        verifyAuditTrailSetOnEntities(application);
     }
 
     /**
@@ -77,7 +75,7 @@ class ApplicationServiceTest {
     @Test
     void getApplication_returnsData() {
         Application application = new Application();
-        ApplicationDetail expectedResponse = new ApplicationDetail();
+        ApplicationDetail expectedResponse = new ApplicationDetail(null,null,null,null);
 
         when(applicationMapper.toApplicationDetail(application)).thenReturn(expectedResponse);
         when(applicationRepository.findById(any())).thenReturn(Optional.of(application));
@@ -157,10 +155,10 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
 
-        applicationService.patchApplicationType(id, CAAB_USER_LOGIN_ID, applicationType);
+        applicationService.patchApplicationType(id, applicationType);
 
         verify(applicationRepository).findById(id);
-        verify(applicationMapper).addApplicationType(application, applicationType, CAAB_USER_LOGIN_ID);
+        verify(applicationMapper).addApplicationType(application, applicationType);
         verify(applicationRepository).save(application);
     }
 
@@ -176,7 +174,7 @@ class ApplicationServiceTest {
 
         // Use assertThrows to check if the method throws the expected exception
         CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.patchApplicationType(id, CAAB_USER_LOGIN_ID, applicationType);
+            applicationService.patchApplicationType(id, applicationType);
         });
 
         verify(applicationRepository).findById(id);
@@ -230,10 +228,10 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
 
-        applicationService.patchProviderDetails(id, caabUserLoginId, providerDetails);
+        applicationService.patchProviderDetails(id, providerDetails);
 
         verify(applicationRepository).findById(id);
-        verify(applicationMapper).addProviderDetails(application, providerDetails, caabUserLoginId);
+        verify(applicationMapper).addProviderDetails(application, providerDetails);
         verify(applicationRepository).save(application);
     }
 
@@ -246,7 +244,7 @@ class ApplicationServiceTest {
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
         CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.patchProviderDetails(id, caabUserLoginId, providerDetails);
+            applicationService.patchProviderDetails(id, providerDetails);
         });
 
         verify(applicationRepository).findById(id);
@@ -286,17 +284,15 @@ class ApplicationServiceTest {
     private void assertAuditTrailSet(String userId, AuditTrail auditTrail) {
         assert auditTrail != null;
         assert userId.equals(auditTrail.getCreatedBy());
-        assert userId.equals(auditTrail.getModifiedBy());
+        assert userId.equals(auditTrail.getLastSavedBy());
     }
 
     /**
      * Helper method to create an Application with existing Address and CostStructure.
      */
     private Application createApplicationWithExistingAddressAndCosts() {
-        AuditTrail auditTrailOld = createAuditTrail(OLD_USER);
-
-        Address existingAddress = new Address(auditTrailOld);
-        CostStructure existingCosts = new CostStructure(auditTrailOld);
+        Address existingAddress = new Address();
+        CostStructure existingCosts = new CostStructure();
 
         Application application = new Application();
         application.setCorrespondenceAddress(existingAddress);
@@ -308,10 +304,10 @@ class ApplicationServiceTest {
     /**
      * Helper method to create a new AuditTrail object.
      */
-    private AuditTrail createAuditTrail(String userId) {
+    private AuditTrail createAuditTrail() {
         AuditTrail auditTrail = new AuditTrail();
-        auditTrail.setCreatedBy(userId);
-        auditTrail.setModifiedBy(userId);
+        auditTrail.setCreatedBy(OLD_USER);
+        auditTrail.setLastSavedBy(OLD_USER);
         return auditTrail;
     }
 }

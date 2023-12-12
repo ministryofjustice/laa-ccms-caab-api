@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -24,6 +25,10 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.LazyGroup;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents an application entity from the "XXCCMS_APPLICATION" table.
@@ -32,6 +37,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_APPLICATION")
 @SequenceGenerator(
         allocationSize = 1,
@@ -158,19 +164,19 @@ public class Application implements Serializable {
   @JoinColumn(name = "FK_CORRESPONDENCE_ADDRESS")
   private Address correspondenceAddress;
 
-  @OneToMany(mappedBy = "application")
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
   @OrderBy("id asc")
   private List<Proceeding> proceedings;
 
-  @OneToMany(mappedBy = "application")
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
   @OrderBy("id asc")
   private List<PriorAuthority> priorAuthorities;
 
-  @OneToMany(mappedBy = "application")
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
   @OrderBy("id asc")
   private List<Opponent> opponents;
 
-  @OneToMany(mappedBy = "application")
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
   @OrderBy("id asc")
   private List<LinkedCase> linkedCases;
 

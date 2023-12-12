@@ -5,22 +5,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.TimeZone;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import uk.gov.laa.ccms.caab.api.CaabApiApplication;
@@ -45,6 +53,8 @@ import uk.gov.laa.ccms.data.api.AbstractIntegrationTest;
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
 public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
+//@ActiveProfiles("local")
+//public class ApplicationServiceIntegrationTest {
 
     @Autowired
     private ApplicationService applicationService;
@@ -84,8 +94,6 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
     private final Boolean meritsReassessmentReqdInd = false;
     private final Boolean larScopeFlag = true;
     private final Boolean leadProceedingChanged = false;
-    private final String createdBy = "Test User";
-    private final String modifiedBy = "Test User";
 
     //cost structure
     private final BigDecimal defaultCostLimitation = BigDecimal.valueOf(11111.11);
@@ -104,13 +112,18 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
     private final String careOf = "Prime Minister's Office";
     private final String preferredAddress = "PROVIDER";
 
+    private final String caabUserLoginId = "audit@user.com";
 
+    @BeforeEach
+    public void setup() {
+        currentUserHolder.set(caabUserLoginId);
+    }
 
     @Test
     public void testSaveApplication_requiredFields(){
         ApplicationDetail application = buildRequiredApplicationDetail();
 
-        Long savedId = applicationService.createApplication(modifiedBy, application);
+        Long savedId = applicationService.createApplication(application);
 
         // Assert that the saved application has been assigned an ID
         assertNotNull(savedId);
@@ -131,7 +144,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
     public void testSaveApplication_allFields(){
         ApplicationDetail application = buildApplication();
 
-        Long savedId = applicationService.createApplication(modifiedBy, application);
+        Long savedId = applicationService.createApplication(application);
 
         // Assert that the saved application has been assigned an ID
         assertNotNull(savedId);
@@ -180,10 +193,10 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(larScopeFlag, fetchedApplication.getLarScopeFlag());
         assertEquals(leadProceedingChanged, fetchedApplication.isLeadProceedingChangedOpaInput());
 
-        assertEquals(modifiedBy, fetchedApplication.getAuditTrail().getModifiedBy());
-        assertEquals(createdBy, fetchedApplication.getAuditTrail().getCreatedBy());
+        assertEquals(caabUserLoginId, fetchedApplication.getAuditTrail().getLastSavedBy());
+        assertEquals(caabUserLoginId, fetchedApplication.getAuditTrail().getCreatedBy());
         assertNotNull(fetchedApplication.getAuditTrail().getCreated());
-        assertNotNull(fetchedApplication.getAuditTrail().getModified());
+        assertNotNull(fetchedApplication.getAuditTrail().getLastSaved());
 
     }
 
@@ -194,7 +207,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         ApplicationDetail application = buildRequiredApplicationDetail();
         application.setCosts(buildCosts());
 
-        Long savedId = applicationService.createApplication(modifiedBy, application);
+        Long savedId = applicationService.createApplication(application);
 
         // Fetch the saved application from the database
         Application fetchedApplication = applicationRepository.findById(savedId).orElse(null);
@@ -206,8 +219,8 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(grantedCostLimitation, fetchedApplication.getCosts().getGrantedCostLimitation());
         assertEquals(requestedCostLimitation, fetchedApplication.getCosts().getRequestedCostLimitation());
 
-        assertEquals(modifiedBy, fetchedApplication.getCosts().getAuditTrail().getModifiedBy());
-        assertEquals(createdBy, fetchedApplication.getCosts().getAuditTrail().getCreatedBy());
+        assertEquals(caabUserLoginId, fetchedApplication.getCosts().getAuditTrail().getLastSavedBy());
+        assertEquals(caabUserLoginId, fetchedApplication.getCosts().getAuditTrail().getCreatedBy());
     }
 
     @Test
@@ -216,7 +229,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         ApplicationDetail application = buildRequiredApplicationDetail();
         application.setCorrespondenceAddress(buildAddress());
 
-        Long savedId = applicationService.createApplication(modifiedBy, application);
+        Long savedId = applicationService.createApplication(application);
 
         // Fetch the saved application from the database
         Application fetchedApplication = applicationRepository.findById(savedId).orElse(null);
@@ -238,8 +251,8 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(preferredAddress, fetchedApplication.getCorrespondenceAddress().getPreferredAddress());
 
         // Audit Trail asserts for the address
-        assertEquals(modifiedBy, fetchedApplication.getCorrespondenceAddress().getAuditTrail().getModifiedBy());
-        assertEquals(createdBy, fetchedApplication.getCorrespondenceAddress().getAuditTrail().getCreatedBy());
+        assertEquals(caabUserLoginId, fetchedApplication.getCorrespondenceAddress().getAuditTrail().getLastSavedBy());
+        assertEquals(caabUserLoginId, fetchedApplication.getCorrespondenceAddress().getAuditTrail().getCreatedBy());
     }
 
     @Test
@@ -325,7 +338,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
             .displayValue(amendedApplicationTypeDisplay);
 
         // Call the service method
-        applicationService.patchApplicationType(applicationId, "TESTER", amendedApplicationType);
+        applicationService.patchApplicationType(applicationId, amendedApplicationType);
 
         Application result = applicationRepository.findById(applicationId).orElse(null);
 
@@ -351,7 +364,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         String newFeeEarnerId,
         String newSupervisorId,
         String newProviderContactId,
-        String caabUserLoginId) {
+        String patchedCaabUserLoginId) {
 
         // Create an ApplicationProviderDetails instance with the provided values
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
@@ -368,8 +381,10 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         providerDetails.setSupervisor(supervisor);
         providerDetails.setProviderContact(providerContact);
 
+        currentUserHolder.set(patchedCaabUserLoginId);
+
         // Call the patchProviderDetails method
-        applicationService.patchProviderDetails(applicationId, caabUserLoginId, providerDetails);
+        applicationService.patchProviderDetails(applicationId, providerDetails);
 
         // Fetch the application from the database after the update
         Application updatedApplication = applicationRepository.findById(applicationId).orElse(null);
@@ -385,6 +400,9 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(feeEarner.getId(), updatedApplication.getFeeEarner());
         assertEquals(supervisor.getId(), updatedApplication.getSupervisor());
         assertEquals(providerContact.getId(), updatedApplication.getProviderContact());
+
+        assertEquals(patchedCaabUserLoginId, updatedApplication.getAuditTrail().getLastSavedBy());
+        assertTrue(updatedApplication.getAuditTrail().getLastSaved().after(updatedApplication.getAuditTrail().getCreated()));
     }
 
     @Test
@@ -396,7 +414,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
 
         // Use assertThrows to check if the method throws the expected exception
         CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.patchProviderDetails(nonExistentApplicationId, "TestUser", providerDetails);
+            applicationService.patchProviderDetails(nonExistentApplicationId, providerDetails);
         });
 
         assertEquals(
