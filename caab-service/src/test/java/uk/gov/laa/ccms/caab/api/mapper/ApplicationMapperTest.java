@@ -7,34 +7,63 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
+import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
 import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.Proceeding;
+import uk.gov.laa.ccms.caab.api.entity.CostEntry;
+import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
+import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
+import uk.gov.laa.ccms.caab.model.BooleanDisplayValue;
 import uk.gov.laa.ccms.caab.model.Client;
+import uk.gov.laa.ccms.caab.model.CostLimit;
 import uk.gov.laa.ccms.caab.model.DevolvedPowers;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 public class ApplicationMapperTest {
 
-    private ApplicationMapper mapper = new ApplicationMapperImpl();
+    private final ApplicationMapper mapper = new ApplicationMapperImpl();
+
+    private static final String CAAB_USER_LOGIN_ID = "testUser";
+
+    private Date createdAt;
+    private Date updatedAt;
+
+    @BeforeEach
+    public void setup() throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        createdAt = dateFormat.parse("01/01/2000");
+        updatedAt = dateFormat.parse("01/01/2001");
+    }
+
+    @Test
+    public void testApplicationMapping_null() {
+        Application application = mapper.toApplication(null);
+        assertNull(application);
+    }
 
     @Test
     public void testApplicationMapping() {
         // Construct ApplicationDetail
-        ApplicationDetail detail = new ApplicationDetail();
+        ApplicationDetail detail = new ApplicationDetail(null,null,null,null);
         detail.setCaseReferenceNumber("caseRef123");
         detail.setProviderCaseReference("providerCase");
         detail.setProvider(new IntDisplayValue().id(1234).displayValue("providerDisp"));
@@ -48,6 +77,14 @@ public class ApplicationMapperTest {
         detail.setApplicationType(new ApplicationType().id("appTypeId").displayValue("appTypeDisp"));
         detail.setMeritsReassessmentRequired(true);
         detail.setLeadProceedingChanged(true);
+        detail.setMeansAssessmentAmended(true);
+        detail.setMeritsAssessmentAmended(true);
+        detail.setAmendment(true);
+
+        CostLimit costLimit = new CostLimit()
+            .changed(true)
+            .limitAtTimeOfMerits(BigDecimal.valueOf(123));
+        detail.setCostLimit(costLimit);
 
         // Convert ApplicationDetail to Application
         Application application = mapper.toApplication(detail);
@@ -74,12 +111,566 @@ public class ApplicationMapperTest {
         assertEquals("clientRef", application.getClientReference());
         assertEquals("appTypeId", application.getApplicationType());
         assertEquals("appTypeDisp", application.getApplicationTypeDisplayValue());
+        assertTrue(application.isCostLimitChanged());
+        assertEquals(BigDecimal.valueOf(123), application.getCostLimitAtTimeOfMerits());
+        assertTrue(application.isAmendment());
+        assertTrue(application.isMeansAssessmentAmended());
+        assertTrue(application.isMeritsAssessmentAmended());
 
     }
 
     @Test
+    public void testApplicationMapping_unsetBooleansFalse() {
+        ApplicationDetail detail = new ApplicationDetail(null,null,null,null);
+
+        Application application = mapper.toApplication(detail);
+
+        assertFalse(application.isCostLimitChanged());
+        assertFalse(application.isAmendment());
+        assertFalse(application.isMeansAssessmentAmended());
+        assertFalse(application.isMeritsAssessmentAmended());
+    }
+
+    @Test
+    public void testToApplication_costStructure_costEntry() {
+        // Construct an ApplicationDetail instance with costEntry
+        ApplicationDetail applicationDetail = new ApplicationDetail(null, null,null,null);
+
+        uk.gov.laa.ccms.caab.model.CostEntry costEntryModel = new uk.gov.laa.ccms.caab.model.CostEntry();
+        costEntryModel.setRequestedCosts(BigDecimal.valueOf(1000));
+        costEntryModel.setCostCategory("Legal Fees");
+
+        uk.gov.laa.ccms.caab.model.CostStructure costStructureModel = new uk.gov.laa.ccms.caab.model.CostStructure();
+        costStructureModel.setCostEntries(Collections.singletonList(costEntryModel));
+        applicationDetail.setCosts(costStructureModel);
+
+        // Convert ApplicationDetail to Application with costEntry
+        Application application = mapper.toApplication(applicationDetail);
+
+        // Assert values in the mapped result
+        assertNotNull(application.getCosts()); // Ensure that CostStructure is not null
+        assertEquals(1, application.getCosts().getCostEntries().size()); // Ensure that there is one CostEntry
+        assertEquals(BigDecimal.valueOf(1000), application.getCosts().getCostEntries().get(0).getRequestedCosts());
+        assertEquals("Legal Fees", application.getCosts().getCostEntries().get(0).getCostCategory());
+    }
+
+    @Test
+    public void testToApplicationDetail_costStructure_costEntry() {
+        Application application = new Application();
+        application.setId(1L);
+        application.setLscCaseReference("caseRef123");
+
+        CostEntry costEntry = new CostEntry();
+        costEntry.setRequestedCosts(BigDecimal.valueOf(1000));
+        costEntry.setCostCategory("Legal Fees");
+
+        CostStructure costStructure = new CostStructure();
+        costStructure.setCostEntries(Collections.singletonList(costEntry));
+        application.setCosts(costStructure);
+
+        ApplicationDetail applicationDetail = mapper.toApplicationDetail(application);
+
+        assertEquals("caseRef123", applicationDetail.getCaseReferenceNumber());
+        assertNotNull(applicationDetail.getCosts());
+        assertEquals(1, applicationDetail.getCosts().getCostEntries().size());
+        assertEquals(BigDecimal.valueOf(1000), applicationDetail.getCosts().getCostEntries().get(0).getRequestedCosts());
+        assertEquals("Legal Fees", applicationDetail.getCosts().getCostEntries().get(0).getCostCategory());
+    }
+
+
+    @Test
+    public void testProceedingMapping_null() {
+        assertNull(mapper.toProceeding(null));
+    }
+
+    @Test
+    public void testProceedingMapping() {
+        uk.gov.laa.ccms.caab.model.Proceeding proceedingModel = new uk.gov.laa.ccms.caab.model.Proceeding();
+        StringDisplayValue matterType = new StringDisplayValue()
+            .id("MT")
+            .displayValue("MatterType");
+        proceedingModel.setMatterType(matterType);
+
+        StringDisplayValue proceedingType = new StringDisplayValue()
+            .id("PT")
+            .displayValue("ProceedingType");
+        proceedingModel.setProceedingType(proceedingType);
+
+        StringDisplayValue levelOfService = new StringDisplayValue()
+            .id("LOS")
+            .displayValue("LevelOfService");
+        proceedingModel.setLevelOfService(levelOfService);
+
+        StringDisplayValue clientInvolvement = new StringDisplayValue()
+            .id("CI")
+            .displayValue("ClientInvolvement");
+        proceedingModel.setClientInvolvement(clientInvolvement);
+
+        StringDisplayValue status = new StringDisplayValue()
+            .id("S")
+            .displayValue("Status");
+        proceedingModel.setStatus(status);
+
+        StringDisplayValue typeOfOrder = new StringDisplayValue()
+            .id("TOO")
+            .displayValue("TypeOfOrder");
+        proceedingModel.setTypeOfOrder(typeOfOrder);
+
+        proceedingModel.setAuditTrail(buildAuditDetail());
+
+        proceedingModel.setEbsId("EBSID");
+        proceedingModel.setCostLimitation(BigDecimal.valueOf(111112));
+
+
+        proceedingModel.setScopeLimitations(new ArrayList<>());
+        proceedingModel.setEdited(Boolean.TRUE);
+        proceedingModel.setLeadProceedingInd(Boolean.TRUE);
+
+        Proceeding proceeding = mapper.toProceeding(proceedingModel);
+
+        assertNotNull(proceeding);
+        assertEquals("MT", proceeding.getMatterType());
+        assertEquals("MatterType", proceeding.getMatterTypeDisplayValue());
+        assertEquals("PT", proceeding.getProceedingType());
+        assertEquals("ProceedingType", proceeding.getProceedingTypeDisplayValue());
+        assertEquals("LOS", proceeding.getLevelOfService());
+        assertEquals("LevelOfService", proceeding.getLevelOfServiceDisplayValue());
+        assertEquals("CI", proceeding.getClientInvolvement());
+        assertEquals("ClientInvolvement", proceeding.getClientInvolvementDisplayValue());
+        assertEquals("S", proceeding.getStatus());
+        assertEquals("Status", proceeding.getDisplayStatus());
+        assertEquals("TOO", proceeding.getTypeOfOrder());
+
+        assertEquals("EBSID", proceeding.getEbsId());
+        assertEquals(BigDecimal.valueOf(111112), proceeding.getCostLimitation());
+
+        assertEquals(proceedingModel.getDescription(), proceeding.getDescription());
+        assertEquals(proceedingModel.getDateGranted(), proceeding.getDateGranted());
+        assertEquals(proceedingModel.getDateCostsValid(), proceeding.getDateCostsValid());
+        assertTrue(proceeding.isEdited());
+        // For collections like scopeLimitations, you might need to assert both the size and the contents
+        assertEquals(0, proceeding.getScopeLimitations().size());
+        // Add more detailed checks for elements in scopeLimitations if necessary
+        assertEquals(proceedingModel.getDefaultScopeLimitation(), proceeding.getDefaultScopeLimitation());
+        assertEquals(proceedingModel.getStage(), proceeding.getStage());
+        assertTrue(proceeding.isLeadProceedingInd());
+        assertEquals(proceedingModel.getLarScope(), proceeding.getLarScope());
+
+    }
+
+    @Test
+    public void testProceedingMapping_unsetBooleansFalse() {
+        uk.gov.laa.ccms.caab.model.Proceeding proceedingModel = new uk.gov.laa.ccms.caab.model.Proceeding();
+        proceedingModel.setLeadProceedingInd(null);
+
+        Proceeding proceeding = mapper.toProceeding(proceedingModel);
+        assertFalse(proceeding.isLeadProceedingInd());
+        assertFalse(proceeding.isEdited());
+    }
+
+    @Test
+    public void testToProceedingModel() {
+        // Construct Proceeding
+        Proceeding proceeding = new Proceeding();
+        AuditTrail auditTrail = new AuditTrail();
+        // Set fields on auditTrail as needed
+        proceeding.setAuditTrail(auditTrail);
+        proceeding.setStage("Stage1");
+
+        // Convert Proceeding to ProceedingDetail
+        uk.gov.laa.ccms.caab.model.Proceeding proceedingDetail = mapper.toProceedingModel(proceeding);
+
+        // Assertions
+        assertEquals("Stage1", proceedingDetail.getStage());
+    }
+
+    @Test
+    public void testToProceedingModel_null() {
+        assertNull(mapper.toProceedingModel(null));
+    }
+
+
+
+    @Test
+    public void testToPriorAuthority(){
+        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityModel = new uk.gov.laa.ccms.caab.model.PriorAuthority();
+        priorAuthorityModel.setEbsId("EBSID");
+        priorAuthorityModel.setStatus("Status");
+        priorAuthorityModel.setType(new StringDisplayValue().id("T").displayValue("Type"));
+        priorAuthorityModel.setSummary("Summary");
+        priorAuthorityModel.setJustification("Justification");
+        priorAuthorityModel.setValueRequired(true);
+        priorAuthorityModel.setAmountRequested(new BigDecimal("0.123456"));
+        priorAuthorityModel.setItems(new ArrayList<>());
+        priorAuthorityModel.setAuditTrail(buildAuditDetail());
+
+        PriorAuthority priorAuthority = mapper.toPriorAuthority(priorAuthorityModel);
+
+        assertEquals("EBSID", priorAuthority.getEbsId());
+        assertEquals("Status", priorAuthority.getStatus());
+        assertEquals("T", priorAuthority.getType());
+        assertEquals("Type", priorAuthority.getTypeDisplayValue());
+        assertEquals("Summary", priorAuthority.getSummary());
+        assertEquals("Justification", priorAuthority.getJustification());
+        assertTrue(priorAuthority.getValueRequired());
+        assertEquals(new BigDecimal("0.123456"), priorAuthority.getAmountRequested());
+        assertEquals(0, priorAuthority.getItems().size()); // Assuming you expect an empty list
+    }
+
+    @Test
+    public void testToPriorAuthority_null(){
+        assertNull(mapper.toPriorAuthority(null));
+    }
+
+
+    @Test
+    public void testToPriorAuthorityModel() {
+        PriorAuthority priorAuthority = new PriorAuthority();
+        AuditTrail auditTrail = buildAuditTrail();
+
+        priorAuthority.setAuditTrail(auditTrail);
+
+        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityDetail
+            = mapper.toPriorAuthorityModel(priorAuthority);
+
+        //TODO
+    }
+
+    @Test
+    public void testToPriorAuthorityModel_null(){
+        assertNull(mapper.toPriorAuthorityModel(null));
+    }
+
+    @Test
+    public void testToReferenceDataItem(){
+
+        uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItemModel =
+            new uk.gov.laa.ccms.caab.model.ReferenceDataItem();
+
+        referenceDataItemModel.setCode(new StringDisplayValue()
+            .id("C")
+            .displayValue("Code"));
+        referenceDataItemModel.setType("Type");
+        referenceDataItemModel.setMandatory(true);
+        referenceDataItemModel.setLovLookUp("Lookup");
+        referenceDataItemModel.setValue(new StringDisplayValue()
+            .id("V")
+            .displayValue("Value"));
+
+        ReferenceDataItem referenceDataItem = mapper.toReferenceDataItem(referenceDataItemModel);
+
+        assertEquals("C", referenceDataItem.getCode());
+        assertEquals("Code", referenceDataItem.getLabel());
+        assertEquals("V", referenceDataItem.getValue());
+        assertEquals("Value", referenceDataItem.getDisplayValue());
+        assertEquals("Type", referenceDataItem.getType());
+        assertTrue(referenceDataItem.getMandatory());
+        assertEquals("Lookup", referenceDataItem.getLovLookUp());
+    }
+
+    @Test
+    public void testToReferenceDataItem_null(){
+        assertNull(mapper.toReferenceDataItem(null));
+    }
+
+    @Test
+    public void testToReferenceDataItemModel() {
+        ReferenceDataItem referenceDataItem = new ReferenceDataItem();
+        referenceDataItem.setCode("C");
+        referenceDataItem.setValue("V");
+        referenceDataItem.setType("Type");
+        referenceDataItem.setMandatory(true);
+        referenceDataItem.setLovLookUp("Lookup");
+
+        uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItemModel = mapper.toReferenceDataItemModel(referenceDataItem);
+
+        assertEquals("C", referenceDataItemModel.getCode().getId());
+        assertEquals("V", referenceDataItemModel.getValue().getId());
+        assertEquals("Type", referenceDataItemModel.getType());
+        assertTrue(referenceDataItemModel.getMandatory());
+        assertEquals("Lookup", referenceDataItemModel.getLovLookUp());
+    }
+
+
+    @Test
+    public void testToReferenceDataItemModel_null(){
+        assertNull(mapper.toReferenceDataItemModel(null));
+    }
+
+    @Test
+    public void testToScopeLimitation() {
+        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel = new uk.gov.laa.ccms.caab.model.ScopeLimitation();
+        scopeLimitationModel.setScopeLimitation(new StringDisplayValue().id("SL").displayValue("ScopeLimitation"));
+        scopeLimitationModel.setScopeLimitationWording("Wording");
+        scopeLimitationModel.setDelegatedFuncApplyInd(new BooleanDisplayValue().flag(true).displayValue(""));
+        scopeLimitationModel.setAuditTrail(buildAuditDetail());
+        scopeLimitationModel.setEbsId("EBSID");
+        scopeLimitationModel.setDefaultInd(true);
+
+        ScopeLimitation scopeLimitation = mapper.toScopeLimitation(scopeLimitationModel);
+
+        assertEquals("SL", scopeLimitation.getScopeLimitation());
+        assertEquals("ScopeLimitation", scopeLimitation.getScopeLimitationDisplayValue());
+        assertTrue(scopeLimitation.isDelegatedFuncApplyInd());
+        assertEquals("EBSID", scopeLimitation.getEbsId());
+        assertEquals("Wording", scopeLimitation.getScopeLimitationWording());
+        assertTrue(scopeLimitation.isDefaultInd());
+    }
+
+    @Test
+    public void testToScopeLimitation_unsetBooleansFalse() {
+        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel = new uk.gov.laa.ccms.caab.model.ScopeLimitation();
+
+        ScopeLimitation scopeLimitation = mapper.toScopeLimitation(scopeLimitationModel);
+
+        assertFalse(scopeLimitation.isDelegatedFuncApplyInd());
+        assertFalse(scopeLimitation.isDefaultInd());
+    }
+
+    @Test
+    public void testToScopeLimitation_null() {
+        assertNull(mapper.toScopeLimitation(null));
+    }
+
+    @Test
+    public void testToScopeLimitationModel() {
+        ScopeLimitation scopeLimitationEntity = new ScopeLimitation();
+        scopeLimitationEntity.setScopeLimitation("SL");
+        scopeLimitationEntity.setScopeLimitationDisplayValue("ScopeLimitation");
+        scopeLimitationEntity.setDelegatedFuncApplyInd(true);
+        scopeLimitationEntity.setAuditTrail(buildAuditTrail());
+        scopeLimitationEntity.setEbsId("EBSID");
+        scopeLimitationEntity.setScopeLimitationWording("Wording");
+        scopeLimitationEntity.setDefaultInd(true);
+
+        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation = mapper.toScopeLimitationModel(scopeLimitationEntity);
+
+        assertEquals("SL", scopeLimitation.getScopeLimitation().getId());
+        assertEquals("ScopeLimitation", scopeLimitation.getScopeLimitation().getDisplayValue());
+        assertTrue(scopeLimitation.getDelegatedFuncApplyInd().getFlag());
+        assertEquals("EBSID", scopeLimitation.getEbsId());
+        assertEquals("Wording", scopeLimitation.getScopeLimitationWording());
+        assertTrue(scopeLimitation.getDefaultInd());
+    }
+
+    @Test
+    public void testToScopeLimitationModel_unsetBooleansFalse() {
+        ScopeLimitation scopeLimitationEntity = new ScopeLimitation();
+
+        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation = mapper.toScopeLimitationModel(scopeLimitationEntity);
+
+        assertFalse(scopeLimitation.getDelegatedFuncApplyInd().getFlag());
+        assertFalse(scopeLimitation.getDefaultInd());
+    }
+
+    @Test
+    public void testToScopeLimitationModel_null() {
+        assertNull(mapper.toScopeLimitationModel(null));
+    }
+
+    @Test
+    public void testToOpponent() {
+        uk.gov.laa.ccms.caab.model.Opponent opponentDetail = new uk.gov.laa.ccms.caab.model.Opponent();
+        opponentDetail.setOrganisationType(new StringDisplayValue().id("OT").displayValue("Organisation Type"));
+        opponentDetail.setAuditTrail(buildAuditDetail());
+        opponentDetail.setEbsId("EBSID");
+        opponentDetail.setType("Type");
+        opponentDetail.setTitle("Title");
+        opponentDetail.setFirstName("John");
+        opponentDetail.setMiddleNames("Doe");
+        opponentDetail.setSurname("Smith");
+        opponentDetail.setDateOfBirth(createdAt);
+        opponentDetail.setNationalInsuranceNumber("AB123456C");
+        opponentDetail.setRelationshipToCase("Relation1");
+        opponentDetail.setRelationshipToClient("Client1");
+        opponentDetail.setTelephoneHome("123456789");
+        opponentDetail.setTelephoneWork("987654321");
+        opponentDetail.setTelephoneMobile("456789123");
+        opponentDetail.setFaxNumber("555555555");
+        opponentDetail.setEmailAddress("john@example.com");
+        opponentDetail.setOtherInformation("Other Info");
+        opponentDetail.setEmploymentStatus("Employed");
+        opponentDetail.setEmployerName("ABC Ltd");
+        opponentDetail.setLegalAided(true);
+        opponentDetail.setCertificateNumber("CERT123");
+        opponentDetail.setCourtOrderedMeansAssessment(true);
+        opponentDetail.setAssessedIncome(BigDecimal.valueOf(50000.00));
+        opponentDetail.setAssessedIncomeFrequency("Annually");
+        opponentDetail.setAssessedAssets(BigDecimal.valueOf(100000.00));
+        opponentDetail.setAssessmentDate(createdAt);
+        opponentDetail.setOrganisationName("Org Name");
+        opponentDetail.setCurrentlyTrading(true);
+        opponentDetail.setContactNameRole("Contact");
+        opponentDetail.setConfirmed(true);
+        opponentDetail.setAppMode(false);
+        opponentDetail.setAmendment(true);
+        opponentDetail.setAward(true);
+        opponentDetail.setPublicFundingApplied(true);
+        opponentDetail.setSharedInd(true);
+        opponentDetail.setDeleteInd(false);
+
+        Opponent opponent = mapper.toOpponent(opponentDetail);
+
+        assertEquals("OT", opponent.getOrganisationType());
+        assertEquals("EBSID", opponent.getEbsId());
+        assertEquals("Type", opponent.getType());
+        assertEquals("Title", opponent.getTitle());
+        assertEquals("John", opponent.getFirstName());
+        assertEquals("Doe", opponent.getMiddleNames());
+        assertEquals("Smith", opponent.getSurname());
+        assertEquals(createdAt, opponent.getDateOfBirth());
+        assertEquals("AB123456C", opponent.getNationalInsuranceNumber());
+        assertEquals("Relation1", opponent.getRelationshipToCase());
+        assertEquals("Client1", opponent.getRelationshipToClient());
+        assertEquals("123456789", opponent.getTelephoneHome());
+        assertEquals("987654321", opponent.getTelephoneWork());
+        assertEquals("456789123", opponent.getTelephoneMobile());
+        assertEquals("555555555", opponent.getFaxNumber());
+        assertEquals("john@example.com", opponent.getEmailAddress());
+        assertEquals("Other Info", opponent.getOtherInformation());
+        assertEquals("Employed", opponent.getEmploymentStatus());
+        assertEquals("ABC Ltd", opponent.getEmployerName());
+        assertTrue(opponent.getLegalAided());
+        assertEquals("CERT123", opponent.getCertificateNumber());
+        assertTrue(opponent.getCourtOrderedMeansAssessment());
+        assertEquals(BigDecimal.valueOf(50000.00), opponent.getAssessedIncome());
+        assertEquals("Annually", opponent.getAssessedIncomeFrequency());
+        assertEquals(BigDecimal.valueOf(100000.00), opponent.getAssessedAssets());
+        assertEquals(createdAt, opponent.getAssessmentDate());
+        assertEquals("Org Name", opponent.getOrganisationName());
+        assertTrue(opponent.getCurrentlyTrading());
+        assertEquals("Contact", opponent.getContactNameRole());
+        assertTrue(opponent.isConfirmed());
+        assertFalse(opponent.isAppMode());
+        assertTrue(opponent.isAmendment());
+        assertTrue(opponent.isAward());
+        assertTrue(opponent.isPublicFundingApplied());
+        assertTrue(opponent.isSharedInd());
+
+        assertFalse(opponent.isAppMode());
+        assertFalse(opponent.isDeleteInd());
+    }
+
+    @Test
+    public void testToOpponent_unsetBooleans() {
+        uk.gov.laa.ccms.caab.model.Opponent opponentDetail =
+            new uk.gov.laa.ccms.caab.model.Opponent();
+        opponentDetail.setAppMode(null);
+
+        Opponent opponent = mapper.toOpponent(opponentDetail);
+
+        assertFalse(opponent.isConfirmed());
+        assertFalse(opponent.isAmendment());
+        assertFalse(opponent.isAward());
+        assertFalse(opponent.isPublicFundingApplied());
+        assertFalse(opponent.isSharedInd());
+
+        assertTrue(opponent.isAppMode());
+        assertTrue(opponent.isDeleteInd());
+    }
+
+    @Test
+    public void testToOpponent_null() {
+        assertNull(mapper.toOpponent(null));
+    }
+
+    @Test
+    public void testToOpponentModel() {
+        Opponent opponent = new Opponent();
+        opponent.setAuditTrail(buildAuditTrail());
+        opponent.setRelationshipToCase("Relation1");
+        opponent.setType("Type1");
+        opponent.setFirstName("John");
+        opponent.setMiddleNames("Doe");
+        opponent.setSurname("Smith");
+        opponent.setDateOfBirth(createdAt);
+        opponent.setNationalInsuranceNumber("AB123456C");
+        opponent.setCourtOrderedMeansAssessment(true);
+
+        uk.gov.laa.ccms.caab.model.Opponent opponentDetail = mapper.toOpponentModel(opponent);
+
+        assertEquals("Relation1", opponentDetail.getRelationshipToCase());
+        assertEquals("Type1", opponentDetail.getType());
+        assertEquals("John", opponentDetail.getFirstName());
+        assertEquals("Doe", opponentDetail.getMiddleNames());
+        assertEquals("Smith", opponentDetail.getSurname());
+        assertEquals(createdAt, opponentDetail.getDateOfBirth());
+        assertEquals("AB123456C", opponentDetail.getNationalInsuranceNumber());
+        assertTrue(opponentDetail.getCourtOrderedMeansAssessment());
+    }
+
+    @Test
+    public void testToOpponentModel_null() {
+        assertNull(mapper.toOpponentModel(null));
+    }
+
+    @Test
+    public void testToLinkedCase() {
+        uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = new uk.gov.laa.ccms.caab.model.LinkedCase();
+        linkedCaseModel.setAuditTrail(buildAuditDetail());
+        linkedCaseModel.setLscCaseReference("LSC123");
+        linkedCaseModel.setRelationToCase("Relation1");
+        linkedCaseModel.setProviderCaseReference("Provider123");
+        linkedCaseModel.setFeeEarner("FeeEarner1");
+        linkedCaseModel.setStatus("Active");
+        Client linkedCaseClient = new Client();
+        linkedCaseClient.setReference("Client123");
+        linkedCaseClient.setFirstName("John");
+        linkedCaseClient.setSurname("Doe");
+        linkedCaseModel.setClient(linkedCaseClient);
+
+        LinkedCase linkedCase = mapper.toLinkedCase(linkedCaseModel);
+
+        assertEquals("LSC123", linkedCase.getLscCaseReference());
+        assertEquals("Relation1", linkedCase.getRelationToCase());
+        assertEquals("Provider123", linkedCase.getProviderCaseReference());
+        assertEquals("FeeEarner1", linkedCase.getFeeEarner());
+        assertEquals("Active", linkedCase.getStatus());
+        assertEquals("Client123", linkedCase.getClientReference());
+        assertEquals("John", linkedCase.getClientFirstName());
+        assertEquals("Doe", linkedCase.getClientSurname());
+    }
+
+    @Test
+    public void testToLinkedCase_null() {
+        assertNull(mapper.toLinkedCase(null));
+    }
+
+
+    @Test
+    public void testToLinkedCaseModel() {
+        LinkedCase linkedCase = new LinkedCase();
+        linkedCase.setAuditTrail(buildAuditTrail());
+        linkedCase.setLscCaseReference("LSC123");
+        linkedCase.setRelationToCase("Relation1");
+        linkedCase.setProviderCaseReference("Provider123");
+        linkedCase.setFeeEarner("FeeEarner1");
+        linkedCase.setStatus("Active");
+        linkedCase.setClientReference("Client123");
+        linkedCase.setClientFirstName("John");
+        linkedCase.setClientSurname("Doe");
+
+        // Perform the mapping
+        uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = mapper.toLinkedCaseModel(linkedCase);
+
+        // Assert the values in the mapped result
+        assertEquals("LSC123", linkedCaseModel.getLscCaseReference());
+        assertEquals("Relation1", linkedCaseModel.getRelationToCase());
+        assertEquals("Provider123", linkedCaseModel.getProviderCaseReference());
+        assertEquals("FeeEarner1", linkedCaseModel.getFeeEarner());
+        assertEquals("Active", linkedCaseModel.getStatus());
+        assertEquals("Client123", linkedCaseModel.getClient().getReference());
+        assertEquals("John", linkedCaseModel.getClient().getFirstName());
+        assertEquals("Doe", linkedCaseModel.getClient().getSurname());
+    }
+
+    @Test
+    public void testToLinkedCaseModel_null() {
+        assertNull(mapper.toLinkedCaseModel(null));
+    }
+
+    @Test
     public void testAddressMapping() {
-        // Construct ApplicationDetailCorrespondenceAddress
         uk.gov.laa.ccms.caab.model.Address detailAddress = new uk.gov.laa.ccms.caab.model.Address();
         detailAddress.setNoFixedAbode(true);
         detailAddress.setPostcode("12345");
@@ -131,7 +722,7 @@ public class ApplicationMapperTest {
     @Test
     public void testToApplicationMapping() {
         // Construct ApplicationDetail
-        ApplicationDetail detail = new ApplicationDetail();
+        ApplicationDetail detail = new ApplicationDetail(null,null,null,null);;
         detail.setCaseReferenceNumber("CASE-001");
         detail.setProviderCaseReference("CASE-001");
         detail.setProvider(new IntDisplayValue().id(1234).displayValue("Provider Display"));
@@ -199,7 +790,7 @@ public class ApplicationMapperTest {
         address.setPreferredAddress("Preferred Address");
 
         // Convert Address to ApplicationDetailCorrespondenceAddress
-        uk.gov.laa.ccms.caab.model.Address detailAddress = mapper.toAddress(address);
+        uk.gov.laa.ccms.caab.model.Address detailAddress = mapper.toAddressModel(address);
 
         // Assertions
         assertTrue(detailAddress.getNoFixedAbode());
@@ -221,82 +812,13 @@ public class ApplicationMapperTest {
         costStructure.setGrantedCostLimitation(new BigDecimal("200.00"));
         costStructure.setRequestedCostLimitation(new BigDecimal("300.00"));
 
-        uk.gov.laa.ccms.caab.model.CostStructure detailCosts = mapper.toCostStructure(costStructure);
+        uk.gov.laa.ccms.caab.model.CostStructure detailCosts = mapper.toCostStructureModel(costStructure);
 
         assertEquals(new BigDecimal("100.00"), detailCosts.getDefaultCostLimitation());
         assertEquals(new BigDecimal("200.00"), detailCosts.getGrantedCostLimitation());
         assertEquals(new BigDecimal("300.00"), detailCosts.getRequestedCostLimitation());
     }
 
-    @Test
-    public void testToProceedingDetail() {
-        // Construct Proceeding
-        Proceeding proceeding = new Proceeding();
-        AuditTrail auditTrail = new AuditTrail();
-        // Set fields on auditTrail as needed
-        proceeding.setAuditTrail(auditTrail);
-        proceeding.setStage("Stage1");
-
-        // Convert Proceeding to ProceedingDetail
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingDetail = mapper.toProceeding(proceeding);
-
-        // Assertions
-        assertEquals(mapper.toAuditDetail(auditTrail), proceedingDetail.getAuditTrail());
-        assertEquals("Stage1", proceedingDetail.getStage());
-    }
-
-    @Test
-    public void testToPriorAuthorityDetail() {
-        // Construct PriorAuthority
-        PriorAuthority priorAuthority = new PriorAuthority();
-        AuditTrail auditTrail = new AuditTrail();
-        // Set fields on auditTrail as needed
-        priorAuthority.setAuditTrail(auditTrail);
-
-        // Convert PriorAuthority to PriorAuthorityDetail
-        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityDetail = mapper.toPriorAuthority(priorAuthority);
-
-        // Assertions
-        assertEquals(mapper.toAuditDetail(auditTrail), priorAuthorityDetail.getAuditTrail());
-    }
-
-    @Test
-    public void testToOpponentDetail() {
-        // Construct Opponent
-        Opponent opponent = new Opponent();
-        AuditTrail auditTrail = new AuditTrail();
-        // Set fields on auditTrail as needed
-        opponent.setAuditTrail(auditTrail);
-        opponent.setRelationshipToCase("Relation1");
-        opponent.setType("Type1");
-
-        // Convert Opponent to OpponentDetail
-        uk.gov.laa.ccms.caab.model.Opponent opponentDetail = mapper.toOpponent(opponent);
-
-        // Assertions
-        assertEquals(mapper.toAuditDetail(auditTrail), opponentDetail.getAuditTrail());
-        assertEquals("Relation1", opponentDetail.getRelationshipToCase());
-        assertEquals("Type1", opponentDetail.getType());
-    }
-
-    @Test
-    public void testToAuditDetail() {
-        // Construct AuditTrail
-        AuditTrail auditTrail = new AuditTrail();
-        auditTrail.setModified(new Date());
-        auditTrail.setModifiedBy("ModifiedBy1");
-        auditTrail.setCreated(new Date());
-        auditTrail.setCreatedBy("CreatedBy1");
-
-        // Convert AuditTrail to AuditDetail
-        AuditDetail auditDetail = mapper.toAuditDetail(auditTrail);
-
-        // Assertions
-        assertEquals(auditTrail.getModified(), auditDetail.getLastSaved());
-        assertEquals(auditTrail.getModifiedBy(), auditDetail.getLastSavedBy());
-        assertEquals(auditTrail.getCreated(), auditDetail.getCreated());
-        assertEquals(auditTrail.getCreatedBy(), auditDetail.getCreatedBy());
-    }
 
     @Test
     void testToApplicationDetailWithNullInput() {
@@ -444,17 +966,15 @@ public class ApplicationMapperTest {
     @Test
     public void testAddApplicationTypeWithNullType() {
         Application application = new Application();
-        ApplicationType applicationType = null;
         String caabUserLoginId = "user123";
 
-        mapper.addApplicationType(application, applicationType, caabUserLoginId);
+        mapper.addApplicationType(application, null);
 
         assertNull(application.getApplicationType());
         assertNull(application.getApplicationTypeDisplayValue());
         assertNull(application.getDevolvedPowersUsed());
         assertNull(application.getDateDevolvedPowersUsed());
         assertNull(application.getDevolvedPowersContractFlag());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     @Test
@@ -469,14 +989,13 @@ public class ApplicationMapperTest {
         applicationType.setDevolvedPowers(devolvedPowers);
         String caabUserLoginId = "user123";
 
-        mapper.addApplicationType(application, applicationType, caabUserLoginId);
+        mapper.addApplicationType(application, applicationType);
 
         assertEquals("TEST",application.getApplicationType());
         assertEquals("TEST123",application.getApplicationTypeDisplayValue());
         assertFalse(application.getDevolvedPowersUsed());
         assertNull(application.getDateDevolvedPowersUsed());
         assertEquals("Y",application.getDevolvedPowersContractFlag());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     private Application getApplicationWithProceedings() {
@@ -563,10 +1082,9 @@ public class ApplicationMapperTest {
     @Test
     public void testAddProviderDetailsWithNullDetails() {
         Application application = new Application();
-        ApplicationProviderDetails providerDetails = null;
         String caabUserLoginId = "user123";
 
-        mapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+        mapper.addProviderDetails(application, null);
 
         assertNull(application.getProviderId());
         assertNull(application.getProviderDisplayValue());
@@ -578,7 +1096,6 @@ public class ApplicationMapperTest {
         assertNull(application.getFeeEarnerDisplayValue());
         assertNull(application.getProviderContact());
         assertNull(application.getProviderContactDisplayValue());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     @Test
@@ -592,7 +1109,7 @@ public class ApplicationMapperTest {
         providerDetails.setProviderContact(new StringDisplayValue().id("ProviderContact").displayValue("Provider Contact Display Value"));
         String caabUserLoginId = "user123";
 
-        mapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+        mapper.addProviderDetails(application, providerDetails);
 
         assertEquals("123", application.getProviderId());
         assertEquals("Provider Display", application.getProviderDisplayValue());
@@ -604,7 +1121,6 @@ public class ApplicationMapperTest {
         assertEquals("Fee Earner Display Value", application.getFeeEarnerDisplayValue());
         assertEquals("ProviderContact", application.getProviderContact());
         assertEquals("Provider Contact Display Value", application.getProviderContactDisplayValue());
-        assertEquals("user123", application.getAuditTrail().getModifiedBy());
     }
 
     @Test
@@ -630,5 +1146,23 @@ public class ApplicationMapperTest {
         assertEquals("Fee Earner Display Value", result.getFeeEarner().getDisplayValue());
         assertEquals("Provider Contact Display Value", result.getProviderContact().getDisplayValue());
         assertEquals("ProviderCase123", result.getProviderCaseReference());
+    }
+
+    private AuditDetail buildAuditDetail() {
+        AuditDetail auditDetail = new AuditDetail();
+        auditDetail.setCreated(createdAt);
+        auditDetail.setLastSaved(updatedAt);
+        auditDetail.setCreatedBy("CreatedBy");
+        auditDetail.setLastSavedBy("LastSavedBy");
+        return auditDetail;
+    }
+
+    private AuditTrail buildAuditTrail() {
+        AuditTrail auditTrail = new AuditTrail();
+        auditTrail.setCreated(createdAt);
+        auditTrail.setLastSaved(updatedAt);
+        auditTrail.setCreatedBy("CreatedBy");
+        auditTrail.setLastSavedBy("LastSavedBy");
+        return auditTrail;
     }
 }

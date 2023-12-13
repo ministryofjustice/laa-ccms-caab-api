@@ -46,7 +46,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 
     //Used for integration tests
-    implementation platform('org.testcontainers:testcontainers-bom:1.19.1')
+    implementation platform('org.testcontainers:testcontainers-bom:1.19.3')
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:oracle-xe'
@@ -65,7 +65,7 @@ task integrationTest(type: Test) {
 }
 
 jacocoTestReport {
-
+    sourceDirectories.from files('build/generated/sources/annotationProcessor/java/main')
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/CaabApiApplication.class'])

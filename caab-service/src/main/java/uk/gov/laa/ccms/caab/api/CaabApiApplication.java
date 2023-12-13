@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
  * Entry point for the CAAB application.

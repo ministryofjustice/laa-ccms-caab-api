@@ -1,0 +1,67 @@
+{
+  "provider": {
+    "id": 26517,
+    "display_value": "SWITALSKI'S SOLICITORS LTD"
+  },
+  "provider_case_reference": "329635",
+  "office": {
+    "id": 145512,
+    "display_value": "SWITALSKI'S SOLICITORS LTD-2L847Q"
+  },
+  "supervisor": {
+    "id":"2854148",
+    "display_value": "David Greenwood"
+  },
+  "fee_earner": {
+    "id":"2027148",
+    "display_value": "Carole Spencer"
+  },
+  "provider_contact": {
+    "id":"2027079",
+    "display_value": "CAROLE.SPENCER@SWITALSKIS.COM"
+  },
+  "category_of_law": {
+    "id":"AAP",
+    "display_value": "Claim Against Public Authority"
+  },
+  "relation_to_linked_case": null,
+  "opponent_applied_for_funding": null,
+  "status": {
+    "id":"UNSUBMITTED",
+    "display_value": "Unsubmitted"
+  },
+  "client": {
+    "first_name":"Phil",
+    "surname": "Payne",
+    "reference": "PhilTest"
+  },
+  "amendment": false,
+  "means_assessment_amended": false,
+  "merits_assessment_amended": false,
+  "cost_limit": {
+    "changed": false,
+    "limit_at_time_of_merits": 1350
+  },
+  "application_type": {
+    "id": "ECF",
+    "display_value": "Exceptional Case Funding",
+    "devolved_powers": {
+      "used": false,
+      "date_used": "null",
+      "contract_flag": "Yes - Excluding JR Proceedings"
+    }
+  },
+  "merits_reassessment_required": false,
+  "lar_scope_flag": "true",
+  "lead_proceeding_changed": false,
+  "linked_cases": [],
+  "prior_authorities": [],
+  "opponents": [],
+  "proceedings": [],
+  "costs": {
+    "default_cost_limitation": 5000,
+    "granted_cost_limitation": 5000,
+    "requested_cost_limitation": 0,
+    "cost_entries": []
+  }
+}

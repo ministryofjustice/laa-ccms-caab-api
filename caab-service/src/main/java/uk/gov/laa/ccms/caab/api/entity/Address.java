@@ -1,11 +1,11 @@
 package uk.gov.laa.ccms.caab.api.entity;
 
 
-import jakarta.persistence.Access;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
@@ -14,6 +14,7 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents an address entity from the "XXCCMS_ADDRESS" table.
@@ -22,6 +23,7 @@ import lombok.Setter;
  * sequence for generating unique identifiers.
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "XXCCMS_ADDRESS")
 @Setter
 @Getter
@@ -65,15 +67,11 @@ public class Address implements Serializable {
   private String careOf;
 
   @Column(name = "PREFERRED_ADDRESS", length = 50)
-  @Access(jakarta.persistence.AccessType.PROPERTY)
   private String preferredAddress;
 
 
   @Embedded
-  private AuditTrail auditTrail;
+  private AuditTrail auditTrail = new AuditTrail();
 
-  public Address(AuditTrail auditTrail) {
-    this.auditTrail = auditTrail;
-  }
 
 }

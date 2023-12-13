@@ -66,13 +66,9 @@ class ApplicationControllerTest {
         StringDisplayValue categoryOfLaw = new StringDisplayValue()
                 .id(categoryOfLawId);
 
-        ApplicationDetail applicationDetail = new ApplicationDetail()
-                .caseReferenceNumber(caseReferenceNumber)
-                .provider(provider)
-                .client(client)
-                .categoryOfLaw(categoryOfLaw);
+        ApplicationDetail applicationDetail = new ApplicationDetail(caseReferenceNumber, categoryOfLaw, client, provider);
 
-        when(applicationService.createApplication(loginId, applicationDetail)).thenReturn(id);
+        when(applicationService.createApplication(applicationDetail)).thenReturn(id);
 
         this.mockMvc.perform(post("/applications")
                         .header("Caab-user-Login-Id", loginId)
@@ -86,7 +82,7 @@ class ApplicationControllerTest {
     public void getApplication() throws Exception {
         Long id = 123456L;
 
-        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
+        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail(null,null,null,null));
 
         this.mockMvc.perform(get("/applications/{id}", id))
                 .andDo(print())
@@ -111,7 +107,7 @@ class ApplicationControllerTest {
         ApplicationType applicationType = new ApplicationType();
 
         // Assuming that your service method returns void (no return value)
-        doNothing().when(applicationService).patchApplicationType(id, caabUserLoginId, applicationType);
+        doNothing().when(applicationService).patchApplicationType(id, applicationType);
 
         this.mockMvc.perform(patch("/applications/{id}/application-type", id)
                 .header("Caab-user-Login-Id", caabUserLoginId)
@@ -119,7 +115,7 @@ class ApplicationControllerTest {
                 .content(objectMapper.writeValueAsString(applicationType)))
             .andExpect(status().isNoContent());
 
-        verify(applicationService).patchApplicationType(id, caabUserLoginId, applicationType);
+        verify(applicationService).patchApplicationType(id, applicationType);
     }
 
     @Test
@@ -139,7 +135,7 @@ class ApplicationControllerTest {
         String caabUserLoginId = "test";
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
 
-        doNothing().when(applicationService).patchProviderDetails(id, caabUserLoginId, providerDetails);
+        doNothing().when(applicationService).patchProviderDetails(id, providerDetails);
 
         this.mockMvc.perform(patch("/applications/{id}/provider-details", id)
                 .header("Caab-user-Login-Id", caabUserLoginId)
@@ -147,6 +143,6 @@ class ApplicationControllerTest {
                 .content(objectMapper.writeValueAsString(providerDetails)))
             .andExpect(status().isNoContent());
 
-        verify(applicationService).patchProviderDetails(id, caabUserLoginId, providerDetails);
+        verify(applicationService).patchProviderDetails(id, providerDetails);
     }
 }

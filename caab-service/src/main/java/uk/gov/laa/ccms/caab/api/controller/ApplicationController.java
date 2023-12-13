@@ -1,6 +1,8 @@
 package uk.gov.laa.ccms.caab.api.controller;
 
 
+import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
+
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +33,8 @@ public class ApplicationController implements ApplicationsApi {
           final String caabUserLoginId,
           final ApplicationDetail applicationDetail) {
 
-    Long id = applicationService.createApplication(caabUserLoginId, applicationDetail);
+    currentUserHolder.set(caabUserLoginId);
+    Long id = applicationService.createApplication(applicationDetail);
 
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
@@ -77,7 +80,8 @@ public class ApplicationController implements ApplicationsApi {
       String caabUserLoginId,
       ApplicationProviderDetails applicationProviderDetails) {
 
-    applicationService.patchProviderDetails(id, caabUserLoginId, applicationProviderDetails);
+    currentUserHolder.set(caabUserLoginId);
+    applicationService.patchProviderDetails(id, applicationProviderDetails);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
@@ -88,7 +92,8 @@ public class ApplicationController implements ApplicationsApi {
       final String caabUserLoginId,
       final ApplicationType applicationType) {
 
-    applicationService.patchApplicationType(id, caabUserLoginId, applicationType);
+    currentUserHolder.set(caabUserLoginId);
+    applicationService.patchApplicationType(id, applicationType);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

@@ -219,7 +219,7 @@ components:
       type: 'object'
       properties:
         flag:
-          type: 'string'
+          type: 'boolean'
         display_value:
           type: 'string'
     costStructure:
@@ -237,7 +237,7 @@ components:
             $ref: "#/components/schemas/costEntry"
         current_provider_billed_amount:
           type: 'number'
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
     costEntry:
       type: 'object'
@@ -259,6 +259,8 @@ components:
           type: 'string'
         submitted:
           type: 'boolean'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     client:
       type: 'object'
       properties:
@@ -275,8 +277,8 @@ components:
       properties:
         changed:
           type: 'boolean'
-        at_time_of_merits:
-          type: 'integer'
+        limit_at_time_of_merits:
+          type: 'number'
     devolvedPowers:
       type: 'object'
       properties:
@@ -310,6 +312,8 @@ components:
           type: 'string'
         preferred_address:
           type: 'string'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     scopeLimitation:
       type: 'object'
       properties:
@@ -327,6 +331,8 @@ components:
           type: 'boolean'
         stage:
           type: 'string'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     proceedingOutcome:
       type: 'object'
       properties:
@@ -425,7 +431,7 @@ components:
           type: 'array'
           items:
             type: 'string'
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
     linkedCase:
       type: 'object'
@@ -444,12 +450,8 @@ components:
           type: 'string'
         status:
           type: 'string'
-        client_reference:
-          type: 'string'
-        client_first_name:
-          type: 'string'
-        client_surname:
-          type: 'string'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     priorAuthority:
       type: 'object'
       properties:
@@ -471,7 +473,7 @@ components:
           type: 'array'
           items:
             $ref: "#/components/schemas/referenceDataItem"
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
     referenceDataItem:
       type: 'object'
@@ -528,14 +530,14 @@ components:
           type: 'string'
         employer_name:
           type: 'string'
-        employment_address:
+        employer_address:
           type: 'string'
         legal_aided:
           type: 'boolean'
         certificate_number:
           type: 'string'
         court_ordered_means_assessment:
-          type: 'string'
+          type: 'boolean'
         assessed_income:
           type: 'number'
         assessed_income_frequency:
@@ -550,7 +552,7 @@ components:
         organisation_type:
           $ref: "#/components/schemas/stringDisplayValue"
         currently_trading:
-          type: 'string'
+          type: 'boolean'
         contact_name_role:
           type: 'string'
         confirmed:
@@ -574,7 +576,7 @@ components:
           type: 'string'
         party_id:
           type: 'string'
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
     recovery:
       type: 'object'
@@ -652,7 +654,7 @@ components:
           type: 'string'
         opponent_id:
           type: 'string'
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
     baseAward:
       type: 'object'
@@ -679,26 +681,20 @@ components:
           type: 'string'
         award_code:
           type: 'string'
-        triggering_event:
-          type: 'string'
         effective_date:
           type: 'string'
           format: 'date'
-        time_related_recovery_details:
-          type: 'string'
         cost_or_financial:
           type: 'boolean'
           default: false
         opponents_to_select:
           type: 'boolean'
           default: false
-        opponent_id:
-          type: 'string'
         liable_parties:
           type: 'array'
           items:
             $ref: '#/components/schemas/liableParty'
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
     costAward:
       allOf:
@@ -719,7 +715,7 @@ components:
         total_cert_costs_awarded:
           type: 'number'
           default: 0.00
-        certificate_cost_rate_market:
+        certificate_cost_market:
           type: 'number'
           default: 0.00
         interest_awarded_rate:
@@ -890,7 +886,7 @@ components:
         discharge_case_ind:
           type: 'string'
         client_continue_ind:
-          type: 'string'
+          type: 'boolean'
         other_details:
           type: 'string'
         office_code:
@@ -1068,7 +1064,7 @@ components:
           type: 'boolean'
         submitted:
           type: 'boolean'
-        auditTrail:
+        audit_trail:
           $ref: "#/components/schemas/auditDetail"
       required:
         - case_reference_number

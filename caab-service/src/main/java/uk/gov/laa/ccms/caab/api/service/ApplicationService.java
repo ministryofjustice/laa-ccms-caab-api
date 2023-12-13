@@ -9,6 +9,7 @@ import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
+import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
@@ -43,36 +44,14 @@ public class ApplicationService {
    * initializes or updates the correspondence address and cost structure, and persists
    * the application in the repository.</p>
    *
-   * @param caabUserLoginId the CAAB user login ID responsible for the application creation.
    * @param applicationDetail the details of the application to be created.
    * @return the unique ID of the newly created application.
    */
   public Long createApplication(
-          final String caabUserLoginId,
           final ApplicationDetail applicationDetail) {
 
-    AuditTrail auditTrail = new AuditTrail();
-    auditTrail.setCreatedBy(caabUserLoginId);
-    auditTrail.setModifiedBy(caabUserLoginId);
-
     Application application = applicationMapper.toApplication(applicationDetail);
-    application.setAuditTrail(auditTrail);
-
-    //set correspondence address
-    if (application.getCorrespondenceAddress() == null) {
-      Address address = new Address(auditTrail);
-      application.setCorrespondenceAddress(address);
-    } else {
-      application.getCorrespondenceAddress().setAuditTrail(auditTrail);
-    }
-
-    //Set Cost Structure
-    if (application.getCosts() == null) {
-      CostStructure costs = new CostStructure(auditTrail);
-      application.setCosts(costs);
-    } else {
-      application.getCosts().setAuditTrail(auditTrail);
-    }
+    applicationMapper.setParentInChildEntities(application);
 
     applicationRepository.save(application);
 
@@ -124,19 +103,17 @@ public class ApplicationService {
    * Patch an application with new provider details.
    *
    * @param id the TDS id for the application.
-   * @param caabUserLoginId the CAAB user login ID responsible for the application creation.
    * @param providerDetails the new application provider details to update the application with
    */
   public void patchProviderDetails(
       final Long id,
-      final String caabUserLoginId,
       final ApplicationProviderDetails providerDetails) {
 
     Application application = applicationRepository.findById(id)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
 
-    applicationMapper.addProviderDetails(application, providerDetails, caabUserLoginId);
+    applicationMapper.addProviderDetails(application, providerDetails);
     applicationRepository.save(application);
   }
 
@@ -144,19 +121,17 @@ public class ApplicationService {
    * Patch an application with new application type.
    *
    * @param id the TDS id for the application.
-   * @param caabUserLoginId the CAAB user login ID responsible for the application creation.
    * @param applicationType the new application type to update the application with
    */
   public void patchApplicationType(
       final Long id,
-      final String caabUserLoginId,
       final ApplicationType applicationType) {
 
     Application application = applicationRepository.findById(id)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
 
-    applicationMapper.addApplicationType(application, applicationType, caabUserLoginId);
+    applicationMapper.addApplicationType(application, applicationType);
     applicationRepository.save(application);
   }
 }
