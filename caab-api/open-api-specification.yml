@@ -847,7 +847,7 @@ components:
         stat_charge_exempt_reason:
           type: 'string'
         recovery_of_award_time_related:
-          type: 'string'
+          type: 'boolean'
         time_recovery:
           $ref: "#/components/schemas/timeRecovery"
     caseOutcome:
