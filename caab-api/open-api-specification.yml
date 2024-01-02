@@ -175,7 +175,7 @@ paths:
             type: 'integer'
             format: 'int64'
             example: '1234567890'
-        - name: 'Caab-User-Login-Id'
+        - name: 'Caab-user-Login-Id'
           in: header
           required: true
           schema:

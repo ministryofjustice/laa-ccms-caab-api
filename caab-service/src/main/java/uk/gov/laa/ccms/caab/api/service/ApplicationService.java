@@ -87,7 +87,6 @@ public class ApplicationService {
             HttpStatus.NOT_FOUND));
   }
 
-
   /**
    * Gets an applications provider details.
    *
