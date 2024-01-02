@@ -1,8 +1,6 @@
 package uk.gov.laa.ccms.caab.api.controller;
 
 
-import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
-
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.laa.ccms.caab.api.ApplicationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
@@ -30,10 +29,9 @@ public class ApplicationController implements ApplicationsApi {
 
   @Override
   public ResponseEntity<Void> createApplication(
-          final String caabUserLoginId,
-          final ApplicationDetail applicationDetail) {
+      final String caabUserLoginId,
+      final ApplicationDetail applicationDetail) {
 
-    currentUserHolder.set(caabUserLoginId);
     Long id = applicationService.createApplication(applicationDetail);
 
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -57,7 +55,17 @@ public class ApplicationController implements ApplicationsApi {
   }
 
   @Override
-  public ResponseEntity<ApplicationProviderDetails> getApplicationProviderDetails(Long id) {
+  public ResponseEntity<Address> getApplicationCorrespondenceAddress(
+      final Long id) {
+    Address correspondenceAddress =
+        applicationService.getApplicationCorrespondenceAddress(id);
+
+    return new ResponseEntity<>(correspondenceAddress, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<ApplicationProviderDetails> getApplicationProviderDetails(
+      final Long id) {
 
     ApplicationProviderDetails applicationProviderDetails =
         applicationService.getApplicationProviderDetails(id);
@@ -75,25 +83,34 @@ public class ApplicationController implements ApplicationsApi {
   }
 
   @Override
-  public ResponseEntity<Void> patchApplicationProviderDetails(
-      Long id,
-      String caabUserLoginId,
-      ApplicationProviderDetails applicationProviderDetails) {
+  public ResponseEntity<Void> putApplicationCorrespondenceAddress(
+      final Long id,
+      final String caabUserLoginId,
+      final Address address) {
 
-    currentUserHolder.set(caabUserLoginId);
-    applicationService.patchProviderDetails(id, applicationProviderDetails);
+    applicationService.putCorrespondenceAddress(id, address);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @Override
-  public ResponseEntity<Void> patchApplicationType(
+  public ResponseEntity<Void> putApplicationProviderDetails(
+      final Long id,
+      final String caabUserLoginId,
+      final ApplicationProviderDetails applicationProviderDetails) {
+
+    applicationService.putProviderDetails(id, applicationProviderDetails);
+
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<Void> putApplicationType(
       final Long id,
       final String caabUserLoginId,
       final ApplicationType applicationType) {
 
-    currentUserHolder.set(caabUserLoginId);
-    applicationService.patchApplicationType(id, applicationType);
+    applicationService.putApplicationType(id, applicationType);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

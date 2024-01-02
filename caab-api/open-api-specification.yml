@@ -16,7 +16,7 @@ paths:
             schema:
               $ref: '#/components/schemas/applicationDetail'
       parameters:
-        - name: 'Caab-user-Login-Id'
+        - name: 'Caab-User-Login-Id'
           in: header
           required: true
           schema:
@@ -91,13 +91,13 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
-    patch:
+    put:
       tags:
         - applications
-      summary: 'patch application type'
-      operationId: 'patchApplicationType'
+      summary: 'put application type'
+      operationId: 'putApplicationType'
       requestBody:
-        description: patch an application's application type
+        description: put an application's application type
         content:
           application/json:
             schema:
@@ -110,7 +110,7 @@ paths:
             type: 'integer'
             format: 'int64'
             example: '1234567890'
-        - name: 'Caab-user-Login-Id'
+        - name: 'Caab-User-Login-Id'
           in: header
           required: true
           schema:
@@ -156,13 +156,13 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
-    patch:
+    put:
       tags:
         - applications
-      summary: 'patch an applications provider details'
-      operationId: 'patchApplicationProviderDetails'
+      summary: 'put an applications provider details'
+      operationId: 'putApplicationProviderDetails'
       requestBody:
-        description: patch an application's application type
+        description: put an application's application type
         content:
           application/json:
             schema:
@@ -175,7 +175,72 @@ paths:
             type: 'integer'
             format: 'int64'
             example: '1234567890'
-        - name: 'Caab-user-Login-Id'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'MARILYN@DESORANDCO.CO.UK'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /applications/{id}/correspondence-address:
+    get:
+      tags:
+        - applications
+      summary: 'get an applications correspondence address'
+      operationId: 'getApplicationCorrespondenceAddress'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/address"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    put:
+      tags:
+        - applications
+      summary: 'put an applications correspondence address'
+      operationId: 'putApplicationCorrespondenceAddress'
+      requestBody:
+        description: put an application's correspondence address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/address'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+        - name: 'Caab-User-Login-Id'
           in: header
           required: true
           schema:

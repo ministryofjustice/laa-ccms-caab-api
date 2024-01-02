@@ -5,11 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
-import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
-import uk.gov.laa.ccms.caab.api.entity.CostStructure;
-import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
@@ -73,6 +69,23 @@ public class ApplicationService {
   }
 
   /**
+   * Gets an application's correspondence address.
+   *
+   * @param id the TDS id for the application.
+   * @return the application's correspondence address.
+   */
+  @Transactional
+  public uk.gov.laa.ccms.caab.model.Address getApplicationCorrespondenceAddress(final Long id) {
+    return applicationRepository.findById(id)
+        .map(Application::getCorrespondenceAddress)
+        .map(applicationMapper::toAddressModel)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Correspondence address for application with id %s not found", id),
+            HttpStatus.NOT_FOUND));
+  }
+
+
+  /**
    * Gets an applications provider details.
    *
    * @param id the TDS id for the application.
@@ -92,7 +105,6 @@ public class ApplicationService {
    * @return the applications application type.
    */
   public ApplicationType getApplicationType(final Long id) {
-
     return applicationRepository.findById(id)
         .map(applicationMapper::toApplicationType)
         .orElseThrow(() -> new CaabApiException(
@@ -100,12 +112,31 @@ public class ApplicationService {
   }
 
   /**
-   * Patch an application with new provider details.
+   * Adds/Updates an application with a new correspondence address.
+   *
+   * @param id the TDS id for the application.
+   * @param address the applications updated correspondence address
+   */
+  @Transactional
+  public void putCorrespondenceAddress(
+      final Long id,
+      final uk.gov.laa.ccms.caab.model.Address address) {
+
+    Application application = applicationRepository.findById(id)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+
+    applicationMapper.addCorrespondenceAddressToApplication(application, address);
+    applicationRepository.save(application);
+  }
+
+  /**
+   * Amends an application with new provider details.
    *
    * @param id the TDS id for the application.
    * @param providerDetails the new application provider details to update the application with
    */
-  public void patchProviderDetails(
+  public void putProviderDetails(
       final Long id,
       final ApplicationProviderDetails providerDetails) {
 
@@ -118,12 +149,12 @@ public class ApplicationService {
   }
 
   /**
-   * Patch an application with new application type.
+   * Amends an application with new application type.
    *
    * @param id the TDS id for the application.
    * @param applicationType the new application type to update the application with
    */
-  public void patchApplicationType(
+  public void putApplicationType(
       final Long id,
       final ApplicationType applicationType) {
 

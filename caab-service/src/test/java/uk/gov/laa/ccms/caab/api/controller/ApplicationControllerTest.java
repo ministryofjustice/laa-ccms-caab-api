@@ -4,8 +4,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,8 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.laa.ccms.caab.api.controller.ApplicationController;
+import uk.gov.laa.ccms.caab.api.advice.AuditAdvice;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
@@ -71,7 +72,7 @@ class ApplicationControllerTest {
         when(applicationService.createApplication(applicationDetail)).thenReturn(id);
 
         this.mockMvc.perform(post("/applications")
-                        .header("Caab-user-Login-Id", loginId)
+                        .header("Caab-User-Login-Id", loginId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(applicationDetail)))
                 .andExpect(status().isCreated())
@@ -101,21 +102,21 @@ class ApplicationControllerTest {
     }
 
     @Test
-    public void patchApplicationType() throws Exception {
+    public void putApplicationType() throws Exception {
         Long id = 123L;
         String caabUserLoginId = "test";
         ApplicationType applicationType = new ApplicationType();
 
         // Assuming that your service method returns void (no return value)
-        doNothing().when(applicationService).patchApplicationType(id, applicationType);
+        doNothing().when(applicationService).putApplicationType(id, applicationType);
 
-        this.mockMvc.perform(patch("/applications/{id}/application-type", id)
-                .header("Caab-user-Login-Id", caabUserLoginId)
+        this.mockMvc.perform(put("/applications/{id}/application-type", id)
+                .header("Caab-User-Login-Id", caabUserLoginId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(applicationType)))
             .andExpect(status().isNoContent());
 
-        verify(applicationService).patchApplicationType(id, applicationType);
+        verify(applicationService).putApplicationType(id, applicationType);
     }
 
     @Test
@@ -130,19 +131,47 @@ class ApplicationControllerTest {
     }
 
     @Test
-    public void patchApplicationProviderDetails() throws Exception {
+    public void putApplicationProviderDetails() throws Exception {
         Long id = 123L;
         String caabUserLoginId = "test";
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
 
-        doNothing().when(applicationService).patchProviderDetails(id, providerDetails);
+        doNothing().when(applicationService).putProviderDetails(id, providerDetails);
 
-        this.mockMvc.perform(patch("/applications/{id}/provider-details", id)
-                .header("Caab-user-Login-Id", caabUserLoginId)
+        this.mockMvc.perform(put("/applications/{id}/provider-details", id)
+                .header("Caab-User-Login-Id", caabUserLoginId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(providerDetails)))
             .andExpect(status().isNoContent());
 
-        verify(applicationService).patchProviderDetails(id, providerDetails);
+        verify(applicationService).putProviderDetails(id, providerDetails);
+    }
+
+    @Test
+    public void getApplicationCorrespondenceAddress() throws Exception {
+        Long id = 123L;
+        Address address = new Address();
+
+        when(applicationService.getApplicationCorrespondenceAddress(id)).thenReturn(address);
+
+        this.mockMvc.perform(get("/applications/{id}/correspondence-address", id))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void putApplicationCorrespondenceAddress() throws Exception {
+        Long id = 123L;
+        String caabUserLoginId = "test";
+        Address address = new Address();
+
+        doNothing().when(applicationService).putCorrespondenceAddress(id, address);
+
+        this.mockMvc.perform(put("/applications/{id}/correspondence-address", id)
+                .header("Caab-User-Login-Id", caabUserLoginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(address)))
+            .andExpect(status().isNoContent());
+
+        verify(applicationService).putCorrespondenceAddress(id, address);
     }
 }

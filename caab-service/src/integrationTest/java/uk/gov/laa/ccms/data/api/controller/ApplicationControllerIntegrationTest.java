@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,6 +47,13 @@ public class ApplicationControllerIntegrationTest extends AbstractIntegrationTes
 
   @Autowired
   private ApplicationService applicationService;
+
+  private final String caabUserLoginId = "audit@user.com";
+
+  @BeforeEach
+  public void setup() {
+    currentUserHolder.set(caabUserLoginId);
+  }
 
   /**
    * Loads the JSON file from the classpath and parses it into an ApplicationDetail object.
@@ -178,8 +187,7 @@ public class ApplicationControllerIntegrationTest extends AbstractIntegrationTes
     Method method = object.getClass().getMethod(methodCalls[index]);
     object = method.invoke(object);
 
-    if (object instanceof List) {
-      List<?> list = (List<?>) object;
+    if (object instanceof List<?> list) {
       for (Object item : list) {
         assertAuditTrailRecursive(item, methodCalls, index + 1, expectedAuditUser);
       }
@@ -231,9 +239,8 @@ public class ApplicationControllerIntegrationTest extends AbstractIntegrationTes
       return;
     }
 
-    if (object instanceof List) {
+    if (object instanceof List<?> list) {
       // Handle List objects
-      List<?> list = (List<?>) object;
       for (Object item : list) {
         nullifyFieldRecursive(item, fields, index);
       }
