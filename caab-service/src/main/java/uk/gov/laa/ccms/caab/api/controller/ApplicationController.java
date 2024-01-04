@@ -32,11 +32,11 @@ public class ApplicationController implements ApplicationsApi {
       final String caabUserLoginId,
       final ApplicationDetail applicationDetail) {
 
-    Long id = applicationService.createApplication(applicationDetail);
+    Long applicationId = applicationService.createApplication(applicationDetail);
 
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
-            .buildAndExpand(id)
+            .buildAndExpand(applicationId)
             .toUri();
 
     HttpHeaders headers = new HttpHeaders();
@@ -47,70 +47,70 @@ public class ApplicationController implements ApplicationsApi {
 
   @Override
   public ResponseEntity<ApplicationDetail> getApplication(
-      final Long id) {
+      final Long applicationId) {
 
-    ApplicationDetail application = applicationService.getApplication(id);
+    ApplicationDetail application = applicationService.getApplication(applicationId);
 
     return new ResponseEntity<>(application, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<Address> getApplicationCorrespondenceAddress(
-      final Long id) {
+      final Long applicationId) {
     Address correspondenceAddress =
-        applicationService.getApplicationCorrespondenceAddress(id);
+        applicationService.getApplicationCorrespondenceAddress(applicationId);
 
     return new ResponseEntity<>(correspondenceAddress, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<ApplicationProviderDetails> getApplicationProviderDetails(
-      final Long id) {
+      final Long applicationId) {
 
     ApplicationProviderDetails applicationProviderDetails =
-        applicationService.getApplicationProviderDetails(id);
+        applicationService.getApplicationProviderDetails(applicationId);
 
     return new ResponseEntity<>(applicationProviderDetails, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<ApplicationType> getApplicationType(
-      final Long id) {
+      final Long applicationId) {
 
-    ApplicationType applicationType = applicationService.getApplicationType(id);
+    ApplicationType applicationType = applicationService.getApplicationType(applicationId);
 
     return new ResponseEntity<>(applicationType, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<Void> putApplicationCorrespondenceAddress(
-      final Long id,
+      final Long applicationId,
       final String caabUserLoginId,
       final Address address) {
 
-    applicationService.putCorrespondenceAddress(id, address);
+    applicationService.putCorrespondenceAddress(applicationId, address);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @Override
   public ResponseEntity<Void> putApplicationProviderDetails(
-      final Long id,
+      final Long applicationId,
       final String caabUserLoginId,
       final ApplicationProviderDetails applicationProviderDetails) {
 
-    applicationService.putProviderDetails(id, applicationProviderDetails);
+    applicationService.putProviderDetails(applicationId, applicationProviderDetails);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @Override
   public ResponseEntity<Void> putApplicationType(
-      final Long id,
+      final Long applicationId,
       final String caabUserLoginId,
       final ApplicationType applicationType) {
 
-    applicationService.putApplicationType(id, applicationType);
+    applicationService.putApplicationType(applicationId, applicationType);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

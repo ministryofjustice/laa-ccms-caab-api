@@ -21,7 +21,7 @@ paths:
           required: true
           schema:
             type: 'string'
-          example: 'MARILYN@DESORANDCO.CO.UK'
+          example: 'SOMEUSER@COMPANY.CO.UK'
       responses:
         '200':
           description: 'Successful operation'
@@ -66,7 +66,7 @@ paths:
     get:
       tags:
         - applications
-      summary: 'get application type'
+      summary: 'Get application type'
       operationId: 'getApplicationType'
       parameters:
         - name: 'id'
@@ -94,7 +94,7 @@ paths:
     put:
       tags:
         - applications
-      summary: 'put application type'
+      summary: 'Update application type'
       operationId: 'putApplicationType'
       requestBody:
         description: put an application's application type
@@ -115,7 +115,7 @@ paths:
           required: true
           schema:
             type: 'string'
-          example: 'MARILYN@DESORANDCO.CO.UK'
+          example: 'SOMEUSER@COMPANY.CO.UK'
       responses:
         '200':
           description: 'Successful operation'
@@ -131,7 +131,7 @@ paths:
     get:
       tags:
         - applications
-      summary: 'get an applications provider details'
+      summary: 'Get an application''s provider details'
       operationId: 'getApplicationProviderDetails'
       parameters:
         - name: 'id'
@@ -159,10 +159,10 @@ paths:
     put:
       tags:
         - applications
-      summary: 'put an applications provider details'
+      summary: 'Update an application''s provider details'
       operationId: 'putApplicationProviderDetails'
       requestBody:
-        description: put an application's application type
+        description: put an application's provider details
         content:
           application/json:
             schema:
@@ -180,7 +180,7 @@ paths:
           required: true
           schema:
             type: 'string'
-          example: 'MARILYN@DESORANDCO.CO.UK'
+          example: 'SOMEUSER@COMPANY.CO.UK'
       responses:
         '200':
           description: 'Successful operation'
@@ -196,7 +196,7 @@ paths:
     get:
       tags:
         - applications
-      summary: 'get an applications correspondence address'
+      summary: 'Get an applications correspondence address'
       operationId: 'getApplicationCorrespondenceAddress'
       parameters:
         - name: 'id'
@@ -224,7 +224,7 @@ paths:
     put:
       tags:
         - applications
-      summary: 'put an applications correspondence address'
+      summary: 'Update an application''s correspondence address'
       operationId: 'putApplicationCorrespondenceAddress'
       requestBody:
         description: put an application's correspondence address
@@ -245,7 +245,7 @@ paths:
           required: true
           schema:
             type: 'string'
-          example: 'MARILYN@DESORANDCO.CO.UK'
+          example: 'SOMEUSER@COMPANY.CO.UK'
       responses:
         '200':
           description: 'Successful operation'

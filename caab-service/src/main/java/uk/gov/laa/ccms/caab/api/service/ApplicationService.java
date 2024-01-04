@@ -57,30 +57,33 @@ public class ApplicationService {
   /**
    * Gets an application.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @return the application details.
    */
   @Transactional
-  public ApplicationDetail getApplication(final Long id) {
-    return applicationRepository.findById(id)
+  public ApplicationDetail getApplication(final Long applicationId) {
+    return applicationRepository.findById(applicationId)
         .map(applicationMapper::toApplicationDetail)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
   }
 
   /**
    * Gets an application's correspondence address.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @return the application's correspondence address.
    */
   @Transactional
-  public uk.gov.laa.ccms.caab.model.Address getApplicationCorrespondenceAddress(final Long id) {
-    return applicationRepository.findById(id)
+  public uk.gov.laa.ccms.caab.model.Address getApplicationCorrespondenceAddress(
+      final Long applicationId) {
+    return applicationRepository.findById(applicationId)
         .map(Application::getCorrespondenceAddress)
         .map(applicationMapper::toAddressModel)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Correspondence address for application with id %s not found", id),
+            String.format("Correspondence address for application with id %s not found",
+                applicationId),
             HttpStatus.NOT_FOUND));
   }
 
@@ -88,43 +91,46 @@ public class ApplicationService {
   /**
    * Gets an applications provider details.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @return the applications provider details.
    */
-  public ApplicationProviderDetails getApplicationProviderDetails(final Long id) {
-    return applicationRepository.findById(id)
+  public ApplicationProviderDetails getApplicationProviderDetails(final Long applicationId) {
+    return applicationRepository.findById(applicationId)
         .map(applicationMapper::toProviderDetails)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
   }
 
   /**
    * Gets an applications application type.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @return the applications application type.
    */
-  public ApplicationType getApplicationType(final Long id) {
-    return applicationRepository.findById(id)
+  public ApplicationType getApplicationType(final Long applicationId) {
+    return applicationRepository.findById(applicationId)
         .map(applicationMapper::toApplicationType)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
   }
 
   /**
    * Adds/Updates an application with a new correspondence address.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @param address the applications updated correspondence address
    */
   @Transactional
   public void putCorrespondenceAddress(
-      final Long id,
+      final Long applicationId,
       final uk.gov.laa.ccms.caab.model.Address address) {
 
-    Application application = applicationRepository.findById(id)
+    Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
 
     applicationMapper.addCorrespondenceAddressToApplication(application, address);
     applicationRepository.save(application);
@@ -133,16 +139,17 @@ public class ApplicationService {
   /**
    * Amends an application with new provider details.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @param providerDetails the new application provider details to update the application with
    */
   public void putProviderDetails(
-      final Long id,
+      final Long applicationId,
       final ApplicationProviderDetails providerDetails) {
 
-    Application application = applicationRepository.findById(id)
+    Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
 
     applicationMapper.addProviderDetails(application, providerDetails);
     applicationRepository.save(application);
@@ -151,16 +158,17 @@ public class ApplicationService {
   /**
    * Amends an application with new application type.
    *
-   * @param id the TDS id for the application.
+   * @param applicationId the TDS id for the application.
    * @param applicationType the new application type to update the application with
    */
   public void putApplicationType(
-      final Long id,
+      final Long applicationId,
       final ApplicationType applicationType) {
 
-    Application application = applicationRepository.findById(id)
+    Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
 
     applicationMapper.addApplicationType(application, applicationType);
     applicationRepository.save(application);
