@@ -64,6 +64,8 @@ public interface ApplicationMapper {
   @Mapping(target = "meritsReassessmentReqdInd", source = "meritsReassessmentRequired")
   @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged")
   @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructure")
+  @Mapping(target = "correspondenceAddress", source = "correspondenceAddress",
+      qualifiedByName = "toAddress")
   Application toApplication(ApplicationDetail applicationDetail);
 
   /**
@@ -107,8 +109,10 @@ public interface ApplicationMapper {
     }
   }
 
-  @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructureModel")
   @InheritInverseConfiguration
+  @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructureModel")
+  @Mapping(target = "correspondenceAddress", source = "correspondenceAddress",
+      qualifiedByName = "toAddressModel")
   ApplicationDetail toApplicationDetail(Application application);
 
   @Mapping(target = "auditTrail", ignore = true)
@@ -159,9 +163,11 @@ public interface ApplicationMapper {
 
   @Mapping(target = "organisationType", source = "organisationType.id")
   @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
   Opponent toOpponent(uk.gov.laa.ccms.caab.model.Opponent opponent);
 
   @InheritInverseConfiguration
+  @Mapping(target = "address", source = "address", qualifiedByName = "toAddressModel")
   uk.gov.laa.ccms.caab.model.Opponent toOpponentModel(Opponent opponent);
 
   @Mapping(target = "auditTrail", ignore = true)
@@ -173,13 +179,15 @@ public interface ApplicationMapper {
   @InheritInverseConfiguration
   uk.gov.laa.ccms.caab.model.LinkedCase toLinkedCaseModel(LinkedCase linkedCase);
 
+  @Named("toAddress")
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "postCode", source = "postcode")
   @Mapping(target = "houseNameNumber", source = "houseNameOrNumber")
   Address toAddress(uk.gov.laa.ccms.caab.model.Address address);
 
-  @InheritInverseConfiguration
+  @Named("toAddressModel")
+  @InheritInverseConfiguration(name = "toAddress")
   uk.gov.laa.ccms.caab.model.Address toAddressModel(Address address);
 
   @Named("toCostStructure")
@@ -244,5 +252,29 @@ public interface ApplicationMapper {
   @Mapping(target = "providerContact.id", source = "providerContact")
   @Mapping(target = "providerContact.displayValue", source = "providerContactDisplayValue")
   ApplicationProviderDetails toProviderDetails(Application application);
+
+
+  /**
+   * Adds/Updates an application with a new correspondence address.
+   */
+  default void addCorrespondenceAddressToApplication(
+      @MappingTarget Application application,
+      uk.gov.laa.ccms.caab.model.Address addressModel) {
+    if (application.getCorrespondenceAddress() == null) {
+      application.setCorrespondenceAddress(new Address());
+    }
+    updateAddress(application.getCorrespondenceAddress(), addressModel);
+  }
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "postCode", source = "postcode")
+  @Mapping(target = "houseNameNumber", source = "houseNameOrNumber")
+  void updateAddress(
+      @MappingTarget Address address,
+      uk.gov.laa.ccms.caab.model.Address addressModel);
+
+
+
 
 }

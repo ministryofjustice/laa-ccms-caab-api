@@ -9,12 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -26,9 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import uk.gov.laa.ccms.caab.api.CaabApiApplication;
@@ -327,7 +322,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/application_insert.sql")
-    public void testPatchApplicationType() {
+    public void testPutApplicationType() {
         Long applicationId = 24L;
         String amendedApplicationTypeId = "APP TYPE";
         String amendedApplicationTypeDisplay = "Application Type";
@@ -338,7 +333,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
             .displayValue(amendedApplicationTypeDisplay);
 
         // Call the service method
-        applicationService.patchApplicationType(applicationId, amendedApplicationType);
+        applicationService.putApplicationType(applicationId, amendedApplicationType);
 
         Application result = applicationRepository.findById(applicationId).orElse(null);
 
@@ -355,7 +350,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         "41, NewProviderCaseRef3, New Provider Display3, 13579, 24680, FeeEarnerId3, SupervisorId3, ProviderContactId3, ThirdUser"
     })
     @Sql(scripts = "/sql/application_insert.sql")
-    public void testPatchProviderDetails(
+    public void testPutProviderDetails(
         Long applicationId,
         String newProviderCaseReference,
         String newProviderDisplayValue,
@@ -384,7 +379,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         currentUserHolder.set(patchedCaabUserLoginId);
 
         // Call the patchProviderDetails method
-        applicationService.patchProviderDetails(applicationId, providerDetails);
+        applicationService.putProviderDetails(applicationId, providerDetails);
 
         // Fetch the application from the database after the update
         Application updatedApplication = applicationRepository.findById(applicationId).orElse(null);
@@ -407,14 +402,14 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/application_insert.sql")
-    public void testPatchProviderDetails_ApplicationNotFound() {
+    public void testPutProviderDetails_ApplicationNotFound() {
         Long nonExistentApplicationId = 999L;
 
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
 
         // Use assertThrows to check if the method throws the expected exception
         CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.patchProviderDetails(nonExistentApplicationId, providerDetails);
+            applicationService.putProviderDetails(nonExistentApplicationId, providerDetails);
         });
 
         assertEquals(

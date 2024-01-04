@@ -13,7 +13,6 @@ import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
-import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
@@ -155,7 +154,7 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
 
-        applicationService.patchApplicationType(id, applicationType);
+        applicationService.putApplicationType(id, applicationType);
 
         verify(applicationRepository).findById(id);
         verify(applicationMapper).addApplicationType(application, applicationType);
@@ -174,7 +173,7 @@ class ApplicationServiceTest {
 
         // Use assertThrows to check if the method throws the expected exception
         CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.patchApplicationType(id, applicationType);
+            applicationService.putApplicationType(id, applicationType);
         });
 
         verify(applicationRepository).findById(id);
@@ -228,7 +227,7 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
 
-        applicationService.patchProviderDetails(id, providerDetails);
+        applicationService.putProviderDetails(id, providerDetails);
 
         verify(applicationRepository).findById(id);
         verify(applicationMapper).addProviderDetails(application, providerDetails);
@@ -244,7 +243,7 @@ class ApplicationServiceTest {
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
         CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.patchProviderDetails(id, providerDetails);
+            applicationService.putProviderDetails(id, providerDetails);
         });
 
         verify(applicationRepository).findById(id);
