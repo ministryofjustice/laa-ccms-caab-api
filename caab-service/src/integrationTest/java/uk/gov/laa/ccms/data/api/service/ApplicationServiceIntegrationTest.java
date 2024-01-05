@@ -262,17 +262,17 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
         assertNotNull(result);
 
         assertEquals("300001644517", result.getCaseReferenceNumber());
-        assertEquals(26517, result.getProvider().getId());
-        assertEquals("329635", result.getProviderCaseReference());
-        assertEquals("SWITALSKI'S SOLICITORS LTD", result.getProvider().getDisplayValue());
-        assertEquals(145512, result.getOffice().getId());
-        assertEquals("SWITALSKI'S SOLICITORS LTD-2L847Q", result.getOffice().getDisplayValue());
-        assertEquals("2854148", result.getSupervisor().getId());
-        assertEquals("David Greenwood", result.getSupervisor().getDisplayValue());
-        assertEquals("2027148", result.getFeeEarner().getId());
-        assertEquals("Carole Spencer", result.getFeeEarner().getDisplayValue());
-        assertEquals("2027079", result.getProviderContact().getId());
-        assertEquals("CAROLE.SPENCER@SWITALSKIS.COM", result.getProviderContact().getDisplayValue());
+        assertEquals(26517, result.getProviderDetails().getProvider().getId());
+        assertEquals("329635", result.getProviderDetails().getProviderCaseReference());
+        assertEquals("SWITALSKI'S SOLICITORS LTD", result.getProviderDetails().getProvider().getDisplayValue());
+        assertEquals(145512, result.getProviderDetails().getOffice().getId());
+        assertEquals("SWITALSKI'S SOLICITORS LTD-2L847Q", result.getProviderDetails().getOffice().getDisplayValue());
+        assertEquals("2854148", result.getProviderDetails().getSupervisor().getId());
+        assertEquals("David Greenwood", result.getProviderDetails().getSupervisor().getDisplayValue());
+        assertEquals("2027148", result.getProviderDetails().getFeeEarner().getId());
+        assertEquals("Carole Spencer", result.getProviderDetails().getFeeEarner().getDisplayValue());
+        assertEquals("2027079", result.getProviderDetails().getProviderContact().getId());
+        assertEquals("CAROLE.SPENCER@SWITALSKIS.COM", result.getProviderDetails().getProviderContact().getDisplayValue());
         assertEquals("AAP", result.getCategoryOfLaw().getId());
         assertEquals("Claim Against Public Authority", result.getCategoryOfLaw().getDisplayValue());
         assertNull(result.getRelationToLinkedCase());
@@ -422,7 +422,7 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
     private ApplicationDetail buildRequiredApplicationDetail() {
         ApplicationDetail application = new ApplicationDetail();
         application.setCaseReferenceNumber(lscCaseReference);
-        application.setProvider(new IntDisplayValue().id(providerId));
+        application.setProviderDetails(new ApplicationProviderDetails().provider(new IntDisplayValue().id(providerId)));
         application.setCategoryOfLaw(new StringDisplayValue().id(categoryOfLaw));
         application.setClient(new Client().reference(clientReference));
         return application;
@@ -431,32 +431,21 @@ public class ApplicationServiceIntegrationTest extends AbstractIntegrationTest {
     private ApplicationDetail buildApplication(){
         ApplicationDetail application = buildRequiredApplicationDetail();
         //provider details
-        application.setProviderCaseReference(providerCaseReference);
-        application.getProvider().setDisplayValue(providerDisplayValue);
-
-        //office
-        IntDisplayValue office = new IntDisplayValue()
-            .id(officeId)
-            .displayValue(officeDisplayValue);
-        application.setOffice(office);
-
-        //supervisor
-        StringDisplayValue supervisorObj = new StringDisplayValue()
-            .id(supervisor)
-            .displayValue(supervisorDisplayValue);
-        application.setSupervisor(supervisorObj);
-
-        //fee earner
-        StringDisplayValue feeEarnerObj = new StringDisplayValue()
-            .id(feeEarner)
-            .displayValue(feeEarnerDisplayValue);
-        application.setFeeEarner(feeEarnerObj);
-
-        //provider contact
-        StringDisplayValue providerContactObj = new StringDisplayValue()
-            .id(providerContact)
-            .displayValue(providerContactDisplayValue);
-        application.setProviderContact(providerContactObj);
+        ApplicationProviderDetails providerDetails = application.getProviderDetails();
+        providerDetails.setProviderCaseReference(providerCaseReference);
+        providerDetails.getProvider().setDisplayValue(providerDisplayValue);
+        providerDetails.setOffice(new IntDisplayValue()
+                .id(officeId)
+                .displayValue(officeDisplayValue));
+        providerDetails.setSupervisor(new StringDisplayValue()
+                .id(supervisor)
+                .displayValue(supervisorDisplayValue));
+        providerDetails.setFeeEarner(new StringDisplayValue()
+                .id(feeEarner)
+                .displayValue(feeEarnerDisplayValue));
+        providerDetails.setProviderContact(new StringDisplayValue()
+                .id(providerContact)
+                .displayValue(providerContactDisplayValue));
 
         //category of law
         application.getCategoryOfLaw().setDisplayValue(categoryOfLawDisplayValue);

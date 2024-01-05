@@ -1,11 +1,23 @@
 package uk.gov.laa.ccms.caab.api.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
@@ -13,15 +25,11 @@ import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
-import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
+import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
@@ -43,7 +51,7 @@ class ApplicationServiceTest {
      */
     @Test
     void createApplication_createsApplicationWithCorrespondenceAddressAndCosts() {
-        ApplicationDetail applicationDetail = new ApplicationDetail(null,null,null,null);
+        ApplicationDetail applicationDetail = new ApplicationDetail();
         Application application = new Application();
 
         mockMapperAndRepository(applicationDetail, application);
@@ -58,7 +66,7 @@ class ApplicationServiceTest {
      */
     @Test
     void createApplication_updatesExistingAddressAndCosts() {
-        ApplicationDetail applicationDetail = new ApplicationDetail(null,null,null,null);
+        ApplicationDetail applicationDetail = new ApplicationDetail();
         Application application = createApplicationWithExistingAddressAndCosts();
 
         mockMapperAndRepository(applicationDetail, application);
@@ -74,7 +82,7 @@ class ApplicationServiceTest {
     @Test
     void getApplication_returnsData() {
         Application application = new Application();
-        ApplicationDetail expectedResponse = new ApplicationDetail(null,null,null,null);
+        ApplicationDetail expectedResponse = new ApplicationDetail();
 
         when(applicationMapper.toApplicationDetail(application)).thenReturn(expectedResponse);
         when(applicationRepository.findById(any())).thenReturn(Optional.of(application));
@@ -221,7 +229,6 @@ class ApplicationServiceTest {
     @Test
     void patchProviderDetails_whenExists_updatesProviderDetails() {
         Long id = 1L;
-        String caabUserLoginId = "testUser";
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
         Application application = new Application();
 
@@ -237,7 +244,6 @@ class ApplicationServiceTest {
     @Test
     void patchProviderDetails_whenNotExists_throwsException() {
         Long id = 1L;
-        String caabUserLoginId = "testUser";
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
 
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
@@ -250,6 +256,45 @@ class ApplicationServiceTest {
 
         assertEquals("Application with id 1 not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    /**
+     * Test case get applications returns data.
+     */
+    @Test
+    void getApplications_returnsData() {
+        Application application = new Application();
+        application.setLscCaseReference("caseref");
+        application.setProviderCaseReference("provref");
+        application.setClientSurname("surname");
+        application.setClientReference("clientref");
+        application.setFeeEarner("feeearner");
+        application.setOfficeId(100);
+        application.setActualStatus("stat");
+
+        Pageable pageable = Pageable.unpaged();
+
+        Page<Application> applicationPage = new PageImpl<>(List.of(application));
+        ApplicationDetails expectedResponse = new ApplicationDetails();
+
+        when(applicationMapper.toApplicationDetails(applicationPage)).thenReturn(expectedResponse);
+        when(applicationRepository.findAll(any(Example.class), eq(pageable))).thenReturn(applicationPage);
+
+        ApplicationDetails response = applicationService.getApplications(
+            application.getLscCaseReference(),
+            application.getProviderCaseReference(),
+            application.getClientSurname(),
+            application.getClientReference(),
+            application.getFeeEarner(),
+            application.getOfficeId(),
+            application.getActualStatus(),
+            pageable
+        );
+
+        verify(applicationMapper).toApplicationDetails(applicationPage);
+        verify(applicationRepository).findAll(any(Example.class), eq(pageable));
+
+        assertEquals(response, expectedResponse);
     }
 
     /**

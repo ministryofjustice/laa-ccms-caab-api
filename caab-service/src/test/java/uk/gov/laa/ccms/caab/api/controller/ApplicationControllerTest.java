@@ -1,5 +1,7 @@
 package uk.gov.laa.ccms.caab.api.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,14 +19,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.laa.ccms.caab.api.advice.AuditAdvice;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.Client;
@@ -47,7 +51,9 @@ class ApplicationControllerTest {
 
     @BeforeEach
     public void setup() {
-        mockMvc = standaloneSetup(applicationController).build();
+        mockMvc = standaloneSetup(applicationController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
         objectMapper = new ObjectMapper();
     }
 
@@ -60,14 +66,19 @@ class ApplicationControllerTest {
         String clientRef = "clientRef";
         Long id = 1L;
 
-        IntDisplayValue provider = new IntDisplayValue().id(providerId);
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails()
+            .provider(new IntDisplayValue().id(providerId));
 
         Client client = new Client().reference(clientRef);
 
         StringDisplayValue categoryOfLaw = new StringDisplayValue()
-                .id(categoryOfLawId);
+            .id(categoryOfLawId);
 
-        ApplicationDetail applicationDetail = new ApplicationDetail(caseReferenceNumber, categoryOfLaw, client, provider);
+        ApplicationDetail applicationDetail = new ApplicationDetail()
+            .caseReferenceNumber(caseReferenceNumber)
+            .categoryOfLaw(categoryOfLaw)
+            .client(client)
+            .providerDetails(providerDetails);
 
         when(applicationService.createApplication(applicationDetail)).thenReturn(id);
 
@@ -83,7 +94,7 @@ class ApplicationControllerTest {
     public void getApplication() throws Exception {
         Long id = 123456L;
 
-        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail(null,null,null,null));
+        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
 
         this.mockMvc.perform(get("/applications/{id}", id))
                 .andDo(print())
@@ -173,5 +184,37 @@ class ApplicationControllerTest {
             .andExpect(status().isNoContent());
 
         verify(applicationService).putCorrespondenceAddress(id, address);
+    }
+
+    @Test
+    public void getApplications() throws Exception {
+        String caseRef = "caseref";
+        String providerRef = "provref";
+        String clientSurname = "surname";
+        String clientRef = "ref";
+        String feeEarner = "fee";
+        String officeId = "123";
+        String status = "stat";
+
+        when(applicationService.getApplications(
+            eq(caseRef),
+            eq(providerRef),
+            eq(clientSurname),
+            eq(clientRef),
+            eq(feeEarner),
+            eq(Integer.parseInt(officeId)),
+            eq(status),
+            any(Pageable.class))).thenReturn(new ApplicationDetails());
+
+        this.mockMvc.perform(get("/applications")
+            .param("case-reference-number", caseRef)
+            .param("provider-case-ref", providerRef)
+            .param("client-surname", clientSurname)
+            .param("client-reference", clientRef)
+            .param("fee-earner", feeEarner)
+            .param("office-id", officeId)
+            .param("status", status))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }

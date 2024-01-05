@@ -60,7 +60,7 @@ public class Application implements Serializable {
 
   //Office
   @Column(name = "OFFICE_ID")
-  private Long officeId;
+  private Integer officeId;
   @Column(name = "OFFICE_DISPLAY_VALUE", length = 360)
   private String officeDisplayValue;
 
