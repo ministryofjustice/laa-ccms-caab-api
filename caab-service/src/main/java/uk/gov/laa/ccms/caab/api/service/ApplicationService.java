@@ -3,6 +3,8 @@ package uk.gov.laa.ccms.caab.api.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.entity.Application;
@@ -10,6 +12,7 @@ import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 
@@ -52,6 +55,34 @@ public class ApplicationService {
     applicationRepository.save(application);
 
     return application.getId();
+  }
+
+  /**
+   * Get applications which match the provided search criteria.
+   *
+   * @return application details containing a page of BaseApplication.
+   */
+  @Transactional
+  public ApplicationDetails getApplications(
+      final String caseReferenceNumber,
+      final String providerCaseRef,
+      final String clientSurname,
+      final String clientReference,
+      final String feeEarner,
+      final Integer officeId,
+      final String status,
+      final Pageable pageable) {
+    Application application = new Application();
+    application.setLscCaseReference(caseReferenceNumber);
+    application.setProviderCaseReference(providerCaseRef);
+    application.setClientSurname(clientSurname);
+    application.setClientReference(clientReference);
+    application.setFeeEarner(feeEarner);
+    application.setOfficeId(officeId);
+    application.setActualStatus(status);
+
+    return applicationMapper.toApplicationDetails(
+        applicationRepository.findAll(Example.of(application), pageable));
   }
 
   /**
