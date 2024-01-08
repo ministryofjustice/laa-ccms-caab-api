@@ -171,7 +171,7 @@ public class Application implements Serializable {
   @OrderBy("id asc")
   private List<Opponent> opponents;
 
-  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("id asc")
   private List<LinkedCase> linkedCases;
 
