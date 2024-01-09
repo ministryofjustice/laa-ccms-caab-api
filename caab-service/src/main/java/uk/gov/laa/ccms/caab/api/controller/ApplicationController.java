@@ -61,8 +61,15 @@ public class ApplicationController implements ApplicationsApi {
   /**
    * Retrieves the details of a specific application.
    *
-   * @param applicationId the unique identifier of the application
-   * @return a ResponseEntity containing the details of the application
+   * @param caseReferenceNumber Unique reference number for the case.
+   * @param providerCaseRef Reference provided by the case provider.
+   * @param clientSurname Surname of the client associated with the case.
+   * @param clientReference Client's personal reference for the case.
+   * @param feeEarner The individual responsible for handling the case fees.
+   * @param officeId Identifier for the office managing the case.
+   * @param status Current status of the application.
+   * @param pageable Pagination information for the response.
+   * @return ResponseEntity containing the application details.
    */
   @Override
   public ResponseEntity<ApplicationDetails> getApplications(
@@ -170,7 +177,7 @@ public class ApplicationController implements ApplicationsApi {
   //application type
 
   /**
-   * Retrieves the type of a specific application.
+   * Retrieves the application type for a specific application.
    *
    * @param applicationId the unique identifier of the application
    * @return a ResponseEntity containing the type of the application
@@ -184,7 +191,7 @@ public class ApplicationController implements ApplicationsApi {
   }
 
   /**
-   * Updates the type of a specific application.
+   * Updates the application type for a specific application.
    *
    * @param applicationId the unique identifier of the application
    * @param caabUserLoginId the user login ID used for audit trail

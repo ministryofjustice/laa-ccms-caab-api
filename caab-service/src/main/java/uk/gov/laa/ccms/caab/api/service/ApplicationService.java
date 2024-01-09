@@ -122,15 +122,18 @@ public class ApplicationService {
    * Creates and associates a new linked case with a specified application.
    * If the application is not found, a CaabApiException is thrown.
    *
-   * @param id The unique identifier of the application.
+   * @param applicationId The unique identifier of the application.
    * @param linkedCase The LinkedCase object containing the details of the case to be linked.
    * @throws CaabApiException If the application with the specified ID is not found.
    */
   @Transactional
-  public void createLinkedCaseForApplication(final Long id, final LinkedCase linkedCase) {
-    Application application = applicationRepository.findById(id)
+  public void createLinkedCaseForApplication(
+      final Long applicationId,
+      final LinkedCase linkedCase) {
+    Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
 
     uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
         applicationMapper.toLinkedCase(linkedCase);
@@ -143,23 +146,25 @@ public class ApplicationService {
    * Removes a linked case from the specified application.
    * If either the application or the linked case is not found, a CaabApiException is thrown.
    *
-   * @param id The unique identifier of the application.
+   * @param applicationId The unique identifier of the application.
    * @param linkedCaseId The unique identifier of the linked case to be removed.
    * @throws CaabApiException If the application or the linked case with the specified IDs are
    *        not found.
    */
   @Transactional
-  public void removeLinkedCaseFromApplication(final Long id, final Long linkedCaseId) {
-    Application application = applicationRepository.findById(id)
+  public void removeLinkedCaseFromApplication(final Long applicationId, final Long linkedCaseId) {
+    Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
 
     uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
         application.getLinkedCases().stream()
         .filter(linkedCase -> linkedCase.getId().equals(linkedCaseId))
         .findFirst()
         .orElseThrow(() -> new CaabApiException(
-            String.format("Linked case with id %s not found", linkedCaseId), HttpStatus.NOT_FOUND));
+            String.format("Linked case with id %s not found", linkedCaseId),
+            HttpStatus.NOT_FOUND));
 
     application.getLinkedCases().remove(linkedCaseEntity);
     applicationRepository.save(application);
@@ -169,7 +174,7 @@ public class ApplicationService {
    * Updates a linked case of a specified application.
    * If either the application or the linked case is not found, a CaabApiException is thrown.
    *
-   * @param id The unique identifier of the application.
+   * @param applicationId The unique identifier of the application.
    * @param linkedCaseId The unique identifier of the linked case to be updated.
    * @param linkedCaseModel The LinkedCase object containing the details of the case to be updated.
    * @throws CaabApiException If the application or the linked case with the specified IDs are not
@@ -177,18 +182,20 @@ public class ApplicationService {
    */
   @Transactional
   public void updateLinkedCaseForApplication(
-      final Long id, final Long linkedCaseId,
+      final Long applicationId, final Long linkedCaseId,
       final LinkedCase linkedCaseModel) {
-    Application application = applicationRepository.findById(id)
+    Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
-            String.format("Application with id %s not found", id), HttpStatus.NOT_FOUND));
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
 
     uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
         application.getLinkedCases().stream()
         .filter(linkedCase -> linkedCase.getId().equals(linkedCaseId))
         .findFirst()
         .orElseThrow(() -> new CaabApiException(
-            String.format("Linked case with id %s not found", linkedCaseId), HttpStatus.NOT_FOUND));
+            String.format("Linked case with id %s not found", linkedCaseId),
+            HttpStatus.NOT_FOUND));
 
     applicationMapper.updateLinkedCase(linkedCaseEntity, linkedCaseModel);
     applicationRepository.save(application);
