@@ -1,5 +1,9 @@
 package uk.gov.laa.ccms.caab.api.mapper;
 
+
+import java.util.List;
+import lombok.Generated;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -171,13 +175,17 @@ public interface ApplicationMapper {
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddressModel")
   uk.gov.laa.ccms.caab.model.Opponent toOpponentModel(Opponent opponent);
 
+  List<LinkedCase> toLinkedCaseList(List<uk.gov.laa.ccms.caab.model.LinkedCase> linkedCases);
+
+  List<uk.gov.laa.ccms.caab.model.LinkedCase> toLinkedCaseModelList(List<LinkedCase> linkedCases);
+
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "clientSurname", source = "client.surname")
   @Mapping(target = "clientReference", source = "client.reference")
   @Mapping(target = "clientFirstName", source = "client.firstName")
   LinkedCase toLinkedCase(uk.gov.laa.ccms.caab.model.LinkedCase linkedCase);
 
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toLinkedCase")
   uk.gov.laa.ccms.caab.model.LinkedCase toLinkedCaseModel(LinkedCase linkedCase);
 
   @Named("toAddress")
@@ -274,6 +282,16 @@ public interface ApplicationMapper {
   void updateAddress(
       @MappingTarget Address address,
       uk.gov.laa.ccms.caab.model.Address addressModel);
+
+
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "clientReference", source = "client.reference")
+  @Mapping(target = "clientSurname", source = "client.surname")
+  @Mapping(target = "clientFirstName", source = "client.firstName")
+  void updateLinkedCase(
+      @MappingTarget LinkedCase linkedCase,
+      uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel);
 
   @Mapping(target = "providerDetails", source = ".")
   @Mapping(target = "caseReferenceNumber", source = "lscCaseReference")

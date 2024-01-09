@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,6 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +37,7 @@ import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
+import uk.gov.laa.ccms.caab.model.LinkedCase;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 @ExtendWith(SpringExtension.class)
@@ -184,6 +189,69 @@ class ApplicationControllerTest {
             .andExpect(status().isNoContent());
 
         verify(applicationService).putCorrespondenceAddress(id, address);
+    }
+
+    @Test
+    public void getApplicationLinkedCases_returnsLinkedCases() throws Exception {
+        Long id = 1L;
+        List<LinkedCase> linkedCases = Arrays.asList(new LinkedCase(), new LinkedCase()); // Assuming some mock linked cases
+
+        when(applicationService.getLinkedCasesForApplication(id)).thenReturn(linkedCases);
+
+        this.mockMvc.perform(get("/applications/{id}/linked-cases", id))
+            .andExpect(status().isOk());
+
+        verify(applicationService).getLinkedCasesForApplication(id);
+    }
+
+    @Test
+    public void addApplicationLinkedCase_isCreated() throws Exception {
+        Long id = 1L;
+        String caabUserLoginId = "userLoginId";
+        LinkedCase linkedCase = new LinkedCase(); // Set up linked case details as required
+
+        doNothing().when(applicationService).createLinkedCaseForApplication(id, linkedCase);
+
+        this.mockMvc.perform(post("/applications/{id}/linked-cases", id)
+                .header("Caab-User-Login-Id", caabUserLoginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(linkedCase)))
+            .andExpect(status().isCreated());
+
+        verify(applicationService).createLinkedCaseForApplication(id, linkedCase);
+    }
+
+  @Test
+  public void updateApplicationLinkedCase_noContent() throws Exception {
+    Long id = 1L;
+    Long linkedCaseId = 2L;
+    String caabUserLoginId = "userLoginId";
+    LinkedCase linkedCase = new LinkedCase(); // Set up updated linked case details as required
+
+    doNothing().when(applicationService).updateLinkedCaseForApplication(id, linkedCaseId, linkedCase);
+
+    this.mockMvc.perform(patch("/applications/{id}/linked-cases/{linkedCaseId}", id, linkedCaseId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(linkedCase)))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).updateLinkedCaseForApplication(id, linkedCaseId, linkedCase);
+  }
+
+    @Test
+    public void removeApplicationLinkedCase_noContent() throws Exception {
+        Long id = 1L;
+        Long linkedCaseId = 2L;
+        String caabUserLoginId = "userLoginId";
+
+        doNothing().when(applicationService).removeLinkedCaseFromApplication(id, linkedCaseId);
+
+        this.mockMvc.perform(delete("/applications/{id}/linked-cases/{linkedCaseId}", id, linkedCaseId)
+                .header("Caab-User-Login-Id", caabUserLoginId))
+            .andExpect(status().isNoContent());
+
+        verify(applicationService).removeLinkedCaseFromApplication(id, linkedCaseId);
     }
 
     @Test

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -1154,6 +1155,56 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    void updateAddress_updatesFieldsWhenModelIsNotNull() {
+        Address address = buildAddress();
+        uk.gov.laa.ccms.caab.model.Address addressModel = new uk.gov.laa.ccms.caab.model.Address();
+
+        addressModel.setPostcode("TestPostcode");
+        addressModel.setHouseNameOrNumber("123");
+
+        mapper.updateAddress(address, addressModel);
+
+        assertEquals("TestPostcode", address.getPostCode());
+        assertEquals("123", address.getHouseNameNumber());
+    }
+
+    @Test
+    void updateAddress_doesNothingWhenModelIsNull() {
+        ApplicationMapper mapper = new ApplicationMapperImpl(); // Replace with your actual mapper instantiation
+
+        Address address = buildAddress();
+
+        mapper.updateAddress(address, null);
+
+        // Assert that all fields remain unchanged
+        assertEquals("InitialPostcode", address.getPostCode());
+        assertEquals("InitialHouseNameNumber", address.getHouseNameNumber());
+        assertTrue(address.getNoFixedAbode());
+        assertEquals("InitialAddressLine1", address.getAddressLine1());
+        assertEquals("InitialAddressLine2", address.getAddressLine2());
+        assertEquals("InitialCity", address.getCity());
+        assertEquals("InitialCounty", address.getCounty());
+        assertEquals("InitialCountry", address.getCountry());
+        assertEquals("InitialCareOf", address.getCareOf());
+        assertEquals("InitialPreferredAddress", address.getPreferredAddress());
+    }
+
+    @NotNull
+    private static Address buildAddress() {
+        Address address = new Address();
+        address.setPostCode("InitialPostcode");
+        address.setHouseNameNumber("InitialHouseNameNumber");
+        address.setNoFixedAbode(true);
+        address.setAddressLine1("InitialAddressLine1");
+        address.setAddressLine2("InitialAddressLine2");
+        address.setCity("InitialCity");
+        address.setCounty("InitialCounty");
+        address.setCountry("InitialCountry");
+        address.setCareOf("InitialCareOf");
+        address.setPreferredAddress("InitialPreferredAddress");
+        return address;
+    }
+
     public void testToBaseApplication() {
         Application application = new Application();
         application.setLscCaseReference("caseref");
