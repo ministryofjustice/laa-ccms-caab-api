@@ -1,24 +1,26 @@
 {
-  "provider": {
-    "id": 26517,
-    "display_value": "SWITALSKI'S SOLICITORS LTD"
-  },
-  "provider_case_reference": "329635",
-  "office": {
-    "id": 145512,
-    "display_value": "SWITALSKI'S SOLICITORS LTD-2L847Q"
-  },
-  "supervisor": {
-    "id":"2854148",
-    "display_value": "David Greenwood"
-  },
-  "fee_earner": {
-    "id":"2027148",
-    "display_value": "Carole Spencer"
-  },
-  "provider_contact": {
-    "id":"2027079",
-    "display_value": "CAROLE.SPENCER@SWITALSKIS.COM"
+  "provider_details": {
+    "provider": {
+      "id": 26517,
+      "display_value": "SWITALSKI'S SOLICITORS LTD"
+    },
+    "provider_case_reference": "329635",
+    "office": {
+      "id": 145512,
+      "display_value": "SWITALSKI'S SOLICITORS LTD-2L847Q"
+    },
+    "supervisor": {
+      "id": "2854148",
+      "display_value": "David Greenwood"
+    },
+    "fee_earner": {
+      "id": "2027148",
+      "display_value": "Carole Spencer"
+    },
+    "provider_contact": {
+      "id": "2027079",
+      "display_value": "CAROLE.SPENCER@SWITALSKIS.COM"
+    }
   },
   "category_of_law": {
     "id":"AAP",

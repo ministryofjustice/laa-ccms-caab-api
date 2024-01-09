@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
@@ -33,6 +35,8 @@ import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
+import uk.gov.laa.ccms.caab.model.BaseApplication;
 import uk.gov.laa.ccms.data.api.AbstractIntegrationTest;
 
 @SpringBootTest(classes = CaabApiApplication.class)
@@ -172,6 +176,121 @@ public class ApplicationControllerIntegrationTest extends AbstractIntegrationTes
     }
 
     assertEquals(applicationDetail, savedApplicationDetails);
+  }
+
+  /**
+   * Test to query for applications by casereference only
+   *
+   */
+  @Test
+  @Sql(scripts = "/sql/application_insert.sql")
+  public void testGetApplications_caseref_returnsdata() {
+    String caseRef = "300001644516";
+    String provCaseRef = "329635";
+    String clientSurname = "Payne";
+    String clientRef = "PhilTest";
+    Integer officeId = 145512;
+    String feeEarner = "2027148";
+    String status = "UNSUBMITTED";
+
+    // Call the getApplications method directly
+    ResponseEntity<ApplicationDetails> responseEntity = applicationController.getApplications(
+        caseRef,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        Pageable.unpaged());
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody().getContent());
+    assertEquals(1, responseEntity.getBody().getSize());
+    BaseApplication result = responseEntity.getBody().getContent().get(0);
+    assertEquals(caseRef, result.getCaseReferenceNumber());
+    assertEquals(provCaseRef, result.getProviderDetails().getProviderCaseReference());
+    assertEquals(clientSurname, result.getClient().getSurname());
+    assertEquals(clientRef, result.getClient().getReference());
+    assertEquals(feeEarner, result.getProviderDetails().getFeeEarner().getId());
+    assertEquals(officeId, result.getProviderDetails().getOffice().getId());
+    assertEquals(status, result.getStatus().getId());
+  }
+
+  /**
+   * Test to query for applications using all criteria
+   *
+   */
+  @Test
+  @Sql(scripts = "/sql/application_insert.sql")
+  public void testGetApplications_allfields_returnsdata() {
+    String caseRef = "300001644516";
+    String provCaseRef = "329635";
+    String clientSurname = "Payne";
+    String clientRef = "PhilTest";
+    Integer officeId = 145512;
+    String feeEarner = "2027148";
+    String status = "UNSUBMITTED";
+
+    // Call the getApplications method directly
+    ResponseEntity<ApplicationDetails> responseEntity = applicationController.getApplications(
+        caseRef,
+        provCaseRef,
+        clientSurname,
+        clientRef,
+        feeEarner,
+        officeId,
+        status,
+        Pageable.unpaged());
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody().getContent());
+    assertEquals(1, responseEntity.getBody().getSize());
+    BaseApplication result = responseEntity.getBody().getContent().get(0);
+    assertEquals(caseRef, result.getCaseReferenceNumber());
+    assertEquals(provCaseRef, result.getProviderDetails().getProviderCaseReference());
+    assertEquals(clientSurname, result.getClient().getSurname());
+    assertEquals(clientRef, result.getClient().getReference());
+    assertEquals(feeEarner, result.getProviderDetails().getFeeEarner().getId());
+    assertEquals(officeId, result.getProviderDetails().getOffice().getId());
+    assertEquals(status, result.getStatus().getId());
+  }
+
+  /**
+   * Test to query for applications and verify no results are returned
+   *
+   */
+  @Test
+  @Sql(scripts = "/sql/application_insert.sql")
+  public void testGetApplications_allfields_nomatch() {
+    String caseRef = "unknown";
+    String provCaseRef = "329635";
+    String clientSurname = "Payne";
+    String clientRef = "PhilTest";
+    Integer officeId = 145512;
+    String feeEarner = "2027148";
+    String status = "UNSUBMITTED";
+
+    // Call the getApplications method directly
+    ResponseEntity<ApplicationDetails> responseEntity = applicationController.getApplications(
+        caseRef,
+        provCaseRef,
+        clientSurname,
+        clientRef,
+        feeEarner,
+        officeId,
+        status,
+        Pageable.unpaged());
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody().getContent());
+    assertEquals(0, responseEntity.getBody().getSize());
   }
 
   /**

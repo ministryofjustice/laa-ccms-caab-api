@@ -1,5 +1,6 @@
 package uk.gov.laa.ccms.caab.api.mapper;
 
+
 import java.util.List;
 import lombok.Generated;
 import org.mapstruct.AfterMapping;
@@ -8,9 +9,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
+import org.springframework.data.domain.Page;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
-import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostEntry;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
@@ -20,9 +21,10 @@ import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
 import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
-import uk.gov.laa.ccms.caab.model.AuditDetail;
+import uk.gov.laa.ccms.caab.model.BaseApplication;
 
 /**
  * Interface responsible for mapping and transforming objects related
@@ -36,16 +38,18 @@ public interface ApplicationMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "lscCaseReference", source = "caseReferenceNumber")
-  @Mapping(target = "providerId", source = "provider.id")
-  @Mapping(target = "providerDisplayValue", source = "provider.displayValue")
-  @Mapping(target = "officeId", source = "office.id")
-  @Mapping(target = "officeDisplayValue", source = "office.displayValue")
-  @Mapping(target = "supervisor", source = "supervisor.id")
-  @Mapping(target = "supervisorDisplayValue", source = "supervisor.displayValue")
-  @Mapping(target = "feeEarner", source = "feeEarner.id")
-  @Mapping(target = "feeEarnerDisplayValue", source = "feeEarner.displayValue")
-  @Mapping(target = "providerContact", source = "providerContact.id")
-  @Mapping(target = "providerContactDisplayValue", source = "providerContact.displayValue")
+  @Mapping(target = "providerId", source = "providerDetails.provider.id")
+  @Mapping(target = "providerDisplayValue", source = "providerDetails.provider.displayValue")
+  @Mapping(target = "officeId", source = "providerDetails.office.id")
+  @Mapping(target = "officeDisplayValue", source = "providerDetails.office.displayValue")
+  @Mapping(target = "supervisor", source = "providerDetails.supervisor.id")
+  @Mapping(target = "supervisorDisplayValue", source = "providerDetails.supervisor.displayValue")
+  @Mapping(target = "feeEarner", source = "providerDetails.feeEarner.id")
+  @Mapping(target = "feeEarnerDisplayValue", source = "providerDetails.feeEarner.displayValue")
+  @Mapping(target = "providerContact", source = "providerDetails.providerContact.id")
+  @Mapping(target = "providerContactDisplayValue",
+      source = "providerDetails.providerContact.displayValue")
+  @Mapping(target = "providerCaseReference", source = "providerDetails.providerCaseReference")
   @Mapping(target = "categoryOfLaw", source = "categoryOfLaw.id")
   @Mapping(target = "categoryOfLawDisplayValue", source = "categoryOfLaw.displayValue")
   @Mapping(target = "displayStatus", source = "status.displayValue")
@@ -279,6 +283,7 @@ public interface ApplicationMapper {
       @MappingTarget Address address,
       uk.gov.laa.ccms.caab.model.Address addressModel);
 
+
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "clientReference", source = "client.reference")
@@ -287,4 +292,17 @@ public interface ApplicationMapper {
   void updateLinkedCase(
       @MappingTarget LinkedCase linkedCase,
       uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel);
+
+  @Mapping(target = "providerDetails", source = ".")
+  @Mapping(target = "caseReferenceNumber", source = "lscCaseReference")
+  @Mapping(target = "categoryOfLaw.id", source = "categoryOfLaw")
+  @Mapping(target = "categoryOfLaw.displayValue", source = "categoryOfLawDisplayValue")
+  @Mapping(target = "status.id", source = "actualStatus")
+  @Mapping(target = "status.displayValue", source = "displayStatus")
+  @Mapping(target = "client.firstName", source = "clientFirstName")
+  @Mapping(target = "client.surname", source = "clientSurname")
+  @Mapping(target = "client.reference", source = "clientReference")
+  BaseApplication toBaseApplication(Application application);
+
+  ApplicationDetails toApplicationDetails(Page<Application> application);
 }

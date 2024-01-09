@@ -4,6 +4,64 @@ info:
   version: '1.0.0'
 paths:
   /applications:
+    get:
+      tags:
+        - applications
+      summary: 'Get Applications'
+      operationId: 'getApplications'
+      x-spring-paginated: true
+      parameters:
+        - name: 'case-reference-number'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'provider-case-ref'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'client-surname'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: 'surname'
+        - name: 'client-reference'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: 'ref1234'
+        - name: 'fee-earner'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: 'fee earner'
+        - name: 'office-id'
+          in: 'query'
+          schema:
+            type: 'integer'
+            example: 12345678
+        - name: 'status'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: 'status'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/applicationDetails"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+
     post:
       tags:
         - applications
@@ -1180,23 +1238,38 @@ components:
           type: 'string'
         user_defined_ind:
           type: 'boolean'
-    applicationDetail:
+    applicationDetails:
       allOf:
-        - $ref: "#/components/schemas/applicationProviderDetails"
+        - $ref: "#/components/schemas/page"
+      type: 'object'
+      properties:
+        content:
+          type: 'array'
+          default: []
+          items:
+            $ref: '#/components/schemas/baseApplication'
+    baseApplication:
       type: 'object'
       properties:
         case_reference_number:
           type: 'string'
         category_of_law:
           $ref: "#/components/schemas/stringDisplayValue"
-        relation_to_linked_case:
-          type: 'string'
-        opponent_applied_for_funding:
-          type: 'boolean'
         status:
           $ref: "#/components/schemas/stringDisplayValue"
         client:
           $ref: "#/components/schemas/client"
+        provider_details:
+          $ref: "#/components/schemas/applicationProviderDetails"
+    applicationDetail:
+      allOf:
+        - $ref: "#/components/schemas/baseApplication"
+      type: 'object'
+      properties:
+        relation_to_linked_case:
+          type: 'string'
+        opponent_applied_for_funding:
+          type: 'boolean'
         amendment:
           type: 'boolean'
         means_assessment_amended:
@@ -1276,11 +1349,11 @@ components:
           type: 'boolean'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-      required:
-        - case_reference_number
-        - provider
-        - category_of_law
-        - client
+#      required:
+#        - case_reference_number
+#        - provider
+#        - category_of_law
+#        - client
     applicationProviderDetails:
       type: 'object'
       properties:
@@ -1309,3 +1382,14 @@ components:
           format: 'date'
         last_saved_by:
           type: 'string'
+    page:
+      type: 'object'
+      properties:
+        total_pages:
+          type: 'integer'
+        total_elements:
+          type: 'integer'
+        number:
+          type: 'integer'
+        size:
+          type: 'integer'

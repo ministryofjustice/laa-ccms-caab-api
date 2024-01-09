@@ -17,21 +17,25 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
+import uk.gov.laa.ccms.caab.api.entity.CostEntry;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
 import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.Proceeding;
-import uk.gov.laa.ccms.caab.api.entity.CostEntry;
 import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
 import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
+import uk.gov.laa.ccms.caab.model.BaseApplication;
 import uk.gov.laa.ccms.caab.model.BooleanDisplayValue;
 import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.CostLimit;
@@ -42,8 +46,6 @@ import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 public class ApplicationMapperTest {
 
     private final ApplicationMapper mapper = new ApplicationMapperImpl();
-
-    private static final String CAAB_USER_LOGIN_ID = "testUser";
 
     private Date createdAt;
     private Date updatedAt;
@@ -64,14 +66,18 @@ public class ApplicationMapperTest {
     @Test
     public void testApplicationMapping() {
         // Construct ApplicationDetail
-        ApplicationDetail detail = new ApplicationDetail(null,null,null,null);
+        ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("caseRef123");
-        detail.setProviderCaseReference("providerCase");
-        detail.setProvider(new IntDisplayValue().id(1234).displayValue("providerDisp"));
-        detail.setOffice(new IntDisplayValue().id(1).displayValue("officeDisp"));
-        detail.setSupervisor(new StringDisplayValue().id("supervisorId").displayValue("supervisorDisp"));
-        detail.setFeeEarner(new StringDisplayValue().id("feeEarnerId").displayValue("feeEarnerDisp"));
-        detail.setProviderContact(new StringDisplayValue().id("providerContactId").displayValue("providerContactDisp"));
+
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+        providerDetails.setProvider(new IntDisplayValue().id(1234).displayValue("providerDisp"));
+        providerDetails.setOffice(new IntDisplayValue().id(1).displayValue("officeDisp"));
+        providerDetails.setSupervisor(new StringDisplayValue().id("supervisorId").displayValue("supervisorDisp"));
+        providerDetails.setFeeEarner(new StringDisplayValue().id("feeEarnerId").displayValue("feeEarnerDisp"));
+        providerDetails.setProviderContact(new StringDisplayValue().id("providerContactId").displayValue("providerContactDisp"));
+        providerDetails.setProviderCaseReference("providerCase");
+
+        detail.setProviderDetails(providerDetails);
         detail.setCategoryOfLaw(new StringDisplayValue().id("categoryLawId").displayValue("categoryLawDisp"));
         detail.setStatus(new StringDisplayValue().id("statusId").displayValue("statusDisp"));
         detail.setClient(new Client().firstName("clientFirst").surname("clientSurname").reference("clientRef"));
@@ -122,7 +128,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void testApplicationMapping_unsetBooleansFalse() {
-        ApplicationDetail detail = new ApplicationDetail(null,null,null,null);
+        ApplicationDetail detail = new ApplicationDetail();
 
         Application application = mapper.toApplication(detail);
 
@@ -135,7 +141,7 @@ public class ApplicationMapperTest {
     @Test
     public void testToApplication_costStructure_costEntry() {
         // Construct an ApplicationDetail instance with costEntry
-        ApplicationDetail applicationDetail = new ApplicationDetail(null, null,null,null);
+        ApplicationDetail applicationDetail = new ApplicationDetail();
 
         uk.gov.laa.ccms.caab.model.CostEntry costEntryModel = new uk.gov.laa.ccms.caab.model.CostEntry();
         costEntryModel.setRequestedCosts(BigDecimal.valueOf(1000));
@@ -723,13 +729,16 @@ public class ApplicationMapperTest {
     @Test
     public void testToApplicationMapping() {
         // Construct ApplicationDetail
-        ApplicationDetail detail = new ApplicationDetail(null,null,null,null);;
+        ApplicationDetail detail = new ApplicationDetail();
         detail.setCaseReferenceNumber("CASE-001");
-        detail.setProviderCaseReference("CASE-001");
-        detail.setProvider(new IntDisplayValue().id(1234).displayValue("Provider Display"));
-        detail.setOffice(new IntDisplayValue().id(1).displayValue("Office 1"));
-        detail.setSupervisor(new StringDisplayValue().id("Supervisor").displayValue("Supervisor Display"));
-        detail.setFeeEarner(new StringDisplayValue().id("Fee Earner").displayValue("Fee Earner Display"));
+
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+        providerDetails.setProviderCaseReference("CASE-001");
+        providerDetails.setProvider(new IntDisplayValue().id(1234).displayValue("Provider Display"));
+        providerDetails.setOffice(new IntDisplayValue().id(1).displayValue("Office 1"));
+        providerDetails.setSupervisor(new StringDisplayValue().id("Supervisor").displayValue("Supervisor Display"));
+        providerDetails.setFeeEarner(new StringDisplayValue().id("Fee Earner").displayValue("Fee Earner Display"));
+        detail.setProviderDetails(providerDetails);
 
         // Convert ApplicationDetail to Application
         Application application = mapper.toApplication(detail);
@@ -739,7 +748,7 @@ public class ApplicationMapperTest {
         assertEquals(1234, Integer.parseInt(application.getProviderId()));
         assertEquals("Provider Display", application.getProviderDisplayValue());
         assertEquals("CASE-001", application.getProviderCaseReference());
-        assertEquals(1L, application.getOfficeId());
+        assertEquals(1, application.getOfficeId());
         assertEquals("Office 1", application.getOfficeDisplayValue());
     }
 
@@ -835,20 +844,20 @@ public class ApplicationMapperTest {
 
         // Verify the resulting ApplicationDetail instance
         assertNotNull(applicationDetail);
-        assertEquals(Integer.valueOf(12345), applicationDetail.getProvider().getId());
-        assertEquals("Provider Display Value", applicationDetail.getProvider().getDisplayValue());
-        assertEquals("Provider Case Reference", applicationDetail.getProviderCaseReference());
-        assertEquals(Integer.valueOf(67890), applicationDetail.getOffice().getId());
-        assertEquals("Office Display Value", applicationDetail.getOffice().getDisplayValue());
+        assertEquals(Integer.valueOf(12345), applicationDetail.getProviderDetails().getProvider().getId());
+        assertEquals("Provider Display Value", applicationDetail.getProviderDetails().getProvider().getDisplayValue());
+        assertEquals("Provider Case Reference", applicationDetail.getProviderDetails().getProviderCaseReference());
+        assertEquals(Integer.valueOf(67890), applicationDetail.getProviderDetails().getOffice().getId());
+        assertEquals("Office Display Value", applicationDetail.getProviderDetails().getOffice().getDisplayValue());
         assertEquals("John", applicationDetail.getClient().getFirstName());
         assertEquals("Doe", applicationDetail.getClient().getSurname());
         assertEquals("Client Reference", applicationDetail.getClient().getReference());
-        assertEquals("Supervisor ID", applicationDetail.getSupervisor().getId());
-        assertEquals("Supervisor Display Value", applicationDetail.getSupervisor().getDisplayValue());
-        assertEquals("Fee Earner ID", applicationDetail.getFeeEarner().getId());
-        assertEquals("Fee Earner Display Value", applicationDetail.getFeeEarner().getDisplayValue());
-        assertEquals("Provider Contact ID", applicationDetail.getProviderContact().getId());
-        assertEquals("Provider Contact Display Value", applicationDetail.getProviderContact().getDisplayValue());
+        assertEquals("Supervisor ID", applicationDetail.getProviderDetails().getSupervisor().getId());
+        assertEquals("Supervisor Display Value", applicationDetail.getProviderDetails().getSupervisor().getDisplayValue());
+        assertEquals("Fee Earner ID", applicationDetail.getProviderDetails().getFeeEarner().getId());
+        assertEquals("Fee Earner Display Value", applicationDetail.getProviderDetails().getFeeEarner().getDisplayValue());
+        assertEquals("Provider Contact ID", applicationDetail.getProviderDetails().getProviderContact().getId());
+        assertEquals("Provider Contact Display Value", applicationDetail.getProviderDetails().getProviderContact().getDisplayValue());
         assertEquals("Category of Law", applicationDetail.getCategoryOfLaw().getId());
         assertEquals("Category of Law Display Value", applicationDetail.getCategoryOfLaw().getDisplayValue());
         assertEquals("Relation to Linked Case", applicationDetail.getRelationToLinkedCase());
@@ -859,7 +868,7 @@ public class ApplicationMapperTest {
         application.setProviderId("12345");
         application.setProviderDisplayValue("Provider Display Value");
         application.setProviderCaseReference("Provider Case Reference");
-        application.setOfficeId(67890L);
+        application.setOfficeId(67890);
         application.setOfficeDisplayValue("Office Display Value");
         application.setClientFirstName("John");
         application.setClientSurname("Doe");
@@ -967,7 +976,6 @@ public class ApplicationMapperTest {
     @Test
     public void testAddApplicationTypeWithNullType() {
         Application application = new Application();
-        String caabUserLoginId = "user123";
 
         mapper.addApplicationType(application, null);
 
@@ -988,7 +996,6 @@ public class ApplicationMapperTest {
         devolvedPowers.setContractFlag("Y");
         devolvedPowers.setUsed(false);
         applicationType.setDevolvedPowers(devolvedPowers);
-        String caabUserLoginId = "user123";
 
         mapper.addApplicationType(application, applicationType);
 
@@ -1083,7 +1090,6 @@ public class ApplicationMapperTest {
     @Test
     public void testAddProviderDetailsWithNullDetails() {
         Application application = new Application();
-        String caabUserLoginId = "user123";
 
         mapper.addProviderDetails(application, null);
 
@@ -1108,7 +1114,6 @@ public class ApplicationMapperTest {
         providerDetails.setSupervisor(new StringDisplayValue().id("Supervisor").displayValue("Supervisor Display Value"));
         providerDetails.setFeeEarner(new StringDisplayValue().id("FeeEarner").displayValue("Fee Earner Display Value"));
         providerDetails.setProviderContact(new StringDisplayValue().id("ProviderContact").displayValue("Provider Contact Display Value"));
-        String caabUserLoginId = "user123";
 
         mapper.addProviderDetails(application, providerDetails);
 
@@ -1129,7 +1134,7 @@ public class ApplicationMapperTest {
         Application application = new Application();
         application.setProviderId("123");
         application.setProviderDisplayValue("Provider Display Value");
-        application.setOfficeId(1L);
+        application.setOfficeId(1);
         application.setOfficeDisplayValue("Office 1");
         application.setSupervisorDisplayValue("Supervisor Display Value");
         application.setFeeEarnerDisplayValue("Fee Earner Display Value");
@@ -1200,6 +1205,59 @@ public class ApplicationMapperTest {
         return address;
     }
 
+    public void testToBaseApplication() {
+        Application application = new Application();
+        application.setLscCaseReference("caseref");
+        application.setCategoryOfLaw("cat1");
+        application.setCategoryOfLawDisplayValue("cat 1");
+        application.setActualStatus("actstat");
+        application.setDisplayStatus("dispstat");
+        application.setClientFirstName("firstname");
+        application.setClientSurname("surname");
+        application.setClientReference("clientref");
+        application.setProviderId("123");
+        application.setProviderDisplayValue("Provider Display Value");
+        application.setOfficeId(1);
+        application.setOfficeDisplayValue("Office 1");
+        application.setSupervisorDisplayValue("Supervisor Display Value");
+        application.setFeeEarnerDisplayValue("Fee Earner Display Value");
+        application.setProviderContactDisplayValue("Provider Contact Display Value");
+        application.setProviderCaseReference("ProviderCase123");
+
+
+        BaseApplication result = mapper.toBaseApplication(application);
+
+        assertNotNull(result);
+        assertEquals(application.getLscCaseReference(), result.getCaseReferenceNumber());
+        assertEquals(application.getCategoryOfLaw(), result.getCategoryOfLaw().getId());
+        assertEquals(application.getCategoryOfLawDisplayValue(), result.getCategoryOfLaw().getDisplayValue());
+        assertEquals(application.getActualStatus(), result.getStatus().getId());
+        assertEquals(application.getDisplayStatus(), result.getStatus().getDisplayValue());
+        assertEquals(application.getClientFirstName(), result.getClient().getFirstName());
+        assertEquals(application.getClientSurname(), result.getClient().getSurname());
+        assertEquals(application.getClientReference(), result.getClient().getReference());
+
+        assertEquals(123, result.getProviderDetails().getProvider().getId());
+        assertEquals("Provider Display Value", result.getProviderDetails().getProvider().getDisplayValue());
+        assertEquals(1, result.getProviderDetails().getOffice().getId());
+        assertEquals("Office 1", result.getProviderDetails().getOffice().getDisplayValue());
+        assertEquals("Supervisor Display Value", result.getProviderDetails().getSupervisor().getDisplayValue());
+        assertEquals("Fee Earner Display Value", result.getProviderDetails().getFeeEarner().getDisplayValue());
+        assertEquals("Provider Contact Display Value", result.getProviderDetails().getProviderContact().getDisplayValue());
+        assertEquals("ProviderCase123", result.getProviderDetails().getProviderCaseReference());
+
+    }
+
+    @Test
+    public void testToApplicationDetails() {
+        Page<Application> applications = new PageImpl<>(Arrays.asList(new Application(), new Application()));
+
+        ApplicationDetails result = mapper.toApplicationDetails(applications);
+
+        assertNotNull(result);
+        assertEquals(2, result.getSize());
+        assertEquals(2, result.getContent().size());
+    }
 
     private AuditDetail buildAuditDetail() {
         AuditDetail auditDetail = new AuditDetail();

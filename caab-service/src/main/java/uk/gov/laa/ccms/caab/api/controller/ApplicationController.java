@@ -4,6 +4,7 @@ package uk.gov.laa.ccms.caab.api.controller;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import uk.gov.laa.ccms.caab.api.ApplicationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
+import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
@@ -62,6 +64,30 @@ public class ApplicationController implements ApplicationsApi {
    * @param applicationId the unique identifier of the application
    * @return a ResponseEntity containing the details of the application
    */
+  @Override
+  public ResponseEntity<ApplicationDetails> getApplications(
+      final String caseReferenceNumber,
+      final String providerCaseRef,
+      final String clientSurname,
+      final String clientReference,
+      final String feeEarner,
+      final Integer officeId,
+      final String status,
+      final Pageable pageable) {
+
+    ApplicationDetails applicationDetails = applicationService.getApplications(
+        caseReferenceNumber,
+        providerCaseRef,
+        clientSurname,
+        clientReference,
+        feeEarner,
+        officeId,
+        status,
+        pageable);
+
+    return new ResponseEntity<>(applicationDetails, HttpStatus.OK);
+  }
+
   @Override
   public ResponseEntity<ApplicationDetail> getApplication(
       final Long applicationId) {
