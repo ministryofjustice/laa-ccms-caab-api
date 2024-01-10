@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.entity.Application;
+import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
+import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
@@ -16,7 +19,10 @@ import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
+import uk.gov.laa.ccms.caab.model.BaseClient;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.Proceeding;
 
 /**
  * Service responsible for handling application-related operations.
@@ -103,6 +109,22 @@ public class ApplicationService {
   }
 
   /**
+   * Updates a client's information in the application repository.
+   *
+   * @param baseClient The client object containing updated information.
+   * @param reference  A unique reference number for the client.
+   */
+  @Transactional
+  public void updateClient(
+      final BaseClient baseClient,
+      final String reference) {
+    applicationRepository.updateClient(
+        baseClient.getFirstName(),
+        baseClient.getSurname(),
+        reference);
+  }
+
+  /**
    * Gets an application's linked cases.
    *
    * @param id the TDS id for the application.
@@ -138,69 +160,104 @@ public class ApplicationService {
     uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
         applicationMapper.toLinkedCase(linkedCase);
     application.getLinkedCases().add(linkedCaseEntity);
+
     linkedCaseEntity.setApplication(application);
     applicationRepository.save(application);
   }
 
   /**
-   * Removes a linked case from the specified application.
-   * If either the application or the linked case is not found, a CaabApiException is thrown.
+   * Gets an application's proceedings.
    *
-   * @param applicationId The unique identifier of the application.
-   * @param linkedCaseId The unique identifier of the linked case to be removed.
-   * @throws CaabApiException If the application or the linked case with the specified IDs are
-   *        not found.
+   * @param id the TDS id for the application.
+   * @return the application's proceedings.
    */
   @Transactional
-  public void removeLinkedCaseFromApplication(final Long applicationId, final Long linkedCaseId) {
+  public List<Proceeding> getProceedingsForApplication(final Long id) {
+    return applicationRepository.findById(id)
+        .map(Application::getProceedings)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", id),
+            HttpStatus.NOT_FOUND))
+        .stream()
+        .map(applicationMapper::toProceedingModel)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Creates and associates a new proceeding with a specified application.
+   * If the application is not found, a CaabApiException is thrown.
+   *
+   * @param applicationId The unique identifier of the application.
+   * @param proceeding The Proceeding object.
+   * @throws CaabApiException If the application with the specified ID is not found.
+   */
+  @Transactional
+  public void createProceedingForApplication(
+      final Long applicationId,
+      final Proceeding proceeding) {
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", applicationId),
             HttpStatus.NOT_FOUND));
 
-    uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
-        application.getLinkedCases().stream()
-        .filter(linkedCase -> linkedCase.getId().equals(linkedCaseId))
-        .findFirst()
-        .orElseThrow(() -> new CaabApiException(
-            String.format("Linked case with id %s not found", linkedCaseId),
-            HttpStatus.NOT_FOUND));
+    uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity =
+        applicationMapper.toProceeding(proceeding);
+    application.getProceedings().add(proceedingEntity);
 
-    application.getLinkedCases().remove(linkedCaseEntity);
+    proceedingEntity.setApplication(application);
+    for (ScopeLimitation scopeLimitation : proceedingEntity.getScopeLimitations()) {
+      scopeLimitation.setProceeding(proceedingEntity);
+    }
+
     applicationRepository.save(application);
   }
 
   /**
-   * Updates a linked case of a specified application.
-   * If either the application or the linked case is not found, a CaabApiException is thrown.
+   * Gets an application's prior authorities.
    *
-   * @param applicationId The unique identifier of the application.
-   * @param linkedCaseId The unique identifier of the linked case to be updated.
-   * @param linkedCaseModel The LinkedCase object containing the details of the case to be updated.
-   * @throws CaabApiException If the application or the linked case with the specified IDs are not
-   *        found.
+   * @param id the TDS id for the application.
+   * @return the application's prior authorities.
    */
   @Transactional
-  public void updateLinkedCaseForApplication(
-      final Long applicationId, final Long linkedCaseId,
-      final LinkedCase linkedCaseModel) {
+  public List<PriorAuthority> getPriorAuthoritiesForApplication(final Long id) {
+    return applicationRepository.findById(id)
+        .map(Application::getPriorAuthorities)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", id),
+            HttpStatus.NOT_FOUND))
+        .stream()
+        .map(applicationMapper::toPriorAuthorityModel)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Creates and associates a new prior authority with a specified application.
+   * If the application is not found, a CaabApiException is thrown.
+   *
+   * @param applicationId The unique identifier of the application.
+   * @param priorAuthority The PriorAuthority object.
+   * @throws CaabApiException If the application with the specified ID is not found.
+   */
+  @Transactional
+  public void createPriorAuthorityForApplication(
+      final Long applicationId,
+      final PriorAuthority priorAuthority) {
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", applicationId),
             HttpStatus.NOT_FOUND));
 
-    uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
-        application.getLinkedCases().stream()
-        .filter(linkedCase -> linkedCase.getId().equals(linkedCaseId))
-        .findFirst()
-        .orElseThrow(() -> new CaabApiException(
-            String.format("Linked case with id %s not found", linkedCaseId),
-            HttpStatus.NOT_FOUND));
+    uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity =
+        applicationMapper.toPriorAuthority(priorAuthority);
+    application.getPriorAuthorities().add(priorAuthorityEntity);
 
-    applicationMapper.updateLinkedCase(linkedCaseEntity, linkedCaseModel);
+    priorAuthorityEntity.setApplication(application);
+    for (ReferenceDataItem item : priorAuthorityEntity.getItems()) {
+      item.setPriorAuthority(priorAuthorityEntity);
+    }
+
     applicationRepository.save(application);
   }
-
 
 
   /**
@@ -217,6 +274,25 @@ public class ApplicationService {
         .map(applicationMapper::toAddressModel)
         .orElseThrow(() -> new CaabApiException(
             String.format("Correspondence address for application with id %s not found",
+                applicationId),
+            HttpStatus.NOT_FOUND));
+  }
+
+
+  /**
+   * Gets an application's cost structure.
+   *
+   * @param applicationId the TDS id for the application.
+   * @return the application's cost structure.
+   */
+  @Transactional
+  public uk.gov.laa.ccms.caab.model.CostStructure getApplicationCostStructure(
+      final Long applicationId) {
+    return applicationRepository.findById(applicationId)
+        .map(Application::getCosts)
+        .map(applicationMapper::toCostStructureModel)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Cost structure for application with id %s not found",
                 applicationId),
             HttpStatus.NOT_FOUND));
   }
@@ -266,6 +342,26 @@ public class ApplicationService {
             HttpStatus.NOT_FOUND));
 
     applicationMapper.addCorrespondenceAddressToApplication(application, address);
+    applicationRepository.save(application);
+  }
+
+  /**
+   * Adds/Updates an application with a new cost structure.
+   *
+   * @param applicationId the TDS id for the application.
+   * @param costStructure the applications updated cost structure
+   */
+  @Transactional
+  public void putCostStructure(
+      final Long applicationId,
+      final uk.gov.laa.ccms.caab.model.CostStructure costStructure) {
+
+    Application application = applicationRepository.findById(applicationId)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
+
+    applicationMapper.addCostStructureToApplication(application, costStructure);
     applicationRepository.save(application);
   }
 

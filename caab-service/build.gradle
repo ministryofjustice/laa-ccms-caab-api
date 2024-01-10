@@ -68,7 +68,10 @@ jacocoTestReport {
     sourceDirectories.from files('build/generated/sources/annotationProcessor/java/main')
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/CaabApiApplication.class'])
+            fileTree(dir: it, exclude: [
+                    '**/CaabApiApplication.class',
+                    '**/ApplicationConfig.class',
+                    '**/AuditorAwareImpl.class'])
         }))
     }
 
@@ -79,7 +82,10 @@ jacocoTestCoverageVerification {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/CaabApiApplication.class'])
+            fileTree(dir: it, exclude: [
+                    '**/CaabApiApplication.class',
+                    '**/ApplicationConfig.class',
+                    '**/AuditorAwareImpl.class'])
         }))
     }
 

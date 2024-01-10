@@ -5,20 +5,20 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import uk.gov.laa.ccms.caab.api.CaabApiApplication;
-import uk.gov.laa.ccms.data.api.IntegrationTestInterface;
 
 @SpringBootTest(classes = CaabApiApplication.class)
 @SqlMergeMode(MERGE)
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
-public class ApplicationServiceIntegrationTest extends
-    BaseApplicationServiceIntegrationTest implements
-    IntegrationTestInterface {
+@ActiveProfiles("local")
+@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/delete_data.sql")
+@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/delete_data.sql")
+public class ApplicationServiceIntegrationLocalTest extends
+    BaseApplicationServiceIntegrationTest {
 
-    //this runs all tests in BaseApplicationServiceIntegrationTest, do not add anything here
-    //running this class takes longer than the local version, but it is used for running tests in a pipeline
+  //this runs all tests in BaseApplicationServiceIntegrationTest, do not add anything here
+  //this is an easy way to run the tests if you have the containerised database running locally already
 
 }

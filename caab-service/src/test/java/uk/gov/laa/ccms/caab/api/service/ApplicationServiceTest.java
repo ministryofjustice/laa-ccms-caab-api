@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
-import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
@@ -35,6 +35,8 @@ import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.Proceeding;
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
@@ -394,108 +396,6 @@ class ApplicationServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
 
-    @Test
-    void removeLinkedCaseFromApplication_whenApplicationNotExists_throwsException() {
-        Long applicationId = 1L;
-        Long linkedCaseId = 2L;
-
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
-
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.removeLinkedCaseFromApplication(applicationId, linkedCaseId));
-
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
-
-
-    @Test
-    void removeLinkedCaseFromApplication_whenCaseExists_removesLinkedCase() {
-        Long applicationId = 1L;
-        Long linkedCaseId = 2L;
-        Application application = new Application();
-        uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity = new uk.gov.laa.ccms.caab.api.entity.LinkedCase();
-        linkedCaseEntity.setId(linkedCaseId);
-        application.setLinkedCases(new ArrayList<>(Arrays.asList(linkedCaseEntity)));
-
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-
-        applicationService.removeLinkedCaseFromApplication(applicationId, linkedCaseId);
-
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationRepository).save(application);
-        assertFalse(application.getLinkedCases().contains(linkedCaseEntity));
-    }
-
-    @Test
-    void removeLinkedCaseFromApplication_whenCaseNotExists_throwsException() {
-        Long applicationId = 1L;
-        Long linkedCaseId = 2L;
-        Application application = new Application();
-        application.setLinkedCases(new ArrayList<>());
-
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.removeLinkedCaseFromApplication(applicationId, linkedCaseId));
-
-        assertEquals("Linked case with id 2 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
-
-    @Test
-    void updateLinkedCaseForApplication_whenApplicationNotExists_throwsException() {
-        Long applicationId = 1L;
-        Long linkedCaseId = 2L;
-        LinkedCase linkedCaseModel = new LinkedCase();
-
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
-
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.updateLinkedCaseForApplication(applicationId, linkedCaseId, linkedCaseModel));
-
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
-
-    @Test
-    void updateLinkedCaseForApplication_whenCaseExists_updatesLinkedCase() {
-        Long applicationId = 1L;
-        Long linkedCaseId = 2L;
-        LinkedCase linkedCaseModel = new LinkedCase();
-        Application application = new Application();
-        application.setLinkedCases(new ArrayList<>());
-
-        uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity = new uk.gov.laa.ccms.caab.api.entity.LinkedCase();
-        linkedCaseEntity.setId(linkedCaseId);
-        application.setLinkedCases(new ArrayList<>(Arrays.asList(linkedCaseEntity)));
-
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-
-        applicationService.updateLinkedCaseForApplication(applicationId, linkedCaseId, linkedCaseModel);
-
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).updateLinkedCase(linkedCaseEntity, linkedCaseModel);
-        verify(applicationRepository).save(application);
-    }
-
-    @Test
-    void updateLinkedCaseForApplication_whenCaseNotExists_throwsException() {
-        Long applicationId = 1L;
-        Long linkedCaseId = 2L;
-        LinkedCase linkedCaseModel = new LinkedCase();
-        Application application = new Application();
-        application.setLinkedCases(new ArrayList<>());
-
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.updateLinkedCaseForApplication(applicationId, linkedCaseId, linkedCaseModel));
-
-        assertEquals("Linked case with id 2 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
-
     /**
      * Test case get applications returns data.
      */
@@ -535,6 +435,200 @@ class ApplicationServiceTest {
         assertEquals(response, expectedResponse);
     }
 
+    @Test
+    void getProceedingsForApplication_WhenExists_ReturnsProceedings() {
+        Long applicationId = 1L;
+        Application application = new Application();
+        application.setProceedings(new ArrayList<>());
+        Proceeding proceedingModel = new Proceeding();
+        application.getProceedings().add(new uk.gov.laa.ccms.caab.api.entity.Proceeding());
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toProceedingModel(any())).thenReturn(proceedingModel);
+
+        List<Proceeding> result = applicationService.getProceedingsForApplication(applicationId);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper, times(application.getProceedings().size())).toProceedingModel(any());
+
+        assertFalse(result.isEmpty());
+        assertEquals(proceedingModel, result.get(0));
+    }
+
+    @Test
+    void getProceedingsForApplication_WhenNotExists_ThrowsException() {
+        Long applicationId = 1L;
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getProceedingsForApplication(applicationId));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void createProceedingForApplication_WhenApplicationExists_CreatesProceeding() {
+        Long applicationId = 1L;
+        Proceeding proceeding = new Proceeding();
+        Application application = new Application();
+        uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity = new uk.gov.laa.ccms.caab.api.entity.Proceeding();
+        application.setProceedings(new ArrayList<>());
+        proceedingEntity.setScopeLimitations(new ArrayList<>());
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toProceeding(proceeding)).thenReturn(proceedingEntity);
+
+        applicationService.createProceedingForApplication(applicationId, proceeding);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper).toProceeding(proceeding);
+        verify(applicationRepository).save(application);
+        assertTrue(application.getProceedings().contains(proceedingEntity));
+    }
+
+    @Test
+    void createProceedingForApplication_WhenApplicationNotExists_ThrowsException() {
+        Long applicationId = 1L;
+        Proceeding proceeding = new Proceeding();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.createProceedingForApplication(applicationId, proceeding));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void getPriorAuthoritiesForApplication_WhenExists_ReturnsPriorAuthorities() {
+        Long applicationId = 1L;
+        Application application = new Application();
+        application.setPriorAuthorities(new ArrayList<>());
+        PriorAuthority priorAuthorityModel = new PriorAuthority();
+        application.getPriorAuthorities().add(new uk.gov.laa.ccms.caab.api.entity.PriorAuthority());
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toPriorAuthorityModel(any())).thenReturn(priorAuthorityModel);
+
+        List<PriorAuthority> result = applicationService.getPriorAuthoritiesForApplication(applicationId);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper, times(application.getPriorAuthorities().size())).toPriorAuthorityModel(any());
+
+        assertFalse(result.isEmpty());
+        assertEquals(priorAuthorityModel, result.get(0));
+    }
+
+    @Test
+    void getPriorAuthoritiesForApplication_WhenNotExists_ThrowsException() {
+        Long applicationId = 1L;
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getPriorAuthoritiesForApplication(applicationId));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void createPriorAuthorityForApplication_WhenApplicationExists_CreatesPriorAuthority() {
+        Long applicationId = 1L;
+        PriorAuthority priorAuthority = new PriorAuthority();
+        Application application = new Application();
+        uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity = new uk.gov.laa.ccms.caab.api.entity.PriorAuthority();
+        application.setPriorAuthorities(new ArrayList<>());
+        priorAuthorityEntity.setItems(new ArrayList<>());
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toPriorAuthority(priorAuthority)).thenReturn(priorAuthorityEntity);
+
+        applicationService.createPriorAuthorityForApplication(applicationId, priorAuthority);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper).toPriorAuthority(priorAuthority);
+        verify(applicationRepository).save(application);
+        assertTrue(application.getPriorAuthorities().contains(priorAuthorityEntity));
+    }
+
+    @Test
+    void createPriorAuthorityForApplication_WhenApplicationNotExists_ThrowsException() {
+        Long applicationId = 1L;
+        PriorAuthority priorAuthority = new PriorAuthority();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.createPriorAuthorityForApplication(applicationId, priorAuthority));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void getApplicationCostStructure_WhenExists_ReturnsCostStructure() {
+        Long applicationId = 1L;
+        Application application = new Application();
+        application.setCosts(new CostStructure());
+        uk.gov.laa.ccms.caab.model.CostStructure expectedCostStructure = new uk.gov.laa.ccms.caab.model.CostStructure();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toCostStructureModel(application.getCosts())).thenReturn(expectedCostStructure);
+
+        uk.gov.laa.ccms.caab.model.CostStructure result = applicationService.getApplicationCostStructure(applicationId);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper).toCostStructureModel(application.getCosts());
+
+        assertEquals(expectedCostStructure, result);
+    }
+
+    @Test
+    void getApplicationCostStructure_WhenNotExists_ThrowsException() {
+        Long applicationId = 1L;
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getApplicationCostStructure(applicationId));
+
+        assertEquals("Cost structure for application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void putCostStructure_WhenExists_UpdatesCostStructure() {
+        Long applicationId = 1L;
+        uk.gov.laa.ccms.caab.model.CostStructure costStructure = new uk.gov.laa.ccms.caab.model.CostStructure();
+        Application application = new Application();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+
+        applicationService.putCostStructure(applicationId, costStructure);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper).addCostStructureToApplication(application, costStructure);
+        verify(applicationRepository).save(application);
+    }
+
+    @Test
+    void putCostStructure_WhenNotExists_ThrowsException() {
+        Long applicationId = 1L;
+        uk.gov.laa.ccms.caab.model.CostStructure costStructure = new uk.gov.laa.ccms.caab.model.CostStructure();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.putCostStructure(applicationId, costStructure));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
     /**
      * Helper method to setup the mocking behaviour of applicationMapper and applicationRepository.
      */
@@ -564,5 +658,7 @@ class ApplicationServiceTest {
 
         return application;
     }
+
+
 }
 
