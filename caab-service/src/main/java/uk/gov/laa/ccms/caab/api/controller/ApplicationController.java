@@ -11,13 +11,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.laa.ccms.caab.api.ApplicationsApi;
+import uk.gov.laa.ccms.caab.api.LinkedCasesApi;
+import uk.gov.laa.ccms.caab.api.PriorAuthoritiesApi;
+import uk.gov.laa.ccms.caab.api.ProceedingsApi;
+import uk.gov.laa.ccms.caab.api.ScopeLimitationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
+import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
+import uk.gov.laa.ccms.caab.api.service.ProceedingService;
+import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
 import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
+import uk.gov.laa.ccms.caab.model.CostStructure;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.Proceeding;
+import uk.gov.laa.ccms.caab.model.ScopeLimitation;
 
 /**
  * Represents the main controller handling application-related requests.
@@ -27,10 +39,14 @@ import uk.gov.laa.ccms.caab.model.LinkedCase;
  */
 @RestController
 @RequiredArgsConstructor
-public class ApplicationController implements ApplicationsApi {
+public class ApplicationController implements ApplicationsApi, LinkedCasesApi, ProceedingsApi,
+    ScopeLimitationsApi, PriorAuthoritiesApi {
 
   private final ApplicationService applicationService;
-
+  private final LinkedCaseService linkedCaseService;
+  private final ProceedingService proceedingService;
+  private final PriorAuthorityService priorAuthorityService;
+  private final ScopeLimitationService scopeLimitationService;
 
   /**
    * Creates a new application and returns the URI of the created resource.
@@ -98,9 +114,7 @@ public class ApplicationController implements ApplicationsApi {
   @Override
   public ResponseEntity<ApplicationDetail> getApplication(
       final Long applicationId) {
-
     ApplicationDetail application = applicationService.getApplication(applicationId);
-
     return new ResponseEntity<>(application, HttpStatus.OK);
   }
 
@@ -117,7 +131,6 @@ public class ApplicationController implements ApplicationsApi {
       final Long applicationId) {
     Address correspondenceAddress =
         applicationService.getApplicationCorrespondenceAddress(applicationId);
-
     return new ResponseEntity<>(correspondenceAddress, HttpStatus.OK);
   }
 
@@ -135,7 +148,6 @@ public class ApplicationController implements ApplicationsApi {
       final String caabUserLoginId,
       final Address address) {
     applicationService.putCorrespondenceAddress(applicationId, address);
-
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
@@ -152,7 +164,6 @@ public class ApplicationController implements ApplicationsApi {
       final Long applicationId) {
     ApplicationProviderDetails applicationProviderDetails =
         applicationService.getApplicationProviderDetails(applicationId);
-
     return new ResponseEntity<>(applicationProviderDetails, HttpStatus.OK);
   }
 
@@ -170,7 +181,6 @@ public class ApplicationController implements ApplicationsApi {
       final String caabUserLoginId,
       final ApplicationProviderDetails applicationProviderDetails) {
     applicationService.putProviderDetails(applicationId, applicationProviderDetails);
-
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
@@ -186,7 +196,6 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<ApplicationType> getApplicationType(
       final Long applicationId) {
     ApplicationType applicationType = applicationService.getApplicationType(applicationId);
-
     return new ResponseEntity<>(applicationType, HttpStatus.OK);
   }
 
@@ -204,7 +213,24 @@ public class ApplicationController implements ApplicationsApi {
       final String caabUserLoginId,
       final ApplicationType applicationType) {
     applicationService.putApplicationType(applicationId, applicationType);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
+  //Cost Structure
+
+  @Override
+  public ResponseEntity<CostStructure> getApplicationCostStructure(final Long applicationId) {
+    CostStructure costStructure =
+        applicationService.getApplicationCostStructure(applicationId);
+    return new ResponseEntity<>(costStructure, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> updateApplicationCostStructure(
+      final Long applicationId,
+      final String caabUserLoginId,
+      final CostStructure costStructure) {
+    applicationService.putCostStructure(applicationId, costStructure);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
@@ -219,7 +245,6 @@ public class ApplicationController implements ApplicationsApi {
   @Override
   public ResponseEntity<List<LinkedCase>> getApplicationLinkedCases(final Long applicationId) {
     List<LinkedCase> linkedCases = applicationService.getLinkedCasesForApplication(applicationId);
-
     return new ResponseEntity<>(linkedCases, HttpStatus.OK);
   }
 
@@ -237,14 +262,12 @@ public class ApplicationController implements ApplicationsApi {
       final String caabUserLoginId,
       final LinkedCase linkedCase) {
     applicationService.createLinkedCaseForApplication(applicationId, linkedCase);
-
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   /**
-   * Updates a linked case of a specific application.
+   * Updates a linked case.
    *
-   * @param applicationId the unique identifier of the application
    * @param linkedCaseId the unique identifier of the linked case
    * @param caabUserLoginId the user login ID used for audit trail
    * @param linkedCase the updated linked case
@@ -252,29 +275,132 @@ public class ApplicationController implements ApplicationsApi {
    */
   @Override
   public ResponseEntity<Void> updateApplicationLinkedCase(
-      final Long applicationId, final Long linkedCaseId,
+      final Long linkedCaseId,
       final String caabUserLoginId,
       final LinkedCase linkedCase) {
-    applicationService.updateLinkedCaseForApplication(applicationId, linkedCaseId, linkedCase);
-
+    linkedCaseService.updateLinkedCase(linkedCaseId, linkedCase);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   /**
    * Removes a linked case from a specific application.
    *
-   * @param applicationId the unique identifier of the application
    * @param linkedCaseId the unique identifier of the linked case
    * @param caabUserLoginId the user login ID used for audit trail
    * @return a ResponseEntity indicating the case was successfully removed
    */
   @Override
   public ResponseEntity<Void> removeApplicationLinkedCase(
-      final Long applicationId,
       final Long linkedCaseId,
       final String caabUserLoginId) {
-    applicationService.removeLinkedCaseFromApplication(applicationId, linkedCaseId);
+    linkedCaseService.removeLinkedCase(linkedCaseId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
+  //proceedings
+
+  @Override
+  public ResponseEntity<Void> addApplicationProceeding(
+      final Long applicationId,
+      final String caabUserLoginId,
+      final Proceeding proceeding) {
+    applicationService.createProceedingForApplication(applicationId, proceeding);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<List<Proceeding>> getApplicationProceedings(
+      final Long applicationId) {
+    List<Proceeding> proceedings = applicationService.getProceedingsForApplication(applicationId);
+    return new ResponseEntity<>(proceedings, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> removeProceeding(
+      final Long proceedingId,
+      final String caabUserLoginId) {
+    proceedingService.removeProceeding(proceedingId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<Void> updateProceeding(
+      final Long proceedingId,
+      final String caabUserLoginId,
+      final Proceeding proceeding) {
+    proceedingService.updateProceeding(proceedingId, proceeding);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  //scope limitations
+
+  @Override
+  public ResponseEntity<Void> addProceedingScopeLimitation(
+      final Long proceedingId,
+      final String caabUserLoginId,
+      final ScopeLimitation scopeLimitation) {
+    proceedingService.createScopeLimitationForProceeding(proceedingId, scopeLimitation);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<List<ScopeLimitation>> getApplicationScopeLimitations(
+      final Long proceedingId) {
+    List<ScopeLimitation> scopeLimitations =
+        proceedingService.getScopeLimitationsForProceeding(proceedingId);
+    return new ResponseEntity<>(scopeLimitations, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> removeScopeLimitation(
+      final Long scopeLimitationId,
+      final String caabUserLoginId) {
+    scopeLimitationService.removeScopeLimitation(scopeLimitationId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<Void> updateScopeLimitation(
+      final Long scopeLimitationId,
+      final String caabUserLoginId,
+      final ScopeLimitation scopeLimitation) {
+    scopeLimitationService.updateScopeLimitation(scopeLimitationId, scopeLimitation);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  //prior authorities
+
+  @Override
+  public ResponseEntity<Void> addApplicationPriorAuthority(
+      final Long id,
+      final String caabUserLoginId,
+      final PriorAuthority priorAuthority) {
+    applicationService.createPriorAuthorityForApplication(id, priorAuthority);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<List<PriorAuthority>> getApplicationPriorAuthorities(
+      final Long id) {
+    List<PriorAuthority> priorAuthorities =
+        applicationService.getPriorAuthoritiesForApplication(id);
+    return new ResponseEntity<>(priorAuthorities, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> removePriorAuthority(
+      final Long priorAuthorityId,
+      final String caabUserLoginId) {
+    priorAuthorityService.removePriorAuthority(priorAuthorityId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<Void> updatePriorAuthority(
+      final Long priorAuthorityId,
+      final String caabUserLoginId,
+      final PriorAuthority priorAuthority) {
+    priorAuthorityService.updatePriorAuthority(priorAuthorityId, priorAuthority);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }

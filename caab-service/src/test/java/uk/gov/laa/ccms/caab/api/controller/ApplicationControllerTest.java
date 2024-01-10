@@ -25,19 +25,29 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
+import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
+import uk.gov.laa.ccms.caab.api.service.ProceedingService;
+import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
 import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.Client;
+import uk.gov.laa.ccms.caab.model.CostStructure;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.Proceeding;
+import uk.gov.laa.ccms.caab.model.ScopeLimitation;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 @ExtendWith(SpringExtension.class)
@@ -47,12 +57,24 @@ class ApplicationControllerTest {
     @Mock
     private ApplicationService applicationService;
 
+    @Mock
+    private LinkedCaseService linkedCaseService;
+    @Mock
+    private ProceedingService proceedingService;
+    @Mock
+    private PriorAuthorityService priorAuthorityService;
+    @Mock
+    private ScopeLimitationService scopeLimitationService;
+
+
     @InjectMocks
     private ApplicationController applicationController;
 
     private MockMvc mockMvc;
 
     private ObjectMapper objectMapper;
+
+    private String caabUserLoginId = "userLoginId";
 
     @BeforeEach
     public void setup() {
@@ -88,11 +110,11 @@ class ApplicationControllerTest {
         when(applicationService.createApplication(applicationDetail)).thenReturn(id);
 
         this.mockMvc.perform(post("/applications")
-                        .header("Caab-User-Login-Id", loginId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(applicationDetail)))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/applications/" + id));
+                .header("Caab-User-Login-Id", loginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(applicationDetail)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", "http://localhost/applications/" + id));
     }
 
     @Test
@@ -102,8 +124,8 @@ class ApplicationControllerTest {
         when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
 
         this.mockMvc.perform(get("/applications/{id}", id))
-                .andDo(print())
-                .andExpect(status().isOk());
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -221,37 +243,35 @@ class ApplicationControllerTest {
         verify(applicationService).createLinkedCaseForApplication(id, linkedCase);
     }
 
-  @Test
-  public void updateApplicationLinkedCase_noContent() throws Exception {
-    Long id = 1L;
-    Long linkedCaseId = 2L;
-    String caabUserLoginId = "userLoginId";
-    LinkedCase linkedCase = new LinkedCase(); // Set up updated linked case details as required
+    @Test
+    public void updateApplicationLinkedCase_noContent() throws Exception {
+        Long linkedCaseId = 2L;
+        String caabUserLoginId = "userLoginId";
+        LinkedCase linkedCase = new LinkedCase(); // Set up updated linked case details as required
 
-    doNothing().when(applicationService).updateLinkedCaseForApplication(id, linkedCaseId, linkedCase);
+        doNothing().when(linkedCaseService).updateLinkedCase(linkedCaseId, linkedCase);
 
-    this.mockMvc.perform(patch("/applications/{id}/linked-cases/{linkedCaseId}", id, linkedCaseId)
-            .header("Caab-User-Login-Id", caabUserLoginId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(linkedCase)))
-        .andExpect(status().isNoContent());
+        this.mockMvc.perform(patch("/linked-cases/{linkedCaseId}", linkedCaseId)
+                .header("Caab-User-Login-Id", caabUserLoginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(linkedCase)))
+            .andExpect(status().isNoContent());
 
-    verify(applicationService).updateLinkedCaseForApplication(id, linkedCaseId, linkedCase);
-  }
+        verify(linkedCaseService).updateLinkedCase(linkedCaseId, linkedCase);
+    }
 
     @Test
-    public void removeApplicationLinkedCase_noContent() throws Exception {
-        Long id = 1L;
+    public void removeLinkedCase_noContent() throws Exception {
         Long linkedCaseId = 2L;
         String caabUserLoginId = "userLoginId";
 
-        doNothing().when(applicationService).removeLinkedCaseFromApplication(id, linkedCaseId);
+        doNothing().when(linkedCaseService).removeLinkedCase(linkedCaseId);
 
-        this.mockMvc.perform(delete("/applications/{id}/linked-cases/{linkedCaseId}", id, linkedCaseId)
+        this.mockMvc.perform(delete("/linked-cases/{linkedCaseId}", linkedCaseId)
                 .header("Caab-User-Login-Id", caabUserLoginId))
             .andExpect(status().isNoContent());
 
-        verify(applicationService).removeLinkedCaseFromApplication(id, linkedCaseId);
+        verify(linkedCaseService).removeLinkedCase(linkedCaseId);
     }
 
     @Test
@@ -275,14 +295,218 @@ class ApplicationControllerTest {
             any(Pageable.class))).thenReturn(new ApplicationDetails());
 
         this.mockMvc.perform(get("/applications")
-            .param("case-reference-number", caseRef)
-            .param("provider-case-ref", providerRef)
-            .param("client-surname", clientSurname)
-            .param("client-reference", clientRef)
-            .param("fee-earner", feeEarner)
-            .param("office-id", officeId)
-            .param("status", status))
+                .param("case-reference-number", caseRef)
+                .param("provider-case-ref", providerRef)
+                .param("client-surname", clientSurname)
+                .param("client-reference", clientRef)
+                .param("fee-earner", feeEarner)
+                .param("office-id", officeId)
+                .param("status", status))
             .andDo(print())
             .andExpect(status().isOk());
     }
+
+  @Test
+  public void getApplicationCostStructure_ReturnsCostStructure() throws Exception {
+    Long applicationId = 1L;
+    CostStructure costStructure = new CostStructure();
+
+    when(applicationService.getApplicationCostStructure(applicationId)).thenReturn(costStructure);
+
+    this.mockMvc.perform(get("/applications/{id}/cost-structure", applicationId))
+        .andExpect(status().isOk());
+
+    verify(applicationService).getApplicationCostStructure(applicationId);
+  }
+
+  @Test
+  public void updateApplicationCostStructure_UpdatesSuccessfully() throws Exception {
+    Long applicationId = 1L;
+    CostStructure costStructure = new CostStructure();
+
+    doNothing().when(applicationService).putCostStructure(applicationId, costStructure);
+
+    this.mockMvc.perform(put("/applications/{id}/cost-structure", applicationId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(costStructure)))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).putCostStructure(applicationId, costStructure);
+  }
+
+  @Test
+  public void addApplicationProceeding_CreatesProceeding() throws Exception {
+    Long applicationId = 1L;
+    Proceeding proceeding = new Proceeding();
+
+    doNothing().when(applicationService).createProceedingForApplication(applicationId, proceeding);
+
+    this.mockMvc.perform(post("/applications/{id}/proceedings", applicationId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(proceeding)))
+        .andExpect(status().isCreated());
+
+    verify(applicationService).createProceedingForApplication(applicationId, proceeding);
+  }
+
+  @Test
+  public void getApplicationProceedings_ReturnsProceedingsList() throws Exception {
+    Long applicationId = 1L;
+    List<Proceeding> proceedings = List.of(new Proceeding());
+
+    when(applicationService.getProceedingsForApplication(applicationId)).thenReturn(proceedings);
+
+    this.mockMvc.perform(get("/applications/{id}/proceedings", applicationId))
+        .andExpect(status().isOk());
+
+    verify(applicationService).getProceedingsForApplication(applicationId);
+  }
+
+  @Test
+  public void removeProceeding_RemovesProceeding() throws Exception {
+    Long proceedingId = 2L;
+
+    doNothing().when(proceedingService).removeProceeding(proceedingId);
+
+    this.mockMvc.perform(delete("/proceedings/{proceedingId}", proceedingId)
+            .header("Caab-User-Login-Id", caabUserLoginId))
+        .andExpect(status().isNoContent());
+
+    verify(proceedingService).removeProceeding(proceedingId);
+  }
+
+  @Test
+  public void updateProceeding_UpdatesProceeding() throws Exception {
+    Long proceedingId = 2L;
+    Proceeding proceeding = new Proceeding();
+
+
+    doNothing().when(proceedingService).updateProceeding(proceedingId, proceeding);
+
+    this.mockMvc.perform(patch("/proceedings/{proceeding-id}", proceedingId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .content(objectMapper.writeValueAsString(proceeding)))
+        .andExpect(status().isNoContent());
+
+    verify(proceedingService).updateProceeding(proceedingId, proceeding);
+  }
+
+  @Test
+  public void addApplicationPriorAuthority_CreatesPriorAuthority() throws Exception {
+    Long id = 1L;
+    PriorAuthority priorAuthority = new PriorAuthority();
+
+    doNothing().when(applicationService).createPriorAuthorityForApplication(id, priorAuthority);
+
+    this.mockMvc.perform(post("/applications/{id}/prior-authorities", id)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(priorAuthority)))
+        .andExpect(status().isCreated());
+
+    verify(applicationService).createPriorAuthorityForApplication(id, priorAuthority);
+  }
+
+  @Test
+  public void getApplicationPriorAuthorities_ReturnsPriorAuthoritiesList() throws Exception {
+    Long id = 1L;
+    List<PriorAuthority> priorAuthorities = List.of(new PriorAuthority());
+
+    when(applicationService.getPriorAuthoritiesForApplication(id)).thenReturn(priorAuthorities);
+
+    this.mockMvc.perform(get("/applications/{id}/prior-authorities", id))
+        .andExpect(status().isOk());
+
+    verify(applicationService).getPriorAuthoritiesForApplication(id);
+  }
+
+  @Test
+  public void removePriorAuthority_RemovesPriorAuthority() throws Exception {
+    Long priorAuthorityId = 2L;
+
+    doNothing().when(priorAuthorityService).removePriorAuthority(priorAuthorityId);
+
+    this.mockMvc.perform(delete("/prior-authorities/{priorAuthorityId}", priorAuthorityId)
+            .header("Caab-User-Login-Id", caabUserLoginId))
+        .andExpect(status().isNoContent());
+
+    verify(priorAuthorityService).removePriorAuthority(priorAuthorityId);
+  }
+
+  @Test
+  public void updatePriorAuthority_UpdatesPriorAuthority() throws Exception {
+    Long priorAuthorityId = 2L;
+    PriorAuthority priorAuthority = new PriorAuthority();
+
+    doNothing().when(priorAuthorityService).updatePriorAuthority(priorAuthorityId, priorAuthority);
+
+    this.mockMvc.perform(patch("/prior-authorities/{priorAuthorityId}", priorAuthorityId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(priorAuthority)))
+        .andExpect(status().isNoContent());
+
+    verify(priorAuthorityService).updatePriorAuthority(priorAuthorityId, priorAuthority);
+  }
+
+  @Test
+  public void addProceedingScopeLimitation_CreatesScopeLimitation() throws Exception {
+    Long proceedingId = 1L;
+    ScopeLimitation scopeLimitation = new ScopeLimitation();
+
+    doNothing().when(proceedingService).createScopeLimitationForProceeding(proceedingId, scopeLimitation);
+
+    this.mockMvc.perform(post("/proceedings/{proceedingId}/scope-limitations", proceedingId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(scopeLimitation)))
+        .andExpect(status().isCreated());
+
+    verify(proceedingService).createScopeLimitationForProceeding(proceedingId, scopeLimitation);
+  }
+
+  @Test
+  public void getApplicationScopeLimitations_ReturnsScopeLimitations() throws Exception {
+    Long proceedingId = 1L;
+    List<ScopeLimitation> scopeLimitations = Arrays.asList(new ScopeLimitation());
+
+    when(proceedingService.getScopeLimitationsForProceeding(proceedingId)).thenReturn(scopeLimitations);
+
+    this.mockMvc.perform(get("/proceedings/{proceedingId}/scope-limitations", proceedingId))
+        .andExpect(status().isOk());
+
+    verify(proceedingService).getScopeLimitationsForProceeding(proceedingId);
+  }
+
+  @Test
+  public void removeScopeLimitation_RemovesScopeLimitation() throws Exception {
+    Long scopeLimitationId = 2L;
+
+    doNothing().when(scopeLimitationService).removeScopeLimitation(scopeLimitationId);
+
+    this.mockMvc.perform(delete("/scope-limitations/{scopeLimitationId}", scopeLimitationId)
+            .header("Caab-User-Login-Id", caabUserLoginId))
+        .andExpect(status().isNoContent());
+
+    verify(scopeLimitationService).removeScopeLimitation(scopeLimitationId);
+  }
+
+  @Test
+  public void updateScopeLimitation_UpdatesScopeLimitation() throws Exception {
+    Long scopeLimitationId = 2L;
+    ScopeLimitation scopeLimitation = new ScopeLimitation();
+
+    doNothing().when(scopeLimitationService).updateScopeLimitation(scopeLimitationId, scopeLimitation);
+
+    this.mockMvc.perform(patch("/scope-limitations/{scopeLimitationId}", scopeLimitationId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(scopeLimitation)))
+        .andExpect(status().isNoContent());
+
+    verify(scopeLimitationService).updateScopeLimitation(scopeLimitationId, scopeLimitation);
+  }
 }
