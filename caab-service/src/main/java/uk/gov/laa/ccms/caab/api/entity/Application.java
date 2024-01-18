@@ -160,7 +160,7 @@ public class Application implements Serializable {
   private Address correspondenceAddress;
 
   @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-  @OrderBy("id asc")
+  @OrderBy("leadProceedingInd desc, id asc")
   private List<Proceeding> proceedings;
 
   @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)

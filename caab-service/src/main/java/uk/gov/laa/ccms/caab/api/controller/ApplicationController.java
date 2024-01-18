@@ -276,7 +276,7 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
    * @return a ResponseEntity with no content
    */
   @Override
-  public ResponseEntity<Void> updateApplicationLinkedCase(
+  public ResponseEntity<Void> updateLinkedCase(
       final Long linkedCaseId,
       final String caabUserLoginId,
       final LinkedCase linkedCase) {
@@ -292,7 +292,7 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
    * @return a ResponseEntity indicating the case was successfully removed
    */
   @Override
-  public ResponseEntity<Void> removeApplicationLinkedCase(
+  public ResponseEntity<Void> removeLinkedCase(
       final Long linkedCaseId,
       final String caabUserLoginId) {
     linkedCaseService.removeLinkedCase(linkedCaseId);
@@ -346,7 +346,7 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
   }
 
   @Override
-  public ResponseEntity<List<ScopeLimitation>> getApplicationScopeLimitations(
+  public ResponseEntity<List<ScopeLimitation>> getProceedingsScopeLimitations(
       final Long proceedingId) {
     List<ScopeLimitation> scopeLimitations =
         proceedingService.getScopeLimitationsForProceeding(proceedingId);

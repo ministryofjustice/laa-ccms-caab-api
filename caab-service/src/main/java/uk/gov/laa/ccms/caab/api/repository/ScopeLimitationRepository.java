@@ -5,7 +5,8 @@ import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 
 /**
- * Repository interface for managing {@link uk.gov.laa.ccms.caab.api.entity.Application} entities.
+ * Repository interface for managing {@link uk.gov.laa.ccms.caab.api.entity.ScopeLimitation}
+ * entities.
  *
  * <p>This interface provides CRUD (Create, Read, Update, Delete) operations
  * for the {@link uk.gov.laa.ccms.caab.api.entity.ScopeLimitation} entity, leveraging the power of

@@ -413,7 +413,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     Long caseRef = 41L;
     Long linkedCaseRef = 2L;
 
-    applicationController.removeApplicationLinkedCase(linkedCaseRef, caabUserLoginId);
+    applicationController.removeLinkedCase(linkedCaseRef, caabUserLoginId);
     ResponseEntity<List<LinkedCase>> responseEntity = applicationController.getApplicationLinkedCases(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -511,7 +511,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
   public void getScopeLimitationsForProceeding() {
     Long proceedingId = 2L;
 
-    ResponseEntity<List<ScopeLimitation>> responseEntity = applicationController.getApplicationScopeLimitations(proceedingId);
+    ResponseEntity<List<ScopeLimitation>> responseEntity = applicationController.getProceedingsScopeLimitations(proceedingId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
@@ -531,7 +531,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     ResponseEntity<Void> response = applicationController.removeScopeLimitation(scopeLimitationId, caabUserLoginId);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-    ResponseEntity<List<ScopeLimitation>> responseEntity = applicationController.getApplicationScopeLimitations(2L);
+    ResponseEntity<List<ScopeLimitation>> responseEntity = applicationController.getProceedingsScopeLimitations(2L);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());

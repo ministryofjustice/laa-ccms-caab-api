@@ -354,7 +354,7 @@ paths:
     get:
       tags:
         - applications
-      summary: 'Get an application''s prior authorities'
+      summary: 'Get an application''s cost structure'
       operationId: 'getApplicationCostStructure'
       parameters:
         - name: 'id'
@@ -417,6 +417,7 @@ paths:
   /applications/{id}/linked-cases:
     get:
       tags:
+        - applications
         - linked cases
       summary: 'Get an application''s linked cases'
       operationId: 'getApplicationLinkedCases'
@@ -447,6 +448,7 @@ paths:
           description: 'Internal server error'
     post:
       tags:
+        - applications
         - linked cases
       summary: 'Add a linked case to an application'
       operationId: 'addApplicationLinkedCase'
@@ -484,8 +486,8 @@ paths:
     delete:
       tags:
         - linked cases
-      summary: 'Remove a linked case from an application'
-      operationId: 'removeApplicationLinkedCase'
+      summary: 'Remove a linked case'
+      operationId: 'removeLinkedCase'
       parameters:
         - name: 'linked-case-id'
           in: 'path'
@@ -513,8 +515,8 @@ paths:
     patch:
       tags:
         - linked cases
-      summary: 'Update a linked case of an application'
-      operationId: 'updateApplicationLinkedCase'
+      summary: 'Update a linked case '
+      operationId: 'updateLinkedCase'
       parameters:
         - name: 'linked-case-id'
           in: 'path'
@@ -680,8 +682,8 @@ paths:
     get:
       tags:
         - scope limitations
-      summary: 'Get a proceedings''s scope limitations'
-      operationId: 'getApplicationScopeLimitations'
+      summary: 'Get a proceeding''s scope limitations'
+      operationId: 'getProceedingsScopeLimitations'
       parameters:
         - name: 'proceeding-id'
           in: 'path'
