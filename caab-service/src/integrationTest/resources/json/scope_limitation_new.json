@@ -1,0 +1,15 @@
+{
+  "scope_limitation": {
+    "id": "FM062",
+    "display_value": "Final Hearing (fam/public law)"
+  },
+  "ebs_id": null,
+  "scope_limitation_wording": "Limited to all steps up to and including final hearing and any action necessary to implement (but not enforce) the order.",
+  "default_ind": false,
+  "delegated_func_apply_ind": {
+    "flag": false,
+    "display_value": null
+  },
+  "non_default_wording_reqd": null,
+  "stage": null
+}

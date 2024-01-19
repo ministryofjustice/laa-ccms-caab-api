@@ -1189,6 +1189,93 @@ public class ApplicationMapperTest {
         assertEquals("InitialPreferredAddress", address.getPreferredAddress());
     }
 
+    @Test
+    void updateCostStructure_updatesFieldsWhenModelIsNotNull() {
+        CostStructure costStructure = new CostStructure();
+        uk.gov.laa.ccms.caab.model.CostStructure costStructureModel = new uk.gov.laa.ccms.caab.model.CostStructure()
+            .defaultCostLimitation(new BigDecimal("100.00"))
+            .requestedCostLimitation(new BigDecimal("200.00"))
+            .grantedCostLimitation(new BigDecimal("300.00"));
+
+        mapper.updateCostStructure(costStructure, costStructureModel);
+
+        assertEquals(new BigDecimal("100.00"), costStructure.getDefaultCostLimitation());
+        assertEquals(new BigDecimal("200.00"), costStructure.getRequestedCostLimitation());
+        assertEquals(new BigDecimal("300.00"), costStructure.getGrantedCostLimitation());
+    }
+
+    @Test
+    void updateCostStructure_doesNothingWhenModelIsNull() {
+        CostStructure costStructure = new CostStructure();
+
+        mapper.updateCostStructure(costStructure, null);
+
+        assertEquals(new BigDecimal("0"),costStructure.getDefaultCostLimitation());
+        assertEquals(new BigDecimal("0"), costStructure.getRequestedCostLimitation());
+        assertEquals(new BigDecimal("0"), costStructure.getGrantedCostLimitation());
+    }
+
+    @Test
+    void updateLinkedCase_updatesFieldsWhenModelIsNotNull() {
+        LinkedCase linkedCase = new LinkedCase();
+        uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = new uk.gov.laa.ccms.caab.model.LinkedCase()
+            .lscCaseReference("LSC123")
+            .relationToCase("Relation1")
+            .providerCaseReference("Provider123")
+            .feeEarner("FeeEarner1")
+            .status("Active");
+
+        mapper.updateLinkedCase(linkedCase, linkedCaseModel);
+
+        assertEquals("LSC123", linkedCase.getLscCaseReference());
+        assertEquals("Relation1", linkedCase.getRelationToCase());
+        assertEquals("Provider123", linkedCase.getProviderCaseReference());
+        assertEquals("FeeEarner1", linkedCase.getFeeEarner());
+        assertEquals("Active", linkedCase.getStatus());
+    }
+
+    @Test
+    void updateLinkedCase_doesNothingWhenModelIsNull() {
+        LinkedCase linkedCase = new LinkedCase();
+
+        mapper.updateLinkedCase(linkedCase, null);
+
+        assertNull(linkedCase.getLscCaseReference());
+        assertNull(linkedCase.getRelationToCase());
+        assertNull(linkedCase.getProviderCaseReference());
+        assertNull(linkedCase.getFeeEarner());
+        assertNull(linkedCase.getStatus());
+    }
+
+    @Test
+    void updatePriorAuthority_updatesFieldsWhenModelIsNotNull() {
+        PriorAuthority priorAuthority = new PriorAuthority();
+        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityModel = new uk.gov.laa.ccms.caab.model.PriorAuthority()
+            .ebsId("EBSID")
+            .status("Status")
+            .summary("Summary")
+            .justification("Justification");
+
+        mapper.updatePriorAuthority(priorAuthority, priorAuthorityModel);
+
+        assertEquals("EBSID", priorAuthority.getEbsId());
+        assertEquals("Status", priorAuthority.getStatus());
+        assertEquals("Summary", priorAuthority.getSummary());
+        assertEquals("Justification", priorAuthority.getJustification());
+    }
+
+    @Test
+    void updatePriorAuthority_doesNothingWhenModelIsNull() {
+        PriorAuthority priorAuthority = new PriorAuthority();
+
+        mapper.updatePriorAuthority(priorAuthority, null);
+
+        assertNull(priorAuthority.getEbsId());
+        assertNull(priorAuthority.getStatus());
+        assertNull(priorAuthority.getSummary());
+        assertNull(priorAuthority.getJustification());
+    }
+
     @NotNull
     private static Address buildAddress() {
         Address address = new Address();

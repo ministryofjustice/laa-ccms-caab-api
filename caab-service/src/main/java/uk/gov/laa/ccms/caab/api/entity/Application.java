@@ -159,15 +159,15 @@ public class Application implements Serializable {
   @JoinColumn(name = "FK_CORRESPONDENCE_ADDRESS")
   private Address correspondenceAddress;
 
-  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
-  @OrderBy("id asc")
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OrderBy("leadProceedingInd desc, id asc")
   private List<Proceeding> proceedings;
 
-  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("id asc")
   private List<PriorAuthority> priorAuthorities;
 
-  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("id asc")
   private List<Opponent> opponents;
 

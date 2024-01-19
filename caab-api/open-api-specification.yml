@@ -61,7 +61,6 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
-
     post:
       tags:
         - applications
@@ -112,6 +111,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/applicationDetail"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /applications/clients/{client-reference-id}:
+    patch:
+      tags:
+          - clients
+      summary: 'Update a client for all applications with matching client reference id'
+      operationId: 'updateApplicationClient'
+      requestBody:
+        description: Update client
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/baseClient'
+      parameters:
+        - name: 'client-reference-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+              type: 'string'
+              example: ''
+      responses:
+        '204':
+          description: 'No Content'
         '400':
           description: 'Bad request'
         '401':
@@ -315,10 +350,75 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /applications/{id}/cost-structure:
+    get:
+      tags:
+        - applications
+      summary: 'Get an application''s cost structure'
+      operationId: 'getApplicationCostStructure'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/costStructure"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    put:
+      tags:
+        - applications
+      summary: 'Update an applications cost structure'
+      operationId: 'updateApplicationCostStructure'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/costStructure"
+      responses:
+        '200':
+          description: 'Case updated successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
   /applications/{id}/linked-cases:
     get:
       tags:
         - applications
+        - linked cases
       summary: 'Get an application''s linked cases'
       operationId: 'getApplicationLinkedCases'
       parameters:
@@ -349,6 +449,7 @@ paths:
     post:
       tags:
         - applications
+        - linked cases
       summary: 'Add a linked case to an application'
       operationId: 'addApplicationLinkedCase'
       parameters:
@@ -381,19 +482,13 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
-  /applications/{id}/linked-cases/{linked-case-id}:
+  /linked-cases/{linked-case-id}:
     delete:
       tags:
-        - applications
-      summary: 'Remove a linked case from an application'
-      operationId: 'removeApplicationLinkedCase'
+        - linked cases
+      summary: 'Remove a linked case'
+      operationId: 'removeLinkedCase'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
         - name: 'linked-case-id'
           in: 'path'
           required: true
@@ -419,16 +514,10 @@ paths:
           description: 'Internal server error'
     patch:
       tags:
-        - applications
-      summary: 'Update a linked case of an application'
-      operationId: 'updateApplicationLinkedCase'
+        - linked cases
+      summary: 'Update a linked case '
+      operationId: 'updateLinkedCase'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
         - name: 'linked-case-id'
           in: 'path'
           required: true
@@ -458,6 +547,400 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /applications/{id}/proceedings:
+    get:
+      tags:
+        - proceedings
+      summary: 'Get an application''s proceedings'
+      operationId: 'getApplicationProceedings'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  $ref: "#/components/schemas/proceeding"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    post:
+      tags:
+        - proceedings
+      summary: 'Add a proceeding to an application'
+      operationId: 'addApplicationProceeding'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/proceeding"
+      responses:
+        '201':
+          description: 'Case added successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /proceedings/{proceeding-id}:
+    delete:
+      tags:
+        - proceedings
+      summary: 'Remove a proceeding'
+      operationId: 'removeProceeding'
+      parameters:
+        - name: 'proceeding-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      responses:
+        '204':
+          description: 'No Content'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    patch:
+      tags:
+        - proceedings
+      summary: 'Update a proceeding'
+      operationId: 'updateProceeding'
+      parameters:
+        - name: 'proceeding-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/proceeding"
+      responses:
+        '200':
+          description: 'Case updated successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /proceedings/{proceeding-id}/scope-limitations:
+    get:
+      tags:
+        - scope limitations
+      summary: 'Get a proceeding''s scope limitations'
+      operationId: 'getProceedingsScopeLimitations'
+      parameters:
+        - name: 'proceeding-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  $ref: "#/components/schemas/scopeLimitation"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    post:
+      tags:
+        - scope limitations
+      summary: 'Add a scope limitations to an proceeding'
+      operationId: 'addProceedingScopeLimitation'
+      parameters:
+        - name: 'proceeding-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/scopeLimitation"
+      responses:
+        '201':
+          description: 'Case added successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /scope-limitations/{scope-limitation-id}:
+    delete:
+      tags:
+        - scope limitations
+      summary: 'Remove a scope limitations'
+      operationId: 'removeScopeLimitation'
+      parameters:
+        - name: 'scope-limitation-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      responses:
+        '204':
+          description: 'No Content'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    patch:
+      tags:
+        - scope limitations
+      summary: 'Update a scope limitation'
+      operationId: 'updateScopeLimitation'
+      parameters:
+        - name: 'scope-limitation-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/scopeLimitation"
+      responses:
+        '200':
+          description: 'Case updated successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /applications/{id}/prior-authorities:
+    get:
+      tags:
+        - prior authorities
+      summary: 'Get an application''s prior authorities'
+      operationId: 'getApplicationPriorAuthorities'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  $ref: "#/components/schemas/priorAuthority"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    post:
+      tags:
+        - prior authorities
+      summary: 'Add a prior authority to an application'
+      operationId: 'addApplicationPriorAuthority'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/priorAuthority"
+      responses:
+        '201':
+          description: 'Case added successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /prior-authorities/{prior-authority-id}:
+    delete:
+      tags:
+        - prior authorities
+      summary: 'Remove a prior authority'
+      operationId: 'removePriorAuthority'
+      parameters:
+        - name: 'prior-authority-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      responses:
+        '204':
+          description: 'No Content'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    patch:
+      tags:
+        - prior authorities
+      summary: 'Update a prior authority'
+      operationId: 'updatePriorAuthority'
+      parameters:
+        - name: 'prior-authority-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/priorAuthority"
+      responses:
+        '200':
+          description: 'Case updated successfully'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+
 components:
   schemas:
     intDisplayValue:
@@ -527,13 +1010,18 @@ components:
           type: 'boolean'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    client:
+    baseClient:
       type: 'object'
       properties:
         first_name:
           type: 'string'
         surname:
           type: 'string'
+    client:
+      allOf:
+        - $ref: "#/components/schemas/baseClient"
+      type: 'object'
+      properties:
         reference:
           type: 'string'
           required:
@@ -583,6 +1071,8 @@ components:
     scopeLimitation:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         scope_limitation:
           $ref: "#/components/schemas/stringDisplayValue"
         ebs_id:
@@ -639,6 +1129,8 @@ components:
     proceeding:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         ebs_id:
           type: 'string'
         matter_type:
@@ -723,6 +1215,8 @@ components:
     priorAuthority:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         ebs_id:
           type: 'string'
         status:

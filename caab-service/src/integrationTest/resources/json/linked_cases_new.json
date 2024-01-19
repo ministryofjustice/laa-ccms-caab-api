@@ -1,0 +1,13 @@
+{
+  "lsc_case_reference": "BLAH123456",
+  "relation_to_case": "Relation to Case Example",
+  "client": {
+    "first_name": "BLAH",
+    "surname": "BLAH",
+    "reference": "1234"
+  },
+  "provider_case_reference": "BLAH123",
+  "category_of_law": "Category of Law Example",
+  "fee_earner": "Fee Earner Name",
+  "status": "Active"
+}

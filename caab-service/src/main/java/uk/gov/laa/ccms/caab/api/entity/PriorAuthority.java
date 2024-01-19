@@ -51,6 +51,9 @@ public class PriorAuthority implements Serializable {
   @Embedded
   private AuditTrail auditTrail = new AuditTrail();
 
+  /**
+   * Application, the prior authority is associated with.
+   */
   @ManyToOne
   @JoinColumn(name = "FK_APPLICATION", nullable = false)
   private Application application;

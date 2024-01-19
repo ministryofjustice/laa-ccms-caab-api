@@ -2,8 +2,6 @@ package uk.gov.laa.ccms.caab.api.mapper;
 
 
 import java.util.List;
-import lombok.Generated;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -134,7 +132,7 @@ public interface ApplicationMapper {
   @Mapping(target = "typeOfOrder", source = "typeOfOrder.id")
   Proceeding toProceeding(uk.gov.laa.ccms.caab.model.Proceeding proceeding);
 
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toProceeding")
   uk.gov.laa.ccms.caab.model.Proceeding toProceedingModel(Proceeding proceeding);
 
   @Mapping(target = "auditTrail", ignore = true)
@@ -142,7 +140,7 @@ public interface ApplicationMapper {
   @Mapping(target = "typeDisplayValue", source = "type.displayValue")
   PriorAuthority toPriorAuthority(uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthority);
 
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toPriorAuthority")
   uk.gov.laa.ccms.caab.model.PriorAuthority toPriorAuthorityModel(PriorAuthority priorAuthority);
 
   @Mapping(target = "code", source = "code.id")
@@ -162,7 +160,7 @@ public interface ApplicationMapper {
   @Mapping(target = "delegatedFuncApplyInd", source = "delegatedFuncApplyInd.flag")
   ScopeLimitation toScopeLimitation(uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation);
 
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toScopeLimitation")
   uk.gov.laa.ccms.caab.model.ScopeLimitation toScopeLimitationModel(
       ScopeLimitation scopeLimitation);
 
@@ -204,7 +202,7 @@ public interface ApplicationMapper {
   CostStructure toCostStructure(uk.gov.laa.ccms.caab.model.CostStructure costs);
 
   @Named("toCostStructureModel")
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toCostStructure")
   uk.gov.laa.ccms.caab.model.CostStructure toCostStructureModel(CostStructure costs);
 
   @Mapping(target = "auditTrail", ignore = true)
@@ -283,6 +281,23 @@ public interface ApplicationMapper {
       @MappingTarget Address address,
       uk.gov.laa.ccms.caab.model.Address addressModel);
 
+  /**
+   * Adds/Updates an application with a new cost structure.
+   */
+  default void addCostStructureToApplication(
+      @MappingTarget Application application,
+      uk.gov.laa.ccms.caab.model.CostStructure costStructureModel) {
+    if (application.getCosts() == null) {
+      application.setCosts(new CostStructure());
+    }
+    updateCostStructure(application.getCosts(), costStructureModel);
+  }
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "auditTrail", ignore = true)
+  void updateCostStructure(
+      @MappingTarget CostStructure costStructure,
+      uk.gov.laa.ccms.caab.model.CostStructure costStructureModel);
 
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "id", ignore = true)
@@ -292,6 +307,40 @@ public interface ApplicationMapper {
   void updateLinkedCase(
       @MappingTarget LinkedCase linkedCase,
       uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel);
+
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "type", source = "type.id")
+  @Mapping(target = "typeDisplayValue", source = "type.displayValue")
+  void updatePriorAuthority(
+      @MappingTarget PriorAuthority priorAuthority,
+      uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityModel);
+
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "matterType", source = "matterType.id")
+  @Mapping(target = "matterTypeDisplayValue", source = "matterType.displayValue")
+  @Mapping(target = "proceedingType", source = "proceedingType.id")
+  @Mapping(target = "proceedingTypeDisplayValue", source = "proceedingType.displayValue")
+  @Mapping(target = "levelOfService", source = "levelOfService.id")
+  @Mapping(target = "levelOfServiceDisplayValue", source = "levelOfService.displayValue")
+  @Mapping(target = "clientInvolvement", source = "clientInvolvement.id")
+  @Mapping(target = "clientInvolvementDisplayValue", source = "clientInvolvement.displayValue")
+  @Mapping(target = "status", source = "status.id")
+  @Mapping(target = "displayStatus", source = "status.displayValue")
+  @Mapping(target = "typeOfOrder", source = "typeOfOrder.id")
+  void updateProceeding(
+      @MappingTarget Proceeding proceeding,
+      uk.gov.laa.ccms.caab.model.Proceeding proceedingModel);
+
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "scopeLimitation", source = "scopeLimitation.id")
+  @Mapping(target = "scopeLimitationDisplayValue", source = "scopeLimitation.displayValue")
+  @Mapping(target = "delegatedFuncApplyInd", source = "delegatedFuncApplyInd.flag")
+  void updateScopeLimitation(
+      @MappingTarget ScopeLimitation scopeLimitation,
+      uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel);
 
   @Mapping(target = "providerDetails", source = ".")
   @Mapping(target = "caseReferenceNumber", source = "lscCaseReference")

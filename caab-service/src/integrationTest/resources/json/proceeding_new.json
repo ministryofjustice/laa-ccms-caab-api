@@ -1,0 +1,61 @@
+{
+  "ebs_id": null,
+  "matter_type": {
+    "id": "KPBLB",
+    "display_value": "Pub Law - Fam"
+  },
+  "proceeding_type": {
+    "id": "PBM32",
+    "display_value": "Special Guardianship Order - Pub Law - Fam"
+  },
+  "level_of_service": {
+    "id": "3",
+    "display_value": "Full Representation"
+  },
+  "client_involvement": {
+    "id": "W",
+    "display_value": "Subject of proceedings (child)"
+  },
+  "type_of_order": {
+    "id": null,
+    "display_value": null
+  },
+  "cost_limitation": 5000,
+  "status": {
+    "id": "Draft",
+    "display_value": "Unchanged"
+  },
+  "description": "Special Guardianship Order - Pub Law - Fam",
+  "date_granted": null,
+  "date_costs_valid": null,
+  "edited": false,
+  "scope_limitations": [
+    {
+      "scope_limitation": {
+        "id": "FM062",
+        "display_value": "Final Hearing (fam/public law)"
+      },
+      "ebs_id": null,
+      "scope_limitation_wording": "Limited to all steps up to and including final hearing and any action necessary to implement (but not enforce) the order.",
+      "default_ind": false,
+      "delegated_func_apply_ind": {
+        "flag": false,
+        "display_value": null
+      },
+      "non_default_wording_reqd": null,
+      "stage": null
+    }
+  ],
+  "default_scope_limitation": null,
+  "stage": "8",
+  "lead_proceeding_ind": false,
+  "lar_scope": "I",
+  "granted_using_devolved_powers": null,
+  "date_devolved_powers_used": null,
+  "proceeding_case_id": null,
+  "outcome": null,
+  "order_type_req_flag": null,
+  "order_type_display_flag": null,
+  "delete_scope_limitation_flag": null,
+  "available_functions": null
+}

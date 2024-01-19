@@ -1,6 +1,10 @@
 package uk.gov.laa.ccms.caab.api.repository;
 
+import java.time.LocalDate;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 
 /**
@@ -12,5 +16,15 @@ import uk.gov.laa.ccms.caab.api.entity.Application;
  * amongst other common operations found within {@link JpaRepository}.</p>
  */
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
-    
+
+  @Modifying
+  @Query(
+      "update Application a "
+          + "set a.clientFirstName = :firstName, a.clientSurname = :surname "
+          + "where a.clientReference = :reference")
+  void updateClient(
+      @Param("firstName") String firstName,
+      @Param("surname") String surname,
+      @Param("reference") String reference
+  );
 }
