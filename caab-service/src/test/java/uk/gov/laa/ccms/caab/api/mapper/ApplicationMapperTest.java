@@ -118,11 +118,11 @@ public class ApplicationMapperTest {
         assertEquals("clientRef", application.getClientReference());
         assertEquals("appTypeId", application.getApplicationType());
         assertEquals("appTypeDisp", application.getApplicationTypeDisplayValue());
-        assertTrue(application.isCostLimitChanged());
+        assertTrue(application.getCostLimitChanged());
         assertEquals(BigDecimal.valueOf(123), application.getCostLimitAtTimeOfMerits());
-        assertTrue(application.isAmendment());
-        assertTrue(application.isMeansAssessmentAmended());
-        assertTrue(application.isMeritsAssessmentAmended());
+        assertTrue(application.getAmendment());
+        assertTrue(application.getMeansAssessmentAmended());
+        assertTrue(application.getMeritsAssessmentAmended());
 
     }
 
@@ -132,10 +132,10 @@ public class ApplicationMapperTest {
 
         Application application = mapper.toApplication(detail);
 
-        assertFalse(application.isCostLimitChanged());
-        assertFalse(application.isAmendment());
-        assertFalse(application.isMeansAssessmentAmended());
-        assertFalse(application.isMeritsAssessmentAmended());
+        assertFalse(application.getCostLimitChanged());
+        assertFalse(application.getAmendment());
+        assertFalse(application.getMeansAssessmentAmended());
+        assertFalse(application.getMeritsAssessmentAmended());
     }
 
     @Test

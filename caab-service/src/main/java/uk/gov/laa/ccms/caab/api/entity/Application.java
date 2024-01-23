@@ -109,7 +109,7 @@ public class Application implements Serializable {
   private String clientReference;
 
   @Column(name = "AMENDMENT")
-  private boolean amendment = false;
+  private Boolean amendment;
 
   //Application Type
   @Column(name = "APPLICATION_TYPE", length = 30)
@@ -131,14 +131,14 @@ public class Application implements Serializable {
   private Boolean larScopeFlag;
 
   @Column(name = "MEANS_ASSESSMENT_AMENDED")
-  private boolean meansAssessmentAmended = false;
+  private Boolean meansAssessmentAmended;
 
   @Column(name = "MERITS_ASSESSMENT_AMENDED")
-  private boolean meritsAssessmentAmended = false;
+  private Boolean meritsAssessmentAmended;
 
   //Cost Limit
   @Column(name = "COST_LIMIT_CHANGED")
-  private boolean costLimitChanged;
+  private Boolean costLimitChanged;
   @Column(name = "COST_LIMIT_AT_TIME_OF_MERITS", precision = 10, scale = 2)
   private BigDecimal costLimitAtTimeOfMerits;
 
@@ -146,10 +146,10 @@ public class Application implements Serializable {
   //poll_transaction_id
 
   @Column(name = "MERITS_REASSESSMENT_REQD_IND")
-  private boolean meritsReassessmentReqdInd = false;
+  private Boolean meritsReassessmentReqdInd;
 
   @Column(name = "LEAD_PROCEEDING_CHANGED")
-  private boolean leadProceedingChangedOpaInput = false;
+  private Boolean leadProceedingChangedOpaInput;
 
   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "FK_COST_STRUCTURE")
@@ -178,5 +178,6 @@ public class Application implements Serializable {
 
   @Embedded
   private AuditTrail auditTrail = new AuditTrail();
+  
 
 }

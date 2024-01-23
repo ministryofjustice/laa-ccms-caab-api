@@ -156,10 +156,10 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(clientFirstName, fetchedApplication.getClientFirstName());
     assertEquals(clientSurname, fetchedApplication.getClientSurname());
     assertEquals(clientReference, fetchedApplication.getClientReference());
-    assertEquals(amendment, fetchedApplication.isAmendment());
-    assertEquals(meansAssessmentAmended, fetchedApplication.isMeansAssessmentAmended());
-    assertEquals(meritsAssessmentAmended, fetchedApplication.isMeritsAssessmentAmended());
-    assertEquals(costLimitChanged, fetchedApplication.isCostLimitChanged());
+    assertEquals(amendment, fetchedApplication.getAmendment());
+    assertEquals(meansAssessmentAmended, fetchedApplication.getMeansAssessmentAmended());
+    assertEquals(meritsAssessmentAmended, fetchedApplication.getMeritsAssessmentAmended());
+    assertEquals(costLimitChanged, fetchedApplication.getCostLimitChanged());
     assertEquals(costLimitAtTimeOfMerits, fetchedApplication.getCostLimitAtTimeOfMerits());
     assertEquals(applicationType, fetchedApplication.getApplicationType());
     assertEquals(applicationTypeDisplayValue, fetchedApplication.getApplicationTypeDisplayValue());
@@ -170,9 +170,9 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(sdf.format(dateDevolvedPowersUsed), sdf.format(fetchedApplication.getDateDevolvedPowersUsed()));
 
     assertEquals(devolvedPowersContractFlag, fetchedApplication.getDevolvedPowersContractFlag());
-    assertEquals(meritsReassessmentReqdInd, fetchedApplication.isMeritsReassessmentReqdInd());
+    assertEquals(meritsReassessmentReqdInd, fetchedApplication.getMeritsReassessmentReqdInd());
     assertEquals(larScopeFlag, fetchedApplication.getLarScopeFlag());
-    assertEquals(leadProceedingChanged, fetchedApplication.isLeadProceedingChangedOpaInput());
+    assertEquals(leadProceedingChanged, fetchedApplication.getLeadProceedingChangedOpaInput());
 
     assertEquals(caabUserLoginId, fetchedApplication.getAuditTrail().getLastSavedBy());
     assertEquals(caabUserLoginId, fetchedApplication.getAuditTrail().getCreatedBy());
