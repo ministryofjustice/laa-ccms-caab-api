@@ -55,7 +55,7 @@ public interface ApplicationMapper {
   @Mapping(target = "clientFirstName", source = "client.firstName")
   @Mapping(target = "clientSurname", source = "client.surname")
   @Mapping(target = "clientReference", source = "client.reference")
-  @Mapping(target = "costLimitChanged", source = "costLimit.changed")
+  @Mapping(target = "costLimitChanged", source = "costLimit.changed", defaultValue = "false")
   @Mapping(target = "costLimitAtTimeOfMerits", source = "costLimit.limitAtTimeOfMerits")
   @Mapping(target = "applicationType", source = "applicationType.id")
   @Mapping(target = "applicationTypeDisplayValue", source = "applicationType.displayValue")
@@ -64,8 +64,16 @@ public interface ApplicationMapper {
       source = "applicationType.devolvedPowers.dateUsed")
   @Mapping(target = "devolvedPowersContractFlag",
       source = "applicationType.devolvedPowers.contractFlag")
-  @Mapping(target = "meritsReassessmentReqdInd", source = "meritsReassessmentRequired")
-  @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged")
+  @Mapping(target = "meritsReassessmentReqdInd", source = "meritsReassessmentRequired",
+      defaultValue = "false")
+  @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged",
+      defaultValue = "false")
+  @Mapping(target = "meansAssessmentAmended", source = "meansAssessmentAmended",
+      defaultValue = "false")
+  @Mapping(target = "meritsAssessmentAmended", source = "meritsAssessmentAmended",
+      defaultValue = "false")
+  @Mapping(target = "amendment", source = "amendment",
+      defaultValue = "false")
   @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructure")
   @Mapping(target = "correspondenceAddress", source = "correspondenceAddress",
       qualifiedByName = "toAddress")
