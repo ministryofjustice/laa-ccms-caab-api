@@ -13,11 +13,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.laa.ccms.caab.api.ApplicationsApi;
 import uk.gov.laa.ccms.caab.api.ClientsApi;
 import uk.gov.laa.ccms.caab.api.LinkedCasesApi;
+import uk.gov.laa.ccms.caab.api.OpponentsApi;
 import uk.gov.laa.ccms.caab.api.PriorAuthoritiesApi;
 import uk.gov.laa.ccms.caab.api.ProceedingsApi;
 import uk.gov.laa.ccms.caab.api.ScopeLimitationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
+import uk.gov.laa.ccms.caab.api.service.OpponentService;
 import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
 import uk.gov.laa.ccms.caab.api.service.ProceedingService;
 import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
@@ -29,6 +31,7 @@ import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.BaseClient;
 import uk.gov.laa.ccms.caab.model.CostStructure;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
 import uk.gov.laa.ccms.caab.model.Proceeding;
 import uk.gov.laa.ccms.caab.model.ScopeLimitation;
@@ -42,13 +45,14 @@ import uk.gov.laa.ccms.caab.model.ScopeLimitation;
 @RestController
 @RequiredArgsConstructor
 public class ApplicationController implements ApplicationsApi, LinkedCasesApi, ProceedingsApi,
-    ScopeLimitationsApi, PriorAuthoritiesApi, ClientsApi {
+    ScopeLimitationsApi, PriorAuthoritiesApi, ClientsApi, OpponentsApi {
 
   private final ApplicationService applicationService;
   private final LinkedCaseService linkedCaseService;
   private final ProceedingService proceedingService;
   private final PriorAuthorityService priorAuthorityService;
   private final ScopeLimitationService scopeLimitationService;
+  private final OpponentService opponentService;
 
   /**
    * Creates a new application and returns the URI of the created resource.
@@ -412,6 +416,33 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
                                                       final String caabUserLoginId,
                                                       final BaseClient baseClient) {
     applicationService.updateClient(baseClient, clientReferenceId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  // Opponents
+  @Override
+  public ResponseEntity<List<Opponent>> getApplicationOpponents(Long id) {
+    List<Opponent> opponents = applicationService.getOpponentsForApplication(id);
+    return new ResponseEntity<>(opponents, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> addApplicationOpponent(Long id, String caabUserLoginId,
+      Opponent opponent) {
+    applicationService.createOpponentForApplication(id, opponent);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  @Override
+  public ResponseEntity<Void> updateOpponent(Long opponentId, String caabUserLoginId,
+      Opponent opponent) {
+    opponentService.updateOpponent(opponentId, opponent);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Override
+  public ResponseEntity<Void> removeOpponent(Long opponentId, String caabUserLoginId) {
+    opponentService.removeOpponent(opponentId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }

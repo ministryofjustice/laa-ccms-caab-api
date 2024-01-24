@@ -35,6 +35,7 @@ import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
 import uk.gov.laa.ccms.caab.model.Proceeding;
 
@@ -628,6 +629,75 @@ class ApplicationServiceTest {
         assertEquals("Application with id 1 not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
     }
+
+    @Test
+    void getOpponentsForApplication_WhenExists_ReturnsOpponents() {
+        Long applicationId = 1L;
+
+        Application application = new Application();
+        application.setOpponents(new ArrayList<>());
+        application.getOpponents().add(new uk.gov.laa.ccms.caab.api.entity.Opponent());
+
+        Opponent opponentModel = new Opponent();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toOpponentModel(any())).thenReturn(opponentModel);
+
+        List<Opponent> result = applicationService.getOpponentsForApplication(applicationId);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper, times(application.getOpponents().size())).toOpponentModel(any());
+
+        assertFalse(result.isEmpty());
+        assertEquals(opponentModel, result.get(0));
+    }
+
+    @Test
+    void getOpponentsForApplication_WhenNotExists_ThrowsException() {
+        Long applicationId = 1L;
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getOpponentsForApplication(applicationId));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void createOpponentForApplication_WhenApplicationExists_CreatesOpponent() {
+        Long applicationId = 1L;
+        Opponent opponent = new Opponent();
+        Application application = new Application();
+        uk.gov.laa.ccms.caab.api.entity.Opponent opponentEntity = new uk.gov.laa.ccms.caab.api.entity.Opponent();
+        application.setOpponents(new ArrayList<>());
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        when(applicationMapper.toOpponent(opponent)).thenReturn(opponentEntity);
+
+        applicationService.createOpponentForApplication(applicationId, opponent);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper).toOpponent(opponent);
+        verify(applicationRepository).save(application);
+        assertTrue(application.getOpponents().contains(opponentEntity));
+    }
+
+    @Test
+    void createOpponentForApplication_WhenApplicationNotExists_ThrowsException() {
+        Long applicationId = 1L;
+        Opponent opponent = new Opponent();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.createOpponentForApplication(applicationId, opponent));
+
+        assertEquals("Application with id 1 not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
 
     /**
      * Helper method to setup the mocking behaviour of applicationMapper and applicationRepository.

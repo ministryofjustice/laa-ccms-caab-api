@@ -21,6 +21,7 @@ import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.BaseClient;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
 import uk.gov.laa.ccms.caab.model.Proceeding;
 
@@ -54,6 +55,7 @@ public class ApplicationService {
    * @param applicationDetail the details of the application to be created.
    * @return the unique ID of the newly created application.
    */
+  @Transactional
   public Long createApplication(
           final ApplicationDetail applicationDetail) {
 
@@ -402,4 +404,49 @@ public class ApplicationService {
     applicationMapper.addApplicationType(application, applicationType);
     applicationRepository.save(application);
   }
+
+  /**
+   * Gets an application's opponents.
+   *
+   * @param id the TDS id for the application.
+   * @return the application's opponents.
+   */
+  @Transactional
+  public List<Opponent> getOpponentsForApplication(final Long id) {
+    return applicationRepository.findById(id)
+        .map(Application::getOpponents)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", id),
+            HttpStatus.NOT_FOUND))
+        .stream()
+        .map(applicationMapper::toOpponentModel)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Creates and associates a new opponent with a specified application.
+   * If the application is not found, a CaabApiException is thrown.
+   *
+   * @param applicationId The unique identifier of the application.
+   * @param opponent The Opponent object.
+   * @throws CaabApiException If the application with the specified ID is not found.
+   */
+  @Transactional
+  public void createOpponentForApplication(
+      final Long applicationId,
+      final Opponent opponent) {
+    Application application = applicationRepository.findById(applicationId)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
+
+    uk.gov.laa.ccms.caab.api.entity.Opponent opponentEntity =
+        applicationMapper.toOpponent(opponent);
+    application.getOpponents().add(opponentEntity);
+
+    opponentEntity.setApplication(application);
+
+    applicationRepository.save(application);
+  }
+
 }
