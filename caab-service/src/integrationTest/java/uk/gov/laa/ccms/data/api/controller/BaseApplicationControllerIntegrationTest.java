@@ -618,13 +618,15 @@ public abstract class BaseApplicationControllerIntegrationTest {
       "/sql/application_insert.sql",
       "/sql/opponent_insert.sql"})
   public void removeOpponentFromApplication() {
-    Long applicationId = 41L;
-    Long opponentId = 3L;
+    Long caseRef = 41L;
+    Long opponentRef = 3L;
 
-    ResponseEntity<Void> response = applicationController.removeOpponent(opponentId, caabUserLoginId);
+    ResponseEntity<Void> response = applicationController.removeOpponent(
+        opponentRef, caabUserLoginId);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-    ResponseEntity<List<Opponent>> responseEntity = applicationController.getApplicationOpponents(applicationId);
+    ResponseEntity<List<Opponent>> responseEntity = applicationController.getApplicationOpponents(
+        caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
@@ -632,11 +634,6 @@ public abstract class BaseApplicationControllerIntegrationTest {
     List<Opponent> opponents = responseEntity.getBody();
     assertTrue(opponents.isEmpty());
   }
-
-
-
-
-
 
   /**
    * Assert that the audit trail is set correctly in the object. Uses reflection to navigate the

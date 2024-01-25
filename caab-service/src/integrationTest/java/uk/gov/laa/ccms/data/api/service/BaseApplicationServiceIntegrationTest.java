@@ -181,16 +181,29 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(caabUserLoginId, fetchedApplication.getAuditTrail().getCreatedBy());
     assertNotNull(fetchedApplication.getAuditTrail().getCreated());
     assertNotNull(fetchedApplication.getAuditTrail().getLastSaved());
+  }
 
-    // Opponents
-    Opponent builtOpponent = application.getOpponents().get(0);
+  @Test
+  @Transactional
+  public void testSaveApplication_opponent(){
+    ApplicationDetail application = buildRequiredApplicationDetail();
+    Opponent builtOpponent = buildOpponent(new Date());
+    application.setOpponents(new ArrayList<>());
+    application.getOpponents().add(builtOpponent);
 
+    Long savedId = applicationService.createApplication(application);
+
+    // Fetch the saved application from the database
+    Application fetchedApplication = applicationRepository.findById(savedId).orElse(null);
+
+    // Assert that the fetched application is not null and has the expected values
+    assertNotNull(fetchedApplication);
     assertNotNull(fetchedApplication.getOpponents());
     assertEquals(1, fetchedApplication.getOpponents().size());
 
     uk.gov.laa.ccms.caab.api.entity.Opponent fetchedOpponent =
         fetchedApplication.getOpponents().get(0);
-
+    
     assertNotNull(fetchedOpponent.getAddress());
     assertEquals(builtOpponent.getAmendment(), fetchedOpponent.getAmendment());
     assertEquals(builtOpponent.getAppMode(), fetchedOpponent.getAppMode());
@@ -214,7 +227,6 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(builtOpponent.getEmploymentStatus(), fetchedOpponent.getEmploymentStatus());
     assertEquals(builtOpponent.getFaxNumber(), fetchedOpponent.getFaxNumber());
     assertEquals(builtOpponent.getFirstName(), fetchedOpponent.getFirstName());
-    assertEquals(builtOpponent.getId(), fetchedOpponent.getId().intValue());
     assertEquals(builtOpponent.getLegalAided(), fetchedOpponent.getLegalAided());
     assertEquals(builtOpponent.getMiddleNames(), fetchedOpponent.getMiddleNames());
     assertEquals(builtOpponent.getNationalInsuranceNumber(), fetchedOpponent.getNationalInsuranceNumber());
@@ -231,8 +243,13 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(builtOpponent.getTelephoneWork(), fetchedOpponent.getTelephoneWork());
     assertEquals(builtOpponent.getTitle(), fetchedOpponent.getTitle());
     assertEquals(builtOpponent.getType(), fetchedOpponent.getType());
-  }
 
+    assertEquals(caabUserLoginId, fetchedOpponent.getAuditTrail().getLastSavedBy());
+    assertEquals(caabUserLoginId, fetchedOpponent.getAuditTrail().getCreatedBy());
+    
+  }
+  
+  
   @Test
   @Transactional
   public void testSaveApplication_costStructure(){
@@ -522,11 +539,6 @@ public abstract class BaseApplicationServiceIntegrationTest {
     application.setLarScopeFlag(larScopeFlag);
     application.setLeadProceedingChanged(leadProceedingChanged);
 
-    // Opponents
-    Opponent opponent = buildOpponent(new Date());
-    application.setOpponents(new ArrayList<>());
-    application.getOpponents().add(opponent);
-
     return application;
   }
 
@@ -580,7 +592,6 @@ public abstract class BaseApplicationServiceIntegrationTest {
         .employmentStatus("empSt")
         .faxNumber("fax")
         .firstName("firstname")
-        .id(1)
         .legalAided(Boolean.TRUE)
         .middleNames("midnames")
         .nationalInsuranceNumber("nino")

@@ -55,7 +55,6 @@ public class ApplicationService {
    * @param applicationDetail the details of the application to be created.
    * @return the unique ID of the newly created application.
    */
-  @Transactional
   public Long createApplication(
           final ApplicationDetail applicationDetail) {
 

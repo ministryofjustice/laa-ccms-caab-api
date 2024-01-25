@@ -421,27 +421,28 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
 
   // Opponents
   @Override
-  public ResponseEntity<List<Opponent>> getApplicationOpponents(Long id) {
+  public ResponseEntity<List<Opponent>> getApplicationOpponents(final Long id) {
     List<Opponent> opponents = applicationService.getOpponentsForApplication(id);
     return new ResponseEntity<>(opponents, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<Void> addApplicationOpponent(Long id, String caabUserLoginId,
-      Opponent opponent) {
+  public ResponseEntity<Void> addApplicationOpponent(
+      final Long id, final String caabUserLoginId, final Opponent opponent) {
     applicationService.createOpponentForApplication(id, opponent);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   @Override
-  public ResponseEntity<Void> updateOpponent(Long opponentId, String caabUserLoginId,
-      Opponent opponent) {
+  public ResponseEntity<Void> updateOpponent(
+      final Long opponentId, final String caabUserLoginId, final Opponent opponent) {
     opponentService.updateOpponent(opponentId, opponent);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @Override
-  public ResponseEntity<Void> removeOpponent(Long opponentId, String caabUserLoginId) {
+  public ResponseEntity<Void> removeOpponent(
+      final Long opponentId, final String caabUserLoginId) {
     opponentService.removeOpponent(opponentId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
