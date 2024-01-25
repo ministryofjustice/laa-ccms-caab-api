@@ -181,7 +181,7 @@ public class Proceeding implements Serializable {
    * Lead proceeding indicator.
    */
   @Column(name = "LEAD_PROCEEDING_IND")
-  private Boolean leadProceedingInd = false;
+  private Boolean leadProceedingInd;
 
   /**
    * LAR Scope.

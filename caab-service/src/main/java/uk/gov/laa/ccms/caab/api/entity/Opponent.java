@@ -256,19 +256,19 @@ public class Opponent implements Serializable {
    * Indicates the application mode.
    */
   @Column(name = "APPMODE")
-  private Boolean appMode = true;
+  private Boolean appMode;
 
   /**
    * Indicates if the Opponent represents an amendment.
    */
   @Column(name = "AMENDMENT")
-  private Boolean amendment = false;
+  private Boolean amendment;
 
   /**
    * Indicates if the Opponent is awarded.
    */
   @Column(name = "AWARD")
-  private Boolean award = false;
+  private Boolean award;
 
   /**
    * Indicates if public funding has been applied for.
@@ -280,13 +280,13 @@ public class Opponent implements Serializable {
    * Indicates if the Opponent is shared.
    */
   @Column(name = "SHARED_IND")
-  private Boolean sharedInd = false;
+  private Boolean sharedInd;
 
   /**
    * Indicates if the Opponent is marked for deletion.
    */
   @Column(name = "DELETE_IND")
-  private Boolean deleteInd = true;
+  private Boolean deleteInd;
 
   /**
    * The outcome associated with the Opponent.
