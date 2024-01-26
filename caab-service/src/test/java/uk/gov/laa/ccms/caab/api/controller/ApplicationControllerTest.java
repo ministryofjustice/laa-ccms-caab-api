@@ -25,14 +25,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
+import uk.gov.laa.ccms.caab.api.service.OpponentService;
 import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
 import uk.gov.laa.ccms.caab.api.service.ProceedingService;
 import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
@@ -45,6 +44,7 @@ import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.CostStructure;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
 import uk.gov.laa.ccms.caab.model.Proceeding;
 import uk.gov.laa.ccms.caab.model.ScopeLimitation;
@@ -65,6 +65,8 @@ class ApplicationControllerTest {
     private PriorAuthorityService priorAuthorityService;
     @Mock
     private ScopeLimitationService scopeLimitationService;
+    @Mock
+    private OpponentService opponentService;
 
 
     @InjectMocks
@@ -74,7 +76,7 @@ class ApplicationControllerTest {
 
     private ObjectMapper objectMapper;
 
-    private String caabUserLoginId = "userLoginId";
+    private final String caabUserLoginId = "userLoginId";
 
     @BeforeEach
     public void setup() {
@@ -471,7 +473,7 @@ class ApplicationControllerTest {
   @Test
   public void getApplicationScopeLimitations_ReturnsScopeLimitations() throws Exception {
     Long proceedingId = 1L;
-    List<ScopeLimitation> scopeLimitations = Arrays.asList(new ScopeLimitation());
+    List<ScopeLimitation> scopeLimitations = List.of(new ScopeLimitation());
 
     when(proceedingService.getScopeLimitationsForProceeding(proceedingId)).thenReturn(scopeLimitations);
 
@@ -508,5 +510,63 @@ class ApplicationControllerTest {
         .andExpect(status().isNoContent());
 
     verify(scopeLimitationService).updateScopeLimitation(scopeLimitationId, scopeLimitation);
+  }
+
+  @Test
+  public void addApplicationOpponent_CreatesOpponent() throws Exception {
+    Long applicationId = 1L;
+    Opponent opponent = new Opponent();
+
+    doNothing().when(applicationService).createOpponentForApplication(applicationId, opponent);
+
+    this.mockMvc.perform(post("/applications/{applicationId}/opponents", applicationId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(opponent)))
+        .andExpect(status().isCreated());
+
+    verify(applicationService).createOpponentForApplication(applicationId, opponent);
+  }
+
+  @Test
+  public void getApplicationOpponents_ReturnsOpponents() throws Exception {
+    Long applicationId = 1L;
+    List<Opponent> opponents = List.of(new Opponent());
+
+    when(applicationService.getOpponentsForApplication(applicationId)).thenReturn(opponents);
+
+    this.mockMvc.perform(get("/applications/{applicationId}/opponents", applicationId))
+        .andExpect(status().isOk());
+
+    verify(applicationService).getOpponentsForApplication(applicationId);
+  }
+
+  @Test
+  public void removeOpponent_RemovesOpponent() throws Exception {
+    Long opponentId = 2L;
+
+    doNothing().when(opponentService).removeOpponent(opponentId);
+
+    this.mockMvc.perform(delete("/opponents/{opponentId}", opponentId)
+            .header("Caab-User-Login-Id", caabUserLoginId))
+        .andExpect(status().isNoContent());
+
+    verify(opponentService).removeOpponent(opponentId);
+  }
+
+  @Test
+  public void updateOpponent_UpdatesOpponent() throws Exception {
+    Long opponentId = 2L;
+    Opponent opponent = new Opponent();
+
+    doNothing().when(opponentService).updateOpponent(opponentId, opponent);
+
+    this.mockMvc.perform(patch("/opponents/{opponentId}", opponentId)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(opponent)))
+        .andExpect(status().isNoContent());
+
+    verify(opponentService).updateOpponent(opponentId, opponent);
   }
 }

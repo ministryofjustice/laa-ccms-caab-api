@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +29,13 @@ import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
+import uk.gov.laa.ccms.caab.model.AuditDetail;
 import uk.gov.laa.ccms.caab.model.Client;
 import uk.gov.laa.ccms.caab.model.CostLimit;
 import uk.gov.laa.ccms.caab.model.CostStructure;
 import uk.gov.laa.ccms.caab.model.DevolvedPowers;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
+import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 public abstract class BaseApplicationServiceIntegrationTest {
@@ -178,9 +181,75 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(caabUserLoginId, fetchedApplication.getAuditTrail().getCreatedBy());
     assertNotNull(fetchedApplication.getAuditTrail().getCreated());
     assertNotNull(fetchedApplication.getAuditTrail().getLastSaved());
-
   }
 
+  @Test
+  @Transactional
+  public void testSaveApplication_opponent(){
+    ApplicationDetail application = buildRequiredApplicationDetail();
+    Opponent builtOpponent = buildOpponent(new Date());
+    application.setOpponents(new ArrayList<>());
+    application.getOpponents().add(builtOpponent);
+
+    Long savedId = applicationService.createApplication(application);
+
+    // Fetch the saved application from the database
+    Application fetchedApplication = applicationRepository.findById(savedId).orElse(null);
+
+    // Assert that the fetched application is not null and has the expected values
+    assertNotNull(fetchedApplication);
+    assertNotNull(fetchedApplication.getOpponents());
+    assertEquals(1, fetchedApplication.getOpponents().size());
+
+    uk.gov.laa.ccms.caab.api.entity.Opponent fetchedOpponent =
+        fetchedApplication.getOpponents().get(0);
+    
+    assertNotNull(fetchedOpponent.getAddress());
+    assertEquals(builtOpponent.getAmendment(), fetchedOpponent.getAmendment());
+    assertEquals(builtOpponent.getAppMode(), fetchedOpponent.getAppMode());
+    assertEquals(builtOpponent.getAssessedAssets(), fetchedOpponent.getAssessedAssets());
+    assertEquals(builtOpponent.getAssessedIncome(), fetchedOpponent.getAssessedIncome());
+    assertEquals(builtOpponent.getAssessedIncomeFrequency(), fetchedOpponent.getAssessedIncomeFrequency());
+    assertEquals(builtOpponent.getAssessmentDate(), fetchedOpponent.getAssessmentDate());
+    assertEquals(caabUserLoginId, fetchedOpponent.getAuditTrail().getCreatedBy());
+    assertEquals(builtOpponent.getAward(), fetchedOpponent.getAward());
+    assertEquals(builtOpponent.getCertificateNumber(), fetchedOpponent.getCertificateNumber());
+    assertEquals(builtOpponent.getConfirmed(), fetchedOpponent.getConfirmed());
+    assertEquals(builtOpponent.getContactNameRole(), fetchedOpponent.getContactNameRole());
+    assertEquals(builtOpponent.getCourtOrderedMeansAssessment(), fetchedOpponent.getCourtOrderedMeansAssessment());
+    assertEquals(builtOpponent.getCurrentlyTrading(), fetchedOpponent.getCurrentlyTrading());
+    assertEquals(builtOpponent.getDateOfBirth(), fetchedOpponent.getDateOfBirth());
+    assertEquals(builtOpponent.getDeleteInd(), fetchedOpponent.getDeleteInd());
+    assertEquals(builtOpponent.getEbsId(), fetchedOpponent.getEbsId());
+    assertEquals(builtOpponent.getEmailAddress(), fetchedOpponent.getEmailAddress());
+    assertEquals(builtOpponent.getEmployerAddress(), fetchedOpponent.getEmployerAddress());
+    assertEquals(builtOpponent.getEmployerName(), fetchedOpponent.getEmployerName());
+    assertEquals(builtOpponent.getEmploymentStatus(), fetchedOpponent.getEmploymentStatus());
+    assertEquals(builtOpponent.getFaxNumber(), fetchedOpponent.getFaxNumber());
+    assertEquals(builtOpponent.getFirstName(), fetchedOpponent.getFirstName());
+    assertEquals(builtOpponent.getLegalAided(), fetchedOpponent.getLegalAided());
+    assertEquals(builtOpponent.getMiddleNames(), fetchedOpponent.getMiddleNames());
+    assertEquals(builtOpponent.getNationalInsuranceNumber(), fetchedOpponent.getNationalInsuranceNumber());
+    assertEquals(builtOpponent.getOrganisationName(), fetchedOpponent.getOrganisationName());
+    assertEquals(builtOpponent.getOrganisationType().getId(), fetchedOpponent.getOrganisationType());
+    assertEquals(builtOpponent.getOtherInformation(), fetchedOpponent.getOtherInformation());
+    assertEquals(builtOpponent.getPublicFundingApplied(), fetchedOpponent.getPublicFundingApplied());
+    assertEquals(builtOpponent.getRelationshipToCase(), fetchedOpponent.getRelationshipToCase());
+    assertEquals(builtOpponent.getRelationshipToClient(), fetchedOpponent.getRelationshipToClient());
+    assertEquals(builtOpponent.getSharedInd(), fetchedOpponent.getSharedInd());
+    assertEquals(builtOpponent.getSurname(), fetchedOpponent.getSurname());
+    assertEquals(builtOpponent.getTelephoneHome(), fetchedOpponent.getTelephoneHome());
+    assertEquals(builtOpponent.getTelephoneMobile(), fetchedOpponent.getTelephoneMobile());
+    assertEquals(builtOpponent.getTelephoneWork(), fetchedOpponent.getTelephoneWork());
+    assertEquals(builtOpponent.getTitle(), fetchedOpponent.getTitle());
+    assertEquals(builtOpponent.getType(), fetchedOpponent.getType());
+
+    assertEquals(caabUserLoginId, fetchedOpponent.getAuditTrail().getLastSavedBy());
+    assertEquals(caabUserLoginId, fetchedOpponent.getAuditTrail().getCreatedBy());
+    
+  }
+  
+  
   @Test
   @Transactional
   public void testSaveApplication_costStructure(){
@@ -278,9 +347,8 @@ public abstract class BaseApplicationServiceIntegrationTest {
     Long applicationId = 999L;
 
     // Use assertThrows to check if the method throws the expected exception
-    CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-      applicationService.getApplicationType(applicationId);
-    });
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getApplicationType(applicationId));
 
     assertEquals(
         String.format("Application with id %s not found", applicationId),
@@ -394,9 +462,8 @@ public abstract class BaseApplicationServiceIntegrationTest {
     ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
 
     // Use assertThrows to check if the method throws the expected exception
-    CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-      applicationService.putProviderDetails(nonExistentApplicationId, providerDetails);
-    });
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.putProviderDetails(nonExistentApplicationId, providerDetails));
 
     assertEquals(
         String.format("Application with id %s not found", nonExistentApplicationId),
@@ -497,4 +564,51 @@ public abstract class BaseApplicationServiceIntegrationTest {
     address.setPreferredAddress(preferredAddress);
     return address;
   }
+
+  public uk.gov.laa.ccms.caab.model.Opponent buildOpponent(java.util.Date date) {
+    return new uk.gov.laa.ccms.caab.model.Opponent()
+        .address(buildAddress())
+        .amendment(Boolean.TRUE)
+        .appMode(Boolean.FALSE)
+        .assessedAssets(BigDecimal.TEN)
+        .assessedIncome(BigDecimal.ONE)
+        .assessedIncomeFrequency("freq")
+        .assessmentDate(date)
+        .auditTrail(new AuditDetail())
+        .award(Boolean.TRUE)
+        .certificateNumber("cert")
+        .confirmed(Boolean.FALSE)
+        .contactNameRole("conNameRole")
+        .courtOrderedMeansAssessment(Boolean.TRUE)
+        .currentlyTrading(Boolean.TRUE)
+        .dateOfBirth(date)
+        .deleteInd(Boolean.FALSE)
+        .displayAddress("address 1")
+        .displayName("disp name")
+        .ebsId("ebsid")
+        .emailAddress("emailAdd")
+        .employerName("empName")
+        .employerAddress("empAddr")
+        .employmentStatus("empSt")
+        .faxNumber("fax")
+        .firstName("firstname")
+        .legalAided(Boolean.TRUE)
+        .middleNames("midnames")
+        .nationalInsuranceNumber("nino")
+        .organisationName("orgName")
+        .organisationType(new StringDisplayValue().id("orgid").displayValue("org"))
+        .otherInformation("otherInf")
+        .partyId("party")
+        .publicFundingApplied(Boolean.TRUE)
+        .relationshipToCase("relToCase")
+        .relationshipToClient("relToClient")
+        .sharedInd(Boolean.TRUE)
+        .surname("surname")
+        .telephoneHome("telHome")
+        .telephoneMobile("telMob")
+        .telephoneWork("telWork")
+        .title("thetitle")
+        .type("thetype");
+  }
+
 }

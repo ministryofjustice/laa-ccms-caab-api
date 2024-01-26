@@ -138,6 +138,7 @@ public interface ApplicationMapper {
   @Mapping(target = "status", source = "status.id")
   @Mapping(target = "displayStatus", source = "status.displayValue")
   @Mapping(target = "typeOfOrder", source = "typeOfOrder.id")
+  @Mapping(target = "leadProceedingInd", source = "leadProceedingInd", defaultValue = "false")
   Proceeding toProceeding(uk.gov.laa.ccms.caab.model.Proceeding proceeding);
 
   @InheritInverseConfiguration(name = "toProceeding")
@@ -165,7 +166,8 @@ public interface ApplicationMapper {
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "scopeLimitation", source = "scopeLimitation.id")
   @Mapping(target = "scopeLimitationDisplayValue", source = "scopeLimitation.displayValue")
-  @Mapping(target = "delegatedFuncApplyInd", source = "delegatedFuncApplyInd.flag")
+  @Mapping(target = "delegatedFuncApplyInd", source = "delegatedFuncApplyInd.flag",
+      defaultValue = "false")
   ScopeLimitation toScopeLimitation(uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation);
 
   @InheritInverseConfiguration(name = "toScopeLimitation")
@@ -175,11 +177,24 @@ public interface ApplicationMapper {
   @Mapping(target = "organisationType", source = "organisationType.id")
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
+  @Mapping(target = "appMode", source = "appMode", defaultValue = "true")
+  @Mapping(target = "amendment", source = "amendment", defaultValue = "false")
+  @Mapping(target = "award", source = "award", defaultValue = "false")
+  @Mapping(target = "sharedInd", source = "sharedInd", defaultValue = "false")
+  @Mapping(target = "deleteInd", source = "deleteInd", defaultValue = "true")
   Opponent toOpponent(uk.gov.laa.ccms.caab.model.Opponent opponent);
 
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toOpponent")
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddressModel")
   uk.gov.laa.ccms.caab.model.Opponent toOpponentModel(Opponent opponent);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "organisationType", source = "organisationType.id")
+  @Mapping(target = "auditTrail", ignore = true)
+  @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
+  void updateOpponent(
+      @MappingTarget Opponent opponent,
+      uk.gov.laa.ccms.caab.model.Opponent opponentModel);
 
   List<LinkedCase> toLinkedCaseList(List<uk.gov.laa.ccms.caab.model.LinkedCase> linkedCases);
 

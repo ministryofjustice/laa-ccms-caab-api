@@ -14,8 +14,6 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -85,12 +83,12 @@ public class ScopeLimitation implements Serializable {
    * Indicates if the Scope Limitation is the default one.
    */
   @Column(name = "DEFAULT_IND")
-  private boolean defaultInd;
+  private Boolean defaultInd;
 
   /**
    * Indicates if delegated functions apply to the Scope Limitation.
    */
   @Column(name = "DELEGATED_FUNC_APPLY_IND")
-  private boolean delegatedFuncApplyInd = false;
+  private Boolean delegatedFuncApplyInd;
 
 }

@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
+import uk.gov.laa.ccms.caab.api.entity.CaseOutcome;
 import uk.gov.laa.ccms.caab.api.entity.CostEntry;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
@@ -254,25 +255,24 @@ public class ApplicationMapperTest {
         assertEquals(proceedingModel.getDescription(), proceeding.getDescription());
         assertEquals(proceedingModel.getDateGranted(), proceeding.getDateGranted());
         assertEquals(proceedingModel.getDateCostsValid(), proceeding.getDateCostsValid());
-        assertTrue(proceeding.isEdited());
+        assertTrue(proceeding.getEdited());
         // For collections like scopeLimitations, you might need to assert both the size and the contents
         assertEquals(0, proceeding.getScopeLimitations().size());
         // Add more detailed checks for elements in scopeLimitations if necessary
         assertEquals(proceedingModel.getDefaultScopeLimitation(), proceeding.getDefaultScopeLimitation());
         assertEquals(proceedingModel.getStage(), proceeding.getStage());
-        assertTrue(proceeding.isLeadProceedingInd());
+        assertTrue(proceeding.getLeadProceedingInd());
         assertEquals(proceedingModel.getLarScope(), proceeding.getLarScope());
 
     }
 
     @Test
-    public void testProceedingMapping_unsetBooleansFalse() {
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingModel = new uk.gov.laa.ccms.caab.model.Proceeding();
-        proceedingModel.setLeadProceedingInd(null);
+    public void testProceedingMapping_checkBooleanDefaults() {
+        uk.gov.laa.ccms.caab.model.Proceeding proceedingModel =
+            new uk.gov.laa.ccms.caab.model.Proceeding();
 
         Proceeding proceeding = mapper.toProceeding(proceedingModel);
-        assertFalse(proceeding.isLeadProceedingInd());
-        assertFalse(proceeding.isEdited());
+        assertFalse(proceeding.getLeadProceedingInd());
     }
 
     @Test
@@ -418,20 +418,19 @@ public class ApplicationMapperTest {
 
         assertEquals("SL", scopeLimitation.getScopeLimitation());
         assertEquals("ScopeLimitation", scopeLimitation.getScopeLimitationDisplayValue());
-        assertTrue(scopeLimitation.isDelegatedFuncApplyInd());
+        assertTrue(scopeLimitation.getDelegatedFuncApplyInd());
         assertEquals("EBSID", scopeLimitation.getEbsId());
         assertEquals("Wording", scopeLimitation.getScopeLimitationWording());
-        assertTrue(scopeLimitation.isDefaultInd());
+        assertTrue(scopeLimitation.getDefaultInd());
     }
 
     @Test
-    public void testToScopeLimitation_unsetBooleansFalse() {
+    public void testToScopeLimitation_checkBooleanDefaults() {
         uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel = new uk.gov.laa.ccms.caab.model.ScopeLimitation();
 
         ScopeLimitation scopeLimitation = mapper.toScopeLimitation(scopeLimitationModel);
 
-        assertFalse(scopeLimitation.isDelegatedFuncApplyInd());
-        assertFalse(scopeLimitation.isDefaultInd());
+        assertFalse(scopeLimitation.getDelegatedFuncApplyInd());
     }
 
     @Test
@@ -461,119 +460,69 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void testToScopeLimitationModel_unsetBooleansFalse() {
-        ScopeLimitation scopeLimitationEntity = new ScopeLimitation();
-
-        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation = mapper.toScopeLimitationModel(scopeLimitationEntity);
-
-        assertFalse(scopeLimitation.getDelegatedFuncApplyInd().getFlag());
-        assertFalse(scopeLimitation.getDefaultInd());
-    }
-
-    @Test
     public void testToScopeLimitationModel_null() {
         assertNull(mapper.toScopeLimitationModel(null));
     }
 
     @Test
     public void testToOpponent() {
-        uk.gov.laa.ccms.caab.model.Opponent opponentDetail = new uk.gov.laa.ccms.caab.model.Opponent();
-        opponentDetail.setOrganisationType(new StringDisplayValue().id("OT").displayValue("Organisation Type"));
-        opponentDetail.setAuditTrail(buildAuditDetail());
-        opponentDetail.setEbsId("EBSID");
-        opponentDetail.setType("Type");
-        opponentDetail.setTitle("Title");
-        opponentDetail.setFirstName("John");
-        opponentDetail.setMiddleNames("Doe");
-        opponentDetail.setSurname("Smith");
-        opponentDetail.setDateOfBirth(createdAt);
-        opponentDetail.setNationalInsuranceNumber("AB123456C");
-        opponentDetail.setRelationshipToCase("Relation1");
-        opponentDetail.setRelationshipToClient("Client1");
-        opponentDetail.setTelephoneHome("123456789");
-        opponentDetail.setTelephoneWork("987654321");
-        opponentDetail.setTelephoneMobile("456789123");
-        opponentDetail.setFaxNumber("555555555");
-        opponentDetail.setEmailAddress("john@example.com");
-        opponentDetail.setOtherInformation("Other Info");
-        opponentDetail.setEmploymentStatus("Employed");
-        opponentDetail.setEmployerName("ABC Ltd");
-        opponentDetail.setLegalAided(true);
-        opponentDetail.setCertificateNumber("CERT123");
-        opponentDetail.setCourtOrderedMeansAssessment(true);
-        opponentDetail.setAssessedIncome(BigDecimal.valueOf(50000.00));
-        opponentDetail.setAssessedIncomeFrequency("Annually");
-        opponentDetail.setAssessedAssets(BigDecimal.valueOf(100000.00));
-        opponentDetail.setAssessmentDate(createdAt);
-        opponentDetail.setOrganisationName("Org Name");
-        opponentDetail.setCurrentlyTrading(true);
-        opponentDetail.setContactNameRole("Contact");
-        opponentDetail.setConfirmed(true);
-        opponentDetail.setAppMode(false);
-        opponentDetail.setAmendment(true);
-        opponentDetail.setAward(true);
-        opponentDetail.setPublicFundingApplied(true);
-        opponentDetail.setSharedInd(true);
-        opponentDetail.setDeleteInd(false);
+        uk.gov.laa.ccms.caab.model.Opponent opponentModel = buildOpponentModel(createdAt);
 
-        Opponent opponent = mapper.toOpponent(opponentDetail);
+        Opponent opponent = mapper.toOpponent(opponentModel);
 
-        assertEquals("OT", opponent.getOrganisationType());
-        assertEquals("EBSID", opponent.getEbsId());
-        assertEquals("Type", opponent.getType());
-        assertEquals("Title", opponent.getTitle());
-        assertEquals("John", opponent.getFirstName());
-        assertEquals("Doe", opponent.getMiddleNames());
-        assertEquals("Smith", opponent.getSurname());
-        assertEquals(createdAt, opponent.getDateOfBirth());
-        assertEquals("AB123456C", opponent.getNationalInsuranceNumber());
-        assertEquals("Relation1", opponent.getRelationshipToCase());
-        assertEquals("Client1", opponent.getRelationshipToClient());
-        assertEquals("123456789", opponent.getTelephoneHome());
-        assertEquals("987654321", opponent.getTelephoneWork());
-        assertEquals("456789123", opponent.getTelephoneMobile());
-        assertEquals("555555555", opponent.getFaxNumber());
-        assertEquals("john@example.com", opponent.getEmailAddress());
-        assertEquals("Other Info", opponent.getOtherInformation());
-        assertEquals("Employed", opponent.getEmploymentStatus());
-        assertEquals("ABC Ltd", opponent.getEmployerName());
-        assertTrue(opponent.getLegalAided());
-        assertEquals("CERT123", opponent.getCertificateNumber());
-        assertTrue(opponent.getCourtOrderedMeansAssessment());
-        assertEquals(BigDecimal.valueOf(50000.00), opponent.getAssessedIncome());
-        assertEquals("Annually", opponent.getAssessedIncomeFrequency());
-        assertEquals(BigDecimal.valueOf(100000.00), opponent.getAssessedAssets());
-        assertEquals(createdAt, opponent.getAssessmentDate());
-        assertEquals("Org Name", opponent.getOrganisationName());
-        assertTrue(opponent.getCurrentlyTrading());
-        assertEquals("Contact", opponent.getContactNameRole());
-        assertTrue(opponent.isConfirmed());
-        assertFalse(opponent.isAppMode());
-        assertTrue(opponent.isAmendment());
-        assertTrue(opponent.isAward());
-        assertTrue(opponent.isPublicFundingApplied());
-        assertTrue(opponent.isSharedInd());
-
-        assertFalse(opponent.isAppMode());
-        assertFalse(opponent.isDeleteInd());
+        assertNotNull(opponent);
+        assertEquals(opponentModel.getOrganisationType().getId(), opponent.getOrganisationType());
+        assertEquals(opponentModel.getEbsId(), opponent.getEbsId());
+        assertEquals(opponentModel.getType(), opponent.getType());
+        assertEquals(opponentModel.getTitle(), opponent.getTitle());
+        assertEquals(opponentModel.getFirstName(), opponent.getFirstName());
+        assertEquals(opponentModel.getMiddleNames(), opponent.getMiddleNames());
+        assertEquals(opponentModel.getSurname(), opponent.getSurname());
+        assertEquals(opponentModel.getDateOfBirth(), opponent.getDateOfBirth());
+        assertEquals(opponentModel.getNationalInsuranceNumber(), opponent.getNationalInsuranceNumber());
+        assertEquals(opponentModel.getRelationshipToCase(), opponent.getRelationshipToCase());
+        assertEquals(opponentModel.getRelationshipToClient(), opponent.getRelationshipToClient());
+        assertEquals(opponentModel.getTelephoneHome(), opponent.getTelephoneHome());
+        assertEquals(opponentModel.getTelephoneWork(), opponent.getTelephoneWork());
+        assertEquals(opponentModel.getTelephoneMobile(), opponent.getTelephoneMobile());
+        assertEquals(opponentModel.getFaxNumber(), opponent.getFaxNumber());
+        assertEquals(opponentModel.getEmailAddress(), opponent.getEmailAddress());
+        assertEquals(opponentModel.getOtherInformation(), opponent.getOtherInformation());
+        assertEquals(opponentModel.getEmploymentStatus(), opponent.getEmploymentStatus());
+        assertEquals(opponentModel.getEmployerName(), opponent.getEmployerName());
+        assertEquals(opponentModel.getLegalAided(), opponent.getLegalAided());
+        assertEquals(opponentModel.getCertificateNumber(), opponent.getCertificateNumber());
+        assertEquals(opponentModel.getCourtOrderedMeansAssessment(), opponent.getCourtOrderedMeansAssessment());
+        assertEquals(opponentModel.getAssessedIncome(), opponent.getAssessedIncome());
+        assertEquals(opponentModel.getAssessedIncomeFrequency(), opponent.getAssessedIncomeFrequency());
+        assertEquals(opponentModel.getAssessedAssets(), opponent.getAssessedAssets());
+        assertEquals(opponentModel.getAssessmentDate(), opponent.getAssessmentDate());
+        assertEquals(opponentModel.getOrganisationName(), opponent.getOrganisationName());
+        assertEquals(opponentModel.getCurrentlyTrading(), opponent.getCurrentlyTrading());
+        assertEquals(opponentModel.getContactNameRole(), opponent.getContactNameRole());
+        assertEquals(opponentModel.getConfirmed(), opponent.getConfirmed());
+        assertEquals(opponentModel.getAppMode(), opponent.getAppMode());
+        assertEquals(opponentModel.getAmendment(), opponent.getAmendment());
+        assertEquals(opponentModel.getAward(), opponent.getAward());
+        assertEquals(opponentModel.getPublicFundingApplied(), opponent.getPublicFundingApplied());
+        assertEquals(opponentModel.getSharedInd(), opponent.getSharedInd());
+        assertEquals(opponentModel.getDeleteInd(), opponent.getDeleteInd());
     }
 
     @Test
-    public void testToOpponent_unsetBooleans() {
+    public void testToOpponent_checkBooleanDefaults() {
         uk.gov.laa.ccms.caab.model.Opponent opponentDetail =
             new uk.gov.laa.ccms.caab.model.Opponent();
         opponentDetail.setAppMode(null);
 
         Opponent opponent = mapper.toOpponent(opponentDetail);
 
-        assertFalse(opponent.isConfirmed());
-        assertFalse(opponent.isAmendment());
-        assertFalse(opponent.isAward());
-        assertFalse(opponent.isPublicFundingApplied());
-        assertFalse(opponent.isSharedInd());
+        assertFalse(opponent.getAmendment());
+        assertFalse(opponent.getAward());
+        assertFalse(opponent.getSharedInd());
 
-        assertTrue(opponent.isAppMode());
-        assertTrue(opponent.isDeleteInd());
+        assertTrue(opponent.getAppMode());
+        assertTrue(opponent.getDeleteInd());
     }
 
     @Test
@@ -1276,22 +1225,61 @@ public class ApplicationMapperTest {
         assertNull(priorAuthority.getJustification());
     }
 
-    @NotNull
-    private static Address buildAddress() {
-        Address address = new Address();
-        address.setPostCode("InitialPostcode");
-        address.setHouseNameNumber("InitialHouseNameNumber");
-        address.setNoFixedAbode(true);
-        address.setAddressLine1("InitialAddressLine1");
-        address.setAddressLine2("InitialAddressLine2");
-        address.setCity("InitialCity");
-        address.setCounty("InitialCounty");
-        address.setCountry("InitialCountry");
-        address.setCareOf("InitialCareOf");
-        address.setPreferredAddress("InitialPreferredAddress");
-        return address;
+    @Test
+    void testUpdateOpponent() {
+        Date date = new Date();
+        Opponent opponentBefore = buildOpponent(date);
+        Opponent opponent = buildOpponent(date);
+
+        uk.gov.laa.ccms.caab.model.Opponent opponentModel = buildOpponentModel(createdAt);
+
+        mapper.updateOpponent(opponent, opponentModel);
+
+        assertNotNull(opponent);
+
+        // attributes that should be unchanged
+        assertEquals(opponentBefore.getId(), opponent.getId());
+        assertEquals(opponentBefore.getAuditTrail(), opponent.getAuditTrail());
+
+        assertEquals(opponentModel.getOrganisationType().getId(), opponent.getOrganisationType());
+        assertEquals(opponentModel.getEbsId(), opponent.getEbsId());
+        assertEquals(opponentModel.getType(), opponent.getType());
+        assertEquals(opponentModel.getTitle(), opponent.getTitle());
+        assertEquals(opponentModel.getFirstName(), opponent.getFirstName());
+        assertEquals(opponentModel.getMiddleNames(), opponent.getMiddleNames());
+        assertEquals(opponentModel.getSurname(), opponent.getSurname());
+        assertEquals(opponentModel.getDateOfBirth(), opponent.getDateOfBirth());
+        assertEquals(opponentModel.getNationalInsuranceNumber(), opponent.getNationalInsuranceNumber());
+        assertEquals(opponentModel.getRelationshipToCase(), opponent.getRelationshipToCase());
+        assertEquals(opponentModel.getRelationshipToClient(), opponent.getRelationshipToClient());
+        assertEquals(opponentModel.getTelephoneHome(), opponent.getTelephoneHome());
+        assertEquals(opponentModel.getTelephoneWork(), opponent.getTelephoneWork());
+        assertEquals(opponentModel.getTelephoneMobile(), opponent.getTelephoneMobile());
+        assertEquals(opponentModel.getFaxNumber(), opponent.getFaxNumber());
+        assertEquals(opponentModel.getEmailAddress(), opponent.getEmailAddress());
+        assertEquals(opponentModel.getOtherInformation(), opponent.getOtherInformation());
+        assertEquals(opponentModel.getEmploymentStatus(), opponent.getEmploymentStatus());
+        assertEquals(opponentModel.getEmployerName(), opponent.getEmployerName());
+        assertEquals(opponentModel.getLegalAided(), opponent.getLegalAided());
+        assertEquals(opponentModel.getCertificateNumber(), opponent.getCertificateNumber());
+        assertEquals(opponentModel.getCourtOrderedMeansAssessment(), opponent.getCourtOrderedMeansAssessment());
+        assertEquals(opponentModel.getAssessedIncome(), opponent.getAssessedIncome());
+        assertEquals(opponentModel.getAssessedIncomeFrequency(), opponent.getAssessedIncomeFrequency());
+        assertEquals(opponentModel.getAssessedAssets(), opponent.getAssessedAssets());
+        assertEquals(opponentModel.getAssessmentDate(), opponent.getAssessmentDate());
+        assertEquals(opponentModel.getOrganisationName(), opponent.getOrganisationName());
+        assertEquals(opponentModel.getCurrentlyTrading(), opponent.getCurrentlyTrading());
+        assertEquals(opponentModel.getContactNameRole(), opponent.getContactNameRole());
+        assertEquals(opponentModel.getConfirmed(), opponent.getConfirmed());
+        assertEquals(opponentModel.getAppMode(), opponent.getAppMode());
+        assertEquals(opponentModel.getAmendment(), opponent.getAmendment());
+        assertEquals(opponentModel.getAward(), opponent.getAward());
+        assertEquals(opponentModel.getPublicFundingApplied(), opponent.getPublicFundingApplied());
+        assertEquals(opponentModel.getSharedInd(), opponent.getSharedInd());
+        assertEquals(opponentModel.getDeleteInd(), opponent.getDeleteInd());
     }
 
+    @Test
     public void testToBaseApplication() {
         Application application = new Application();
         application.setLscCaseReference("caseref");
@@ -1362,5 +1350,116 @@ public class ApplicationMapperTest {
         auditTrail.setCreatedBy("CreatedBy");
         auditTrail.setLastSavedBy("LastSavedBy");
         return auditTrail;
+    }
+
+    @NotNull
+    private static Address buildAddress() {
+        Address address = new Address();
+        address.setPostCode("InitialPostcode");
+        address.setHouseNameNumber("InitialHouseNameNumber");
+        address.setNoFixedAbode(true);
+        address.setAddressLine1("InitialAddressLine1");
+        address.setAddressLine2("InitialAddressLine2");
+        address.setCity("InitialCity");
+        address.setCounty("InitialCounty");
+        address.setCountry("InitialCountry");
+        address.setCareOf("InitialCareOf");
+        address.setPreferredAddress("InitialPreferredAddress");
+        return address;
+    }
+
+    private Opponent buildOpponent(Date date) {
+        Opponent opponent = new Opponent();
+        opponent.setId(Long.valueOf("11111"));
+        opponent.setAmendment(true);
+        opponent.setApplication(new Application());
+        opponent.setAppMode(false);
+        opponent.setAssessedAssets(BigDecimal.TEN);
+        opponent.setAssessedIncome(BigDecimal.ONE);
+        opponent.setAssessedIncomeFrequency("freq");
+        opponent.setAssessmentDate(date);
+        opponent.setAuditTrail(new AuditTrail());
+        opponent.setAward(true);
+        opponent.setCertificateNumber("certnum");
+        opponent.setConfirmed(false);
+        opponent.setContactNameRole("namerole");
+        opponent.setCourtOrderedMeansAssessment(true);
+        opponent.setCurrentlyTrading(false);
+        opponent.setDateOfBirth(date);
+        opponent.setDeleteInd(true);
+        opponent.setEbsId("ebs1");
+        opponent.setEmailAddress("emailadd");
+        opponent.setEmployerAddress("empaddr");
+        opponent.setEmployerName("name");
+        opponent.setEmploymentStatus("empStat");
+        opponent.setFaxNumber("faxnum");
+        opponent.setFirstName("first");
+        opponent.setId(Long.parseLong("1"));
+        opponent.setLegalAided(true);
+        opponent.setMiddleNames("middle");
+        opponent.setNationalInsuranceNumber("nino");
+        opponent.setOrganisationName("org");
+        opponent.setOrganisationType("orgtype");
+        opponent.setOtherInformation("otherinf");
+        opponent.setOutcome(new CaseOutcome());
+        opponent.setPublicFundingApplied(false);
+        opponent.setRelationshipToCase("rel2case");
+        opponent.setRelationshipToClient("rel2client");
+        opponent.setSharedInd(true);
+        opponent.setSurname("sur");
+        opponent.setTelephoneHome("telhome");
+        opponent.setTelephoneMobile("telmob");
+        opponent.setTelephoneWork("telwork");
+        opponent.setTitle("ttl");
+        opponent.setType("thetype");
+
+        return opponent;
+    }
+
+    public uk.gov.laa.ccms.caab.model.Opponent buildOpponentModel(java.util.Date date) {
+        return new uk.gov.laa.ccms.caab.model.Opponent()
+            .address(new uk.gov.laa.ccms.caab.model.Address().addressLine1("add1"))
+            .amendment(Boolean.TRUE)
+            .appMode(Boolean.FALSE)
+            .assessedAssets(BigDecimal.TEN)
+            .assessedIncome(BigDecimal.ONE)
+            .assessedIncomeFrequency("freq")
+            .assessmentDate(date)
+            .auditTrail(new AuditDetail())
+            .award(Boolean.TRUE)
+            .certificateNumber("cert")
+            .confirmed(Boolean.FALSE)
+            .contactNameRole("conNameRole")
+            .courtOrderedMeansAssessment(Boolean.TRUE)
+            .currentlyTrading(Boolean.TRUE)
+            .dateOfBirth(date)
+            .deleteInd(Boolean.FALSE)
+            .displayAddress("address 1")
+            .displayName("disp name")
+            .ebsId("ebsid")
+            .emailAddress("emailAdd")
+            .employerName("empName")
+            .employerAddress("empAddr")
+            .employmentStatus("empSt")
+            .faxNumber("fax")
+            .firstName("firstname")
+            .id(2222)
+            .legalAided(Boolean.TRUE)
+            .middleNames("midnames")
+            .nationalInsuranceNumber("nino")
+            .organisationName("orgName")
+            .organisationType(new StringDisplayValue().id("orgid").displayValue("org"))
+            .otherInformation("otherInf")
+            .partyId("party")
+            .publicFundingApplied(Boolean.TRUE)
+            .relationshipToCase("relToCase")
+            .relationshipToClient("relToClient")
+            .sharedInd(Boolean.TRUE)
+            .surname("surname")
+            .telephoneHome("telHome")
+            .telephoneMobile("telMob")
+            .telephoneWork("telWork")
+            .title("thetitle")
+            .type("thetype");
     }
 }

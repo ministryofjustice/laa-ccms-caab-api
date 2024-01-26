@@ -34,6 +34,7 @@ import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.BaseApplication;
 import uk.gov.laa.ccms.caab.model.BaseClient;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
 import uk.gov.laa.ccms.caab.model.Proceeding;
 import uk.gov.laa.ccms.caab.model.ScopeLimitation;
@@ -188,6 +189,12 @@ public abstract class BaseApplicationControllerIntegrationTest {
     if (applicationDetail.getPriorAuthorities() != null) {
       for (uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthority : applicationDetail.getPriorAuthorities()) {
         priorAuthority.setId(null);
+      }
+    }
+
+    if (applicationDetail.getOpponents() != null) {
+      for (uk.gov.laa.ccms.caab.model.Opponent opponent : applicationDetail.getOpponents()) {
+        opponent.setId(null);
       }
     }
   }
@@ -560,6 +567,72 @@ public abstract class BaseApplicationControllerIntegrationTest {
     assertEquals(clientReferenceId, applicationDetail.getClient().getReference());
     assertEquals(baseClient.getFirstName(), applicationDetail.getClient().getFirstName());
     assertEquals(baseClient.getSurname(), applicationDetail.getClient().getSurname());
+  }
+
+
+
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql",})
+  public void addOpponentToApplication() throws IOException {
+    Long applicationId = 41L;
+
+    Opponent opponent = loadObjectFromJson("/json/opponent_new.json", Opponent.class);
+
+    ResponseEntity<Void> response = applicationController.addApplicationOpponent(applicationId, caabUserLoginId, opponent);
+
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql"})
+  public void updateOpponentInApplication() throws IOException {
+    Long opponentId = 3L;
+
+    Opponent updatedOpponent = loadObjectFromJson("/json/opponent_new.json", Opponent.class);
+
+    ResponseEntity<Void> response = applicationController.updateOpponent(opponentId, caabUserLoginId, updatedOpponent);
+
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+  }
+
+
+  @Test
+  @Sql(scripts = {
+      "/sql/application_insert.sql",
+      "/sql/opponent_insert.sql"})
+  public void getOpponentsForApplication() {
+    Long applicationId = 41L;
+
+    ResponseEntity<List<Opponent>> responseEntity = applicationController.getApplicationOpponents(applicationId);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    List<Opponent> opponents = responseEntity.getBody();
+    assertFalse(opponents.isEmpty());
+  }
+
+  @Test
+  @Sql(scripts = {
+      "/sql/application_insert.sql",
+      "/sql/opponent_insert.sql"})
+  public void removeOpponentFromApplication() {
+    Long caseRef = 41L;
+    Long opponentRef = 3L;
+
+    ResponseEntity<Void> response = applicationController.removeOpponent(
+        opponentRef, caabUserLoginId);
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+    ResponseEntity<List<Opponent>> responseEntity = applicationController.getApplicationOpponents(
+        caseRef);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    List<Opponent> opponents = responseEntity.getBody();
+    assertTrue(opponents.isEmpty());
   }
 
   /**

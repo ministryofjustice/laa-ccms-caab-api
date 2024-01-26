@@ -156,7 +156,7 @@ public class Proceeding implements Serializable {
    * updater. Will be set to false when coming from EBS.
    */
   @Column(name = "EDITED")
-  private boolean edited;
+  private Boolean edited;
 
   /**
    * Scope limitations.
@@ -181,7 +181,7 @@ public class Proceeding implements Serializable {
    * Lead proceeding indicator.
    */
   @Column(name = "LEAD_PROCEEDING_IND")
-  private boolean leadProceedingInd = false;
+  private Boolean leadProceedingInd;
 
   /**
    * LAR Scope.
