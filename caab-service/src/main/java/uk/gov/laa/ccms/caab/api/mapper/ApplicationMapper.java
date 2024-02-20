@@ -55,7 +55,7 @@ public interface ApplicationMapper {
   @Mapping(target = "clientFirstName", source = "client.firstName")
   @Mapping(target = "clientSurname", source = "client.surname")
   @Mapping(target = "clientReference", source = "client.reference")
-  @Mapping(target = "costLimitChanged", source = "costLimit.changed", defaultValue = "false")
+  @Mapping(target = "costLimitChanged", source = "costLimit.changed")
   @Mapping(target = "costLimitAtTimeOfMerits", source = "costLimit.limitAtTimeOfMerits")
   @Mapping(target = "applicationType", source = "applicationType.id")
   @Mapping(target = "applicationTypeDisplayValue", source = "applicationType.displayValue")
@@ -64,16 +64,11 @@ public interface ApplicationMapper {
       source = "applicationType.devolvedPowers.dateUsed")
   @Mapping(target = "devolvedPowersContractFlag",
       source = "applicationType.devolvedPowers.contractFlag")
-  @Mapping(target = "meritsReassessmentReqdInd", source = "meritsReassessmentRequired",
-      defaultValue = "false")
-  @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged",
-      defaultValue = "false")
-  @Mapping(target = "meansAssessmentAmended", source = "meansAssessmentAmended",
-      defaultValue = "false")
-  @Mapping(target = "meritsAssessmentAmended", source = "meritsAssessmentAmended",
-      defaultValue = "false")
-  @Mapping(target = "amendment", source = "amendment",
-      defaultValue = "false")
+  @Mapping(target = "meritsReassessmentReqdInd", source = "meritsReassessmentRequired")
+  @Mapping(target = "leadProceedingChangedOpaInput", source = "leadProceedingChanged")
+  @Mapping(target = "meansAssessmentAmended", source = "meansAssessmentAmended")
+  @Mapping(target = "meritsAssessmentAmended", source = "meritsAssessmentAmended")
+  @Mapping(target = "amendment", source = "amendment")
   @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructure")
   @Mapping(target = "correspondenceAddress", source = "correspondenceAddress",
       qualifiedByName = "toAddress")
@@ -138,7 +133,7 @@ public interface ApplicationMapper {
   @Mapping(target = "status", source = "status.id")
   @Mapping(target = "displayStatus", source = "status.displayValue")
   @Mapping(target = "typeOfOrder", source = "typeOfOrder.id")
-  @Mapping(target = "leadProceedingInd", source = "leadProceedingInd", defaultValue = "false")
+  @Mapping(target = "leadProceedingInd", source = "leadProceedingInd")
   Proceeding toProceeding(uk.gov.laa.ccms.caab.model.Proceeding proceeding);
 
   @InheritInverseConfiguration(name = "toProceeding")
@@ -178,9 +173,9 @@ public interface ApplicationMapper {
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
   @Mapping(target = "appMode", source = "appMode", defaultValue = "true")
-  @Mapping(target = "amendment", source = "amendment", defaultValue = "false")
-  @Mapping(target = "award", source = "award", defaultValue = "false")
-  @Mapping(target = "sharedInd", source = "sharedInd", defaultValue = "false")
+  @Mapping(target = "amendment", source = "amendment")
+  @Mapping(target = "award", source = "award")
+  @Mapping(target = "sharedInd", source = "sharedInd")
   @Mapping(target = "deleteInd", source = "deleteInd", defaultValue = "true")
   Opponent toOpponent(uk.gov.laa.ccms.caab.model.Opponent opponent);
 
@@ -228,6 +223,7 @@ public interface ApplicationMapper {
   @InheritInverseConfiguration(name = "toCostStructure")
   uk.gov.laa.ccms.caab.model.CostStructure toCostStructureModel(CostStructure costs);
 
+  @Mapping(target = "newEntry", source = "newEntry", defaultValue = "true")
   @Mapping(target = "auditTrail", ignore = true)
   CostEntry toCostEntry(uk.gov.laa.ccms.caab.model.CostEntry costEntry);
 
@@ -377,4 +373,13 @@ public interface ApplicationMapper {
   BaseApplication toBaseApplication(Application application);
 
   ApplicationDetails toApplicationDetails(Page<Application> application);
+
+  /**
+   * Global mapper to default Booleans to FALSE in the case of a null source value.
+   * @param flag - the source value
+   * @return the source value, or FALSE.
+   */
+  default Boolean toBoolean(Boolean flag) {
+    return flag != null ? flag : Boolean.FALSE;
+  }
 }

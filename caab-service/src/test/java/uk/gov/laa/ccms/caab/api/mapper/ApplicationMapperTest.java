@@ -128,7 +128,7 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void testApplicationMapping_unsetBooleansFalse() {
+    public void testApplicationMapping_nullBooleansDefaultCorrectly() {
         ApplicationDetail detail = new ApplicationDetail();
 
         Application application = mapper.toApplication(detail);
@@ -273,6 +273,7 @@ public class ApplicationMapperTest {
 
         Proceeding proceeding = mapper.toProceeding(proceedingModel);
         assertFalse(proceeding.getLeadProceedingInd());
+        assertFalse(proceeding.getEdited());
     }
 
     @Test
@@ -426,11 +427,13 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToScopeLimitation_checkBooleanDefaults() {
-        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel = new uk.gov.laa.ccms.caab.model.ScopeLimitation();
+        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel =
+            new uk.gov.laa.ccms.caab.model.ScopeLimitation();
 
         ScopeLimitation scopeLimitation = mapper.toScopeLimitation(scopeLimitationModel);
 
         assertFalse(scopeLimitation.getDelegatedFuncApplyInd());
+        assertFalse(scopeLimitation.getDefaultInd());
     }
 
     @Test
@@ -513,7 +516,6 @@ public class ApplicationMapperTest {
     public void testToOpponent_checkBooleanDefaults() {
         uk.gov.laa.ccms.caab.model.Opponent opponentDetail =
             new uk.gov.laa.ccms.caab.model.Opponent();
-        opponentDetail.setAppMode(null);
 
         Opponent opponent = mapper.toOpponent(opponentDetail);
 
@@ -627,7 +629,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void testAddressMapping() {
-        uk.gov.laa.ccms.caab.model.Address detailAddress = new uk.gov.laa.ccms.caab.model.Address();
+        uk.gov.laa.ccms.caab.model.Address detailAddress =
+            new uk.gov.laa.ccms.caab.model.Address();
         detailAddress.setNoFixedAbode(true);
         detailAddress.setPostcode("12345");
         detailAddress.setHouseNameOrNumber("House 123");
