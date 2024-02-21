@@ -1,6 +1,7 @@
 package uk.gov.laa.ccms.data.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -331,7 +332,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals("AAP", result.getCategoryOfLaw().getId());
     assertEquals("Claim Against Public Authority", result.getCategoryOfLaw().getDisplayValue());
     assertNull(result.getRelationToLinkedCase());
-    assertNull(result.getOpponentAppliedForFunding());
+    assertFalse(result.getOpponentAppliedForFunding());
     assertEquals("Unsubmitted", result.getStatus().getDisplayValue());
     assertEquals("UNSUBMITTED", result.getStatus().getId());
     assertEquals("Phil", result.getClient().getFirstName());

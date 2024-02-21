@@ -17,6 +17,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import uk.gov.laa.ccms.caab.api.entity.Address;
@@ -44,8 +49,12 @@ import uk.gov.laa.ccms.caab.model.DevolvedPowers;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
+@ExtendWith(MockitoExtension.class)
 public class ApplicationMapperTest {
+    @Mock(answer = Answers.CALLS_REAL_METHODS)
+    private CommonMapper commonMapper;
 
+    @InjectMocks
     private final ApplicationMapper mapper = new ApplicationMapperImpl();
 
     private Date createdAt;

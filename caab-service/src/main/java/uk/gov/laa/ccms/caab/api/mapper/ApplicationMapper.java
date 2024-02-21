@@ -30,7 +30,9 @@ import uk.gov.laa.ccms.caab.model.BaseApplication;
  * and the service or API layers, ensuring consistent object translation.
  */
 
-@Mapper(componentModel = "spring", config = IgnoreUnmappedMapperConfig.class)
+@Mapper(componentModel = "spring",
+    config = IgnoreUnmappedMapperConfig.class,
+    uses = CommonMapper.class)
 public interface ApplicationMapper {
 
   @Mapping(target = "id", ignore = true)
@@ -374,12 +376,4 @@ public interface ApplicationMapper {
 
   ApplicationDetails toApplicationDetails(Page<Application> application);
 
-  /**
-   * Global mapper to default Booleans to FALSE in the case of a null source value.
-   * @param flag - the source value
-   * @return the source value, or FALSE.
-   */
-  default Boolean toBoolean(Boolean flag) {
-    return flag != null ? flag : Boolean.FALSE;
-  }
 }
