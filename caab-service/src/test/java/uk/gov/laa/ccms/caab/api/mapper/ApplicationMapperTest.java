@@ -17,6 +17,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import uk.gov.laa.ccms.caab.api.entity.Address;
@@ -44,8 +49,12 @@ import uk.gov.laa.ccms.caab.model.DevolvedPowers;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
+@ExtendWith(MockitoExtension.class)
 public class ApplicationMapperTest {
+    @Mock(answer = Answers.CALLS_REAL_METHODS)
+    private CommonMapper commonMapper;
 
+    @InjectMocks
     private final ApplicationMapper mapper = new ApplicationMapperImpl();
 
     private Date createdAt;
@@ -128,7 +137,7 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void testApplicationMapping_unsetBooleansFalse() {
+    public void testApplicationMapping_nullBooleansDefaultCorrectly() {
         ApplicationDetail detail = new ApplicationDetail();
 
         Application application = mapper.toApplication(detail);
@@ -273,6 +282,7 @@ public class ApplicationMapperTest {
 
         Proceeding proceeding = mapper.toProceeding(proceedingModel);
         assertFalse(proceeding.getLeadProceedingInd());
+        assertFalse(proceeding.getEdited());
     }
 
     @Test
@@ -426,11 +436,13 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToScopeLimitation_checkBooleanDefaults() {
-        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel = new uk.gov.laa.ccms.caab.model.ScopeLimitation();
+        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel =
+            new uk.gov.laa.ccms.caab.model.ScopeLimitation();
 
         ScopeLimitation scopeLimitation = mapper.toScopeLimitation(scopeLimitationModel);
 
         assertFalse(scopeLimitation.getDelegatedFuncApplyInd());
+        assertFalse(scopeLimitation.getDefaultInd());
     }
 
     @Test
@@ -513,7 +525,6 @@ public class ApplicationMapperTest {
     public void testToOpponent_checkBooleanDefaults() {
         uk.gov.laa.ccms.caab.model.Opponent opponentDetail =
             new uk.gov.laa.ccms.caab.model.Opponent();
-        opponentDetail.setAppMode(null);
 
         Opponent opponent = mapper.toOpponent(opponentDetail);
 
@@ -627,7 +638,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void testAddressMapping() {
-        uk.gov.laa.ccms.caab.model.Address detailAddress = new uk.gov.laa.ccms.caab.model.Address();
+        uk.gov.laa.ccms.caab.model.Address detailAddress =
+            new uk.gov.laa.ccms.caab.model.Address();
         detailAddress.setNoFixedAbode(true);
         detailAddress.setPostcode("12345");
         detailAddress.setHouseNameOrNumber("House 123");

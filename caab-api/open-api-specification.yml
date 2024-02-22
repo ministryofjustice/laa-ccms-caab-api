@@ -1133,13 +1133,13 @@ components:
           type: 'string'
         new_entry:
           type: 'boolean'
-          default: true
         lsc_resource_id:
           type: 'string'
         resource_name:
           type: 'string'
         submitted:
           type: 'boolean'
+          default: 'true'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
     baseClient:
@@ -1299,7 +1299,6 @@ components:
           type: 'string'
         lead_proceeding_ind:
           type: 'boolean'
-          default: false
         lar_scope:
           type: 'string'
         granted_using_devolved_powers:
@@ -1455,7 +1454,6 @@ components:
           type: 'boolean'
         app_mode:
           type: 'boolean'
-          default: true
         amendment:
           type: 'boolean'
         award:
