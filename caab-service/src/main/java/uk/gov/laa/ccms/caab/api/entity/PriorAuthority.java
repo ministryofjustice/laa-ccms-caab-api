@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -97,6 +98,7 @@ public class PriorAuthority implements Serializable {
   /**
    * Amount requested required or not.
    */
+  @Convert(converter = BooleanConverter.class)
   @Column(name = "VALUE_REQUIRED_FLAG", length = 5)
   private Boolean valueRequired;
 
