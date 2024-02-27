@@ -1,6 +1,7 @@
 package uk.gov.laa.ccms.caab.api.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -60,6 +61,7 @@ public class ReferenceDataItem implements Serializable {
   /**
    * If the question is mandatory or not, can be Y or N.
    */
+  @Convert(converter = BooleanConverter.class)
   @Column(name = "MANDATORY", length = 5)
   private Boolean mandatory;
 
