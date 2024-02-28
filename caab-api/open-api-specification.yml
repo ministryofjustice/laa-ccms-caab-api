@@ -1371,6 +1371,8 @@ components:
     referenceDataItem:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         code:
           $ref: "#/components/schemas/stringDisplayValue"
         type:

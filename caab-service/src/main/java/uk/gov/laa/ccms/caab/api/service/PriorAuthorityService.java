@@ -65,6 +65,10 @@ public class PriorAuthorityService {
                 HttpStatus.NOT_FOUND));
 
     mapper.updatePriorAuthority(priorAuthorityEntity, priorAuthorityModel);
+    for (uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem referenceDataItemEntity :
+        priorAuthorityEntity.getItems()) {
+      referenceDataItemEntity.setPriorAuthority(priorAuthorityEntity);
+    }
     repository.save(priorAuthorityEntity);
   }
 }
