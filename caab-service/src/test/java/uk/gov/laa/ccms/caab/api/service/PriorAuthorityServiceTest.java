@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,6 +62,9 @@ class PriorAuthorityServiceTest {
 
     uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity = new uk.gov.laa.ccms.caab.api.entity.PriorAuthority();
     priorAuthorityEntity.setId(priorAuthorityId);
+    uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem referenceDataItemEntity =
+        new uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem();
+    priorAuthorityEntity.setItems(List.of(referenceDataItemEntity));
 
     when(priorAuthorityRepository.findById(priorAuthorityId)).thenReturn(Optional.of(priorAuthorityEntity));
     when(priorAuthorityRepository.save(priorAuthorityEntity)).thenReturn(priorAuthorityEntity);

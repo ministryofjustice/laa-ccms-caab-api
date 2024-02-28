@@ -220,6 +220,11 @@ public abstract class BaseApplicationControllerIntegrationTest {
     if (applicationDetail.getPriorAuthorities() != null) {
       for (uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthority : applicationDetail.getPriorAuthorities()) {
         priorAuthority.setId(null);
+        if (priorAuthority.getItems() != null) {
+          for (uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItem : priorAuthority.getItems()) {
+            referenceDataItem.setId(null);
+          }
+        }
       }
     }
 
