@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.YesNoConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
@@ -98,7 +99,7 @@ public class PriorAuthority implements Serializable {
   /**
    * Amount requested required or not.
    */
-  @Convert(converter = BooleanConverter.class)
+  @Convert(converter = YesNoConverter.class)
   @Column(name = "VALUE_REQUIRED_FLAG", length = 5)
   private Boolean valueRequired;
 

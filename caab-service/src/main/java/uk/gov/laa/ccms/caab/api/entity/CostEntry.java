@@ -1,6 +1,7 @@
 package uk.gov.laa.ccms.caab.api.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -64,8 +66,9 @@ public class CostEntry implements Serializable {
    * amendment. true (default)= its a new Entry - added during a PUI  amendment false         = its
    * been created from an existing EBS case.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "NEW_ENTRY")
-  private Boolean newEntry = Boolean.TRUE;
+  private Boolean newEntry;
 
   /**
    * The LSC ID for the resource these costs belongs to.
