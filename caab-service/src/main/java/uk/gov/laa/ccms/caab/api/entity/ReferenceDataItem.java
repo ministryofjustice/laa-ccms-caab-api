@@ -14,6 +14,7 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.YesNoConverter;
 
 /**
  * Class used to represent a question retrieved from the reference data. It is currently used by
@@ -61,7 +62,7 @@ public class ReferenceDataItem implements Serializable {
   /**
    * If the question is mandatory or not, can be Y or N.
    */
-  @Convert(converter = BooleanConverter.class)
+  @Convert(converter = YesNoConverter.class)
   @Column(name = "MANDATORY", length = 5)
   private Boolean mandatory;
 

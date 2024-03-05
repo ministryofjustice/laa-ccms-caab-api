@@ -23,6 +23,8 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
+import org.hibernate.type.YesNoConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -108,6 +110,7 @@ public class Application implements Serializable {
   @Column(name = "CLIENT_REFERENCE", length = 30, nullable = false)
   private String clientReference;
 
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "AMENDMENT")
   private Boolean amendment;
 
@@ -117,7 +120,7 @@ public class Application implements Serializable {
   @Column(name = "APPLICATION_TYPE_DISPLAY_VALUE", length = 35)
   private String applicationTypeDisplayValue;
 
-  @Convert(converter = BooleanConverter.class)
+  @Convert(converter = YesNoConverter.class)
   @Column(name = "DEVOLVED_POWERS_USED", length = 5)
   private Boolean devolvedPowersUsed;
 
@@ -126,17 +129,20 @@ public class Application implements Serializable {
   @Column(name = "DEVOLVED_POWERS_CONTRACT_FLAG", length = 30)
   private String devolvedPowersContractFlag;
 
-  @Convert(converter = BooleanConverter.class)
+  @Convert(converter = YesNoConverter.class)
   @Column(name = "LAR_SCOPE_FLAG", length = 5)
   private Boolean larScopeFlag;
 
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "MEANS_ASSESSMENT_AMENDED")
   private Boolean meansAssessmentAmended;
 
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "MERITS_ASSESSMENT_AMENDED")
   private Boolean meritsAssessmentAmended;
 
   //Cost Limit
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "COST_LIMIT_CHANGED")
   private Boolean costLimitChanged;
   @Column(name = "COST_LIMIT_AT_TIME_OF_MERITS", precision = 10, scale = 2)
@@ -144,10 +150,11 @@ public class Application implements Serializable {
 
   //submission status
   //poll_transaction_id
-
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "MERITS_REASSESSMENT_REQD_IND")
   private Boolean meritsReassessmentReqdInd;
 
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "LEAD_PROCEEDING_CHANGED")
   private Boolean leadProceedingChangedOpaInput;
 

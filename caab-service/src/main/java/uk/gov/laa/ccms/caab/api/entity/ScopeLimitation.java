@@ -1,6 +1,7 @@
 package uk.gov.laa.ccms.caab.api.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -82,12 +84,14 @@ public class ScopeLimitation implements Serializable {
   /**
    * Indicates if the Scope Limitation is the default one.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "DEFAULT_IND")
   private Boolean defaultInd;
 
   /**
    * Indicates if delegated functions apply to the Scope Limitation.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "DELEGATED_FUNC_APPLY_IND")
   private Boolean delegatedFuncApplyInd;
 

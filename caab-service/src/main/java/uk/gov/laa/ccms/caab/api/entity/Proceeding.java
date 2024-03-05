@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -20,6 +21,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -155,6 +157,7 @@ public class Proceeding implements Serializable {
    * Indicates if a proceeding has been edited in TDS, will be set to true if saved through the
    * updater. Will be set to false when coming from EBS.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "EDITED")
   private Boolean edited;
 
@@ -180,6 +183,7 @@ public class Proceeding implements Serializable {
   /**
    * Lead proceeding indicator.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "LEAD_PROCEEDING_IND")
   private Boolean leadProceedingInd;
 

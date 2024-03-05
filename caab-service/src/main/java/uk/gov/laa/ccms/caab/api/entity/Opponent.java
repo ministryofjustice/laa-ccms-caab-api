@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -17,6 +18,8 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
+import org.hibernate.type.YesNoConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
@@ -183,6 +186,7 @@ public class Opponent implements Serializable {
   /**
    * Indicates if the Opponent is eligible for legal aid.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "LEGAL_AIDED")
   private Boolean legalAided;
 
@@ -195,6 +199,7 @@ public class Opponent implements Serializable {
   /**
    * Indicates if a court-ordered means assessment is required for the Opponent.
    */
+  @Convert(converter = YesNoConverter.class)
   @Column(name = "COURT_ORDERDED_MEANS_ASSMT", length = 10)
   private Boolean courtOrderedMeansAssessment;
 
@@ -237,6 +242,7 @@ public class Opponent implements Serializable {
   /**
    * Indicates if the organization is currently trading.
    */
+  @Convert(converter = YesNoConverter.class)
   @Column(name = "CURRENTLY_TRADING", length = 10)
   private Boolean currentlyTrading;
 
@@ -249,36 +255,42 @@ public class Opponent implements Serializable {
   /**
    * Indicates if the Opponent is confirmed.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "CONFIRMED")
   private Boolean confirmed;
 
   /**
    * Indicates the application mode.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "APPMODE")
   private Boolean appMode;
 
   /**
    * Indicates if the Opponent represents an amendment.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "AMENDMENT")
   private Boolean amendment;
 
   /**
    * Indicates if the Opponent is awarded.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "AWARD")
   private Boolean award;
 
   /**
    * Indicates if public funding has been applied for.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "PUBLIC_FUNDING_APPLIED")
   private Boolean publicFundingApplied;
 
   /**
    * Indicates if the Opponent is shared.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "SHARED_IND")
   private Boolean sharedInd;
 

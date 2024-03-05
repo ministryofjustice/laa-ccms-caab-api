@@ -14,6 +14,7 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -38,9 +39,9 @@ public class Address implements Serializable {
   @GeneratedValue(generator = "XXCCMS_ADDRESS_S")
   private Long id;
 
-  @Convert(converter = BooleanIntegerConverter.class)
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "NO_FIXED_ABODE")
-  private Boolean noFixedAbode = false;
+  private Boolean noFixedAbode;
 
   @Column(name = "POSTCODE", length = 15)
   private String postCode;
