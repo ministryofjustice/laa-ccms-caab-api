@@ -137,6 +137,61 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    void mapIntoApplication_updatesAllFields() {
+        Application application = new Application();
+        ApplicationDetail applicationDetail = new ApplicationDetail();
+
+        applicationDetail.setCaseReferenceNumber("12345");
+        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+        providerDetails.setProvider(new IntDisplayValue().id(1).displayValue("Provider"));
+        providerDetails.setOffice(new IntDisplayValue().id(2).displayValue("Office"));
+        providerDetails.setSupervisor(new StringDisplayValue().id("S123").displayValue("Supervisor"));
+        providerDetails.setFeeEarner(new StringDisplayValue().id("F123").displayValue("Fee Earner"));
+        providerDetails.setProviderContact(new StringDisplayValue().id("P123").displayValue("Provider Contact"));
+        applicationDetail.setProviderDetails(providerDetails);
+        applicationDetail.setCategoryOfLaw(new StringDisplayValue().id("C123").displayValue("Category of Law"));
+        applicationDetail.setStatus(new StringDisplayValue().id("ST123").displayValue("Status"));
+
+        Client client = new Client();
+        client.setFirstName("John");
+        client.setSurname("Doe");
+        client.setReference("Ref123");
+        applicationDetail.setClient(client);
+
+        mapper.mapIntoApplication(application, applicationDetail);
+
+        assertEquals("12345", application.getLscCaseReference());
+        assertEquals("1", application.getProviderId());
+        assertEquals("Provider", application.getProviderDisplayValue());
+        assertEquals("2", application.getOfficeId().toString());
+        assertEquals("Office", application.getOfficeDisplayValue());
+        assertEquals("S123", application.getSupervisor());
+        assertEquals("Supervisor", application.getSupervisorDisplayValue());
+        assertEquals("F123", application.getFeeEarner());
+        assertEquals("Fee Earner", application.getFeeEarnerDisplayValue());
+        assertEquals("P123", application.getProviderContact());
+        assertEquals("Provider Contact", application.getProviderContactDisplayValue());
+        assertEquals("C123", application.getCategoryOfLaw());
+        assertEquals("Category of Law", application.getCategoryOfLawDisplayValue());
+        assertEquals("ST123", application.getActualStatus());
+        assertEquals("Status", application.getDisplayStatus());
+        assertEquals("John", application.getClientFirstName());
+        assertEquals("Doe", application.getClientSurname());
+        assertEquals("Ref123", application.getClientReference());
+    }
+
+    @Test
+    void mapIntoApplication_ignoresNullApplicationDetail() {
+        Application application = new Application();
+        application.setLscCaseReference("Original");
+
+        mapper.mapIntoApplication(application, null);
+
+        assertEquals("Original", application.getLscCaseReference());
+    }
+
+
+    @Test
     public void testApplicationMapping_nullBooleansDefaultCorrectly() {
         ApplicationDetail detail = new ApplicationDetail();
 

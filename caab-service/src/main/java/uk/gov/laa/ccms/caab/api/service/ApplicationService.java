@@ -110,6 +110,27 @@ public class ApplicationService {
   }
 
   /**
+   * Updates an application with new details.
+   *
+   * @param applicationId The unique identifier of the application to be updated.
+   * @param applicationDetail The ApplicationDetail object containing the details of the
+   *                          application to be updated.
+   * @throws CaabApiException If the application with the specified ID is not found.
+   */
+  @Transactional
+  public void updateApplication(
+      final Long applicationId,
+      final ApplicationDetail applicationDetail) {
+    Application application = applicationRepository.findById(applicationId)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Application with id %s not found", applicationId),
+            HttpStatus.NOT_FOUND));
+
+    applicationMapper.mapIntoApplication(application, applicationDetail);
+    applicationRepository.save(application);
+  }
+
+  /**
    * Updates a client's information in the application repository.
    *
    * @param baseClient The client object containing updated information.

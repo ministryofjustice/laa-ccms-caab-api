@@ -130,7 +130,25 @@ class ApplicationControllerTest {
             .andExpect(status().isOk());
     }
 
-    @Test
+  @Test
+  public void updateApplication() throws Exception {
+    Long id = 1L;
+    String caabUserLoginId = "testUserLoginId";
+    ApplicationDetail applicationDetail = new ApplicationDetail();
+
+    doNothing().when(applicationService).updateApplication(id, applicationDetail);
+
+    this.mockMvc.perform(patch("/applications/{id}", id)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(applicationDetail)))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).updateApplication(id, applicationDetail);
+  }
+
+
+  @Test
     public void getApplicationType() throws Exception {
         Long id = 123L;
         ApplicationType applicationType = new ApplicationType();

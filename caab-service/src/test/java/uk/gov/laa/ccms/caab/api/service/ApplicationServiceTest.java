@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
+import uk.gov.laa.ccms.caab.model.BaseClient;
 import uk.gov.laa.ccms.caab.model.LinkedCase;
 import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
@@ -78,6 +80,50 @@ class ApplicationServiceTest {
         applicationService.createApplication(applicationDetail);
 
         verifyInteractionsWithMocks(applicationDetail, application);
+    }
+
+    @Test
+    void updateApplication_whenApplicationExists_updatesApplication() {
+        Long applicationId = 1L;
+        ApplicationDetail applicationDetail = new ApplicationDetail();
+        Application application = new Application();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+        doNothing().when(applicationMapper).mapIntoApplication(
+            any(Application.class),
+            any(ApplicationDetail.class));
+
+        applicationService.updateApplication(applicationId, applicationDetail);
+
+        verify(applicationRepository).findById(applicationId);
+        verify(applicationMapper).mapIntoApplication(application, applicationDetail);
+        verify(applicationRepository).save(application);
+    }
+
+    @Test
+    void updateApplication_whenApplicationNotExists_throwsException() {
+        Long applicationId = 1L;
+        ApplicationDetail applicationDetail = new ApplicationDetail();
+
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class,
+            () -> applicationService.updateApplication(applicationId, applicationDetail));
+
+        assertEquals("Application with id " + applicationId + " not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void updateClient_updatesClientInformation() {
+        BaseClient baseClient = new BaseClient();
+        baseClient.setFirstName("John");
+        baseClient.setSurname("Doe");
+        String reference = "clientRef";
+
+        applicationService.updateClient(baseClient, reference);
+
+        verify(applicationRepository).updateClient("John", "Doe", reference);
     }
 
     /**

@@ -124,6 +124,15 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
     return new ResponseEntity<>(application, HttpStatus.OK);
   }
 
+  @Override
+  public ResponseEntity<Void> updateApplication(
+      final Long id,
+      final String caabUserLoginId,
+      final ApplicationDetail applicationDetail) {
+    applicationService.updateApplication(id, applicationDetail);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
   //correspondence address
 
   /**
@@ -412,9 +421,10 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
 
   //clients
   @Override
-  public ResponseEntity<Void> updateApplicationClient(final String clientReferenceId,
-                                                      final String caabUserLoginId,
-                                                      final BaseClient baseClient) {
+  public ResponseEntity<Void> updateApplicationClient(
+      final String clientReferenceId,
+      final String caabUserLoginId,
+      final BaseClient baseClient) {
     applicationService.updateClient(baseClient, clientReferenceId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
