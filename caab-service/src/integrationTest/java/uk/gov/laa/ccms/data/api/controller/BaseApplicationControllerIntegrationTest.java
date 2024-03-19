@@ -12,7 +12,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,6 +81,90 @@ public abstract class BaseApplicationControllerIntegrationTest {
     }
 
     return stringBuilder.toString();
+  }
+
+  private static Stream<Arguments> createApplicationUpdateArguments() {
+    return Stream.of(
+        Arguments.of("/json/applicationUpdate_caseReferenceNumber.json", "getCaseReferenceNumber", "caseReferenceNumber"),
+        Arguments.of("/json/applicationUpdate_clientFirstName.json", "getClient.getFirstName", "client"),
+        Arguments.of("/json/applicationUpdate_costLimit.json", "getCostLimit.getLimitAtTimeOfMerits", "costLimit"),
+        Arguments.of("/json/applicationUpdate_applicationType.json", "getApplicationType.getId", "applicationType"),
+        Arguments.of("/json/applicationUpdate_categoryOfLaw.json", "getCategoryOfLaw.getId", "categoryOfLaw"),
+        Arguments.of("/json/applicationUpdate_correspondenceAddress.json", "getCorrespondenceAddress.getPostcode", "correspondenceAddress"),
+        Arguments.of("/json/applicationUpdate_providerContact.json", "getProviderDetails.getProviderContact.getId", "providerDetails"),
+        Arguments.of("/json/applicationUpdate_status.json", "getStatus.getId", "status")
+    );
+  }
+
+
+  @ParameterizedTest
+  @MethodSource("createApplicationUpdateArguments")
+  @Sql(scripts = "/sql/application_insert.sql")
+  public void testUpdateApplication(String fileInput, String methodCall, String fieldToIgnore)
+      throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    ApplicationDetail patchedApplicationDetails = loadObjectFromJson(
+        fileInput, ApplicationDetail.class);
+
+    final Long id = 21L;
+
+    //get the application before doing the update
+    ApplicationDetail beforeUpdateApplication = applicationService.getApplication(id);
+
+    String auditUser = "audit@user.com";
+    ResponseEntity<Void> responseEntity =
+        applicationController.updateApplication(id, auditUser, patchedApplicationDetails);
+
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    //get the application after doing the update
+    ApplicationDetail afterUpdateApplication = applicationService.getApplication(id);
+
+    // Split the methodCall string and iterate over it to get the final value
+    String[] methodCalls = methodCall.split("\\.");
+    Object expectedVariable = getObjectToCheckFromMethod(patchedApplicationDetails, methodCalls);
+    Object actualVariable = getObjectToCheckFromMethod(afterUpdateApplication, methodCalls);
+    assertEquals(expectedVariable, actualVariable);
+
+    //check other variables are not changed
+    assertTrue(areAllFieldsEqual(
+        beforeUpdateApplication,
+        afterUpdateApplication,
+        ApplicationDetail.class, List.of(fieldToIgnore, "auditTrail")));
+  }
+
+  // Utility method to resolve the method chain and get the value
+  private Object getObjectToCheckFromMethod(Object initialObject, String[] methodCalls)
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+    Object currentObject = initialObject;
+    for (String methodName : methodCalls) {
+      Method method = currentObject.getClass().getMethod(methodName);
+      currentObject = method.invoke(currentObject);
+    }
+    return currentObject;
+  }
+
+
+  public static boolean areAllFieldsEqual(Object obj1, Object obj2, Class<?> clazz, List<String> fieldsToIgnore)
+      throws IllegalArgumentException, IllegalAccessException {
+
+    for (Field field : clazz.getDeclaredFields()) {
+      field.setAccessible(true);
+
+      // Continue to the next field if it should be ignored
+      if (fieldsToIgnore.contains(field.getName())) {
+        continue;
+      }
+
+      Object value1 = field.get(obj1);
+      Object value2 = field.get(obj2);
+
+      if (!Objects.equals(value1, value2)) {
+        System.out.println("Field " + field.getName() + " is not equal: " + value1 + " != " + value2);
+        return false;
+      }
+    }
+    return true;
   }
 
   /**

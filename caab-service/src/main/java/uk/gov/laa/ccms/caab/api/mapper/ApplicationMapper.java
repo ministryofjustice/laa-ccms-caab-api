@@ -2,11 +2,14 @@ package uk.gov.laa.ccms.caab.api.mapper;
 
 
 import java.util.List;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
@@ -76,6 +79,16 @@ public interface ApplicationMapper {
       qualifiedByName = "toAddress")
   Application toApplication(ApplicationDetail applicationDetail);
 
+  @InheritConfiguration(name = "toApplication")
+  @Mapping(target = "opponents", ignore = true)
+  @Mapping(target = "linkedCases", ignore = true)
+  @Mapping(target = "proceedings", ignore = true)
+  @Mapping(target = "priorAuthorities", ignore = true)
+  @BeanMapping(nullValuePropertyMappingStrategy =  NullValuePropertyMappingStrategy.IGNORE)
+  void mapIntoApplication(
+      @MappingTarget Application application,
+      ApplicationDetail applicationDetail);
+
   /**
    * After mapping, set the parent entity in the child entities.
    *
@@ -117,7 +130,7 @@ public interface ApplicationMapper {
     }
   }
 
-  @InheritInverseConfiguration
+  @InheritInverseConfiguration(name = "toApplication")
   @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructureModel")
   @Mapping(target = "correspondenceAddress", source = "correspondenceAddress",
       qualifiedByName = "toAddressModel")
@@ -253,6 +266,18 @@ public interface ApplicationMapper {
       source = "devolvedPowersContractFlag")
   ApplicationType toApplicationType(Application application);
 
+  @Mapping(target = "provider.id", source = "providerId")
+  @Mapping(target = "provider.displayValue", source = "providerDisplayValue")
+  @Mapping(target = "office.id", source = "officeId")
+  @Mapping(target = "office.displayValue", source = "officeDisplayValue")
+  @Mapping(target = "supervisor.id", source = "supervisor")
+  @Mapping(target = "supervisor.displayValue", source = "supervisorDisplayValue")
+  @Mapping(target = "feeEarner.id", source = "feeEarner")
+  @Mapping(target = "feeEarner.displayValue", source = "feeEarnerDisplayValue")
+  @Mapping(target = "providerContact.id", source = "providerContact")
+  @Mapping(target = "providerContact.displayValue", source = "providerContactDisplayValue")
+  ApplicationProviderDetails toProviderDetails(Application application);
+
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "providerId", source = "providerDetails.provider.id")
@@ -268,18 +293,6 @@ public interface ApplicationMapper {
       source = "providerDetails.providerContact.displayValue")
   void addProviderDetails(@MappingTarget Application application,
                           ApplicationProviderDetails providerDetails);
-
-  @Mapping(target = "provider.id", source = "providerId")
-  @Mapping(target = "provider.displayValue", source = "providerDisplayValue")
-  @Mapping(target = "office.id", source = "officeId")
-  @Mapping(target = "office.displayValue", source = "officeDisplayValue")
-  @Mapping(target = "supervisor.id", source = "supervisor")
-  @Mapping(target = "supervisor.displayValue", source = "supervisorDisplayValue")
-  @Mapping(target = "feeEarner.id", source = "feeEarner")
-  @Mapping(target = "feeEarner.displayValue", source = "feeEarnerDisplayValue")
-  @Mapping(target = "providerContact.id", source = "providerContact")
-  @Mapping(target = "providerContact.displayValue", source = "providerContactDisplayValue")
-  ApplicationProviderDetails toProviderDetails(Application application);
 
 
   /**
@@ -337,19 +350,8 @@ public interface ApplicationMapper {
       @MappingTarget PriorAuthority priorAuthority,
       uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityModel);
 
-  @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "matterType", source = "matterType.id")
-  @Mapping(target = "matterTypeDisplayValue", source = "matterType.displayValue")
-  @Mapping(target = "proceedingType", source = "proceedingType.id")
-  @Mapping(target = "proceedingTypeDisplayValue", source = "proceedingType.displayValue")
-  @Mapping(target = "levelOfService", source = "levelOfService.id")
-  @Mapping(target = "levelOfServiceDisplayValue", source = "levelOfService.displayValue")
-  @Mapping(target = "clientInvolvement", source = "clientInvolvement.id")
-  @Mapping(target = "clientInvolvementDisplayValue", source = "clientInvolvement.displayValue")
-  @Mapping(target = "status", source = "status.id")
-  @Mapping(target = "displayStatus", source = "status.displayValue")
-  @Mapping(target = "typeOfOrder", source = "typeOfOrder.id")
+  @InheritConfiguration(name = "toProceeding")
   void updateProceeding(
       @MappingTarget Proceeding proceeding,
       uk.gov.laa.ccms.caab.model.Proceeding proceedingModel);

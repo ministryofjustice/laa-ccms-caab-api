@@ -1,0 +1,11 @@
+{
+  "application_type": {
+    "id": "LEGAL_HELP",
+    "display_value": "Legal Help",
+    "devolved_powers": {
+      "used": true,
+      "date_used": "2024-01-01",
+      "contract_flag": "No"
+    }
+  }
+}
