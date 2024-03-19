@@ -122,11 +122,11 @@ paths:
     patch:
       tags:
         - applications
-      summary: 'Update Application'
+      summary: 'Update an Application'
       operationId: 'updateApplication'
 
       requestBody:
-        description: Update a application
+        description: Update an application
         content:
           application/json:
             schema:
