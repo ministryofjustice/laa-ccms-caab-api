@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -329,6 +328,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
   @Sql(scripts = "/sql/application_insert.sql")
   public void testGetApplications_caseref_returnsdata() {
     String caseRef = "300001644516";
+    String providerId = "26517";
     String provCaseRef = "329635";
     String clientSurname = "Payne";
     String clientRef = "PhilTest";
@@ -345,6 +345,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
         null,
         null,
         null,
+        null,
         Pageable.unpaged());
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -354,6 +355,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     assertEquals(1, responseEntity.getBody().getSize());
     BaseApplication result = responseEntity.getBody().getContent().get(0);
     assertEquals(caseRef, result.getCaseReferenceNumber());
+    assertEquals(Integer.parseInt(providerId), result.getProviderDetails().getProvider().getId());
     assertEquals(provCaseRef, result.getProviderDetails().getProviderCaseReference());
     assertEquals(clientSurname, result.getClient().getSurname());
     assertEquals(clientRef, result.getClient().getReference());
@@ -370,6 +372,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
   @Sql(scripts = "/sql/application_insert.sql")
   public void testGetApplications_allfields_returnsdata() {
     String caseRef = "300001644516";
+    String providerId = "26517";
     String provCaseRef = "329635";
     String clientSurname = "Payne";
     String clientRef = "PhilTest";
@@ -380,6 +383,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     // Call the getApplications method directly
     ResponseEntity<ApplicationDetails> responseEntity = applicationController.getApplications(
         caseRef,
+        providerId,
         provCaseRef,
         clientSurname,
         clientRef,
@@ -395,6 +399,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     assertEquals(1, responseEntity.getBody().getSize());
     BaseApplication result = responseEntity.getBody().getContent().get(0);
     assertEquals(caseRef, result.getCaseReferenceNumber());
+    assertEquals(Integer.parseInt(providerId), result.getProviderDetails().getProvider().getId());
     assertEquals(provCaseRef, result.getProviderDetails().getProviderCaseReference());
     assertEquals(clientSurname, result.getClient().getSurname());
     assertEquals(clientRef, result.getClient().getReference());
@@ -411,6 +416,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
   @Sql(scripts = "/sql/application_insert.sql")
   public void testGetApplications_allfields_nomatch() {
     String caseRef = "unknown";
+    String providerId = "26517";
     String provCaseRef = "329635";
     String clientSurname = "Payne";
     String clientRef = "PhilTest";
@@ -421,6 +427,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     // Call the getApplications method directly
     ResponseEntity<ApplicationDetails> responseEntity = applicationController.getApplications(
         caseRef,
+        providerId,
         provCaseRef,
         clientSurname,
         clientRef,

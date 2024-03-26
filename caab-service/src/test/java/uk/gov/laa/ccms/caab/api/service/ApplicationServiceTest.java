@@ -153,9 +153,8 @@ class ApplicationServiceTest {
         when(applicationRepository.findById(any())).thenReturn(Optional.empty());
 
         // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.getApplication(1L);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getApplication(1L));
 
         verify(applicationRepository).findById(1L);
 
@@ -190,9 +189,8 @@ class ApplicationServiceTest {
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
         // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.getApplicationType(id);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getApplicationType(id));
 
         verify(applicationRepository).findById(id);
 
@@ -230,9 +228,8 @@ class ApplicationServiceTest {
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
         // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.putApplicationType(id, applicationType);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.putApplicationType(id, applicationType));
 
         verify(applicationRepository).findById(id);
 
@@ -265,9 +262,8 @@ class ApplicationServiceTest {
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
         // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.getApplicationProviderDetails(id);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getApplicationProviderDetails(id));
 
         verify(applicationRepository).findById(id);
 
@@ -298,9 +294,8 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.putProviderDetails(id, providerDetails);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.putProviderDetails(id, providerDetails));
 
         verify(applicationRepository).findById(id);
 
@@ -332,9 +327,8 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.getLinkedCasesForApplication(id);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getLinkedCasesForApplication(id));
 
         verify(applicationRepository).findById(id);
 
@@ -366,9 +360,8 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.getApplicationCorrespondenceAddress(id);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.getApplicationCorrespondenceAddress(id));
 
         verify(applicationRepository).findById(id);
 
@@ -398,9 +391,8 @@ class ApplicationServiceTest {
 
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () -> {
-            applicationService.putCorrespondenceAddress(id, newAddress);
-        });
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            applicationService.putCorrespondenceAddress(id, newAddress));
 
         verify(applicationRepository).findById(id);
 
@@ -450,6 +442,7 @@ class ApplicationServiceTest {
     void getApplications_returnsData() {
         Application application = new Application();
         application.setLscCaseReference("caseref");
+        application.setProviderId("provid");
         application.setProviderCaseReference("provref");
         application.setClientSurname("surname");
         application.setClientReference("clientref");
@@ -467,6 +460,7 @@ class ApplicationServiceTest {
 
         ApplicationDetails response = applicationService.getApplications(
             application.getLscCaseReference(),
+            application.getProviderId(),
             application.getProviderCaseReference(),
             application.getClientSurname(),
             application.getClientReference(),

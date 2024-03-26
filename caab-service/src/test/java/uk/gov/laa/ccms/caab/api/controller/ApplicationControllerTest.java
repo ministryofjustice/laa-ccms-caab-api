@@ -297,6 +297,7 @@ class ApplicationControllerTest {
     @Test
     public void getApplications() throws Exception {
         String caseRef = "caseref";
+        String providerId = "provid";
         String providerRef = "provref";
         String clientSurname = "surname";
         String clientRef = "ref";
@@ -306,6 +307,7 @@ class ApplicationControllerTest {
 
         when(applicationService.getApplications(
             eq(caseRef),
+            eq(providerId),
             eq(providerRef),
             eq(clientSurname),
             eq(clientRef),
@@ -316,6 +318,7 @@ class ApplicationControllerTest {
 
         this.mockMvc.perform(get("/applications")
                 .param("case-reference-number", caseRef)
+                .param("provider-id", providerId)
                 .param("provider-case-ref", providerRef)
                 .param("client-surname", clientSurname)
                 .param("client-reference", clientRef)
@@ -324,6 +327,17 @@ class ApplicationControllerTest {
                 .param("status", status))
             .andDo(print())
             .andExpect(status().isOk());
+
+        verify(applicationService).getApplications(
+            eq(caseRef),
+            eq(providerId),
+            eq(providerRef),
+            eq(clientSurname),
+            eq(clientRef),
+            eq(feeEarner),
+            eq(Integer.parseInt(officeId)),
+            eq(status),
+            any(Pageable.class));
     }
 
   @Test
