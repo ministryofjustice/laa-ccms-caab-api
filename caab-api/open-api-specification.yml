@@ -1489,7 +1489,7 @@ components:
         organisation_name:
           type: 'string'
         organisation_type:
-          $ref: "#/components/schemas/stringDisplayValue"
+          type: "string"
         currently_trading:
           type: 'boolean'
         contact_name_role:
@@ -1921,6 +1921,8 @@ components:
     baseApplication:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         case_reference_number:
           type: 'string'
         category_of_law:

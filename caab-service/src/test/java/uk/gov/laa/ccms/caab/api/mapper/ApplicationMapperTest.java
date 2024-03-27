@@ -538,7 +538,7 @@ public class ApplicationMapperTest {
         Opponent opponent = mapper.toOpponent(opponentModel);
 
         assertNotNull(opponent);
-        assertEquals(opponentModel.getOrganisationType().getId(), opponent.getOrganisationType());
+        assertEquals(opponentModel.getOrganisationType(), opponent.getOrganisationType());
         assertEquals(opponentModel.getEbsId(), opponent.getEbsId());
         assertEquals(opponentModel.getType(), opponent.getType());
         assertEquals(opponentModel.getTitle(), opponent.getTitle());
@@ -860,6 +860,7 @@ public class ApplicationMapperTest {
 
         // Verify the resulting ApplicationDetail instance
         assertNotNull(applicationDetail);
+        assertEquals(application.getId().intValue(), applicationDetail.getId());
         assertEquals(Integer.valueOf(12345), applicationDetail.getProviderDetails().getProvider().getId());
         assertEquals("Provider Display Value", applicationDetail.getProviderDetails().getProvider().getDisplayValue());
         assertEquals("Provider Case Reference", applicationDetail.getProviderDetails().getProviderCaseReference());
@@ -881,6 +882,7 @@ public class ApplicationMapperTest {
 
     private static Application getApplication() {
         Application application = new Application();
+        application.setId(9876L);
         application.setProviderId("12345");
         application.setProviderDisplayValue("Provider Display Value");
         application.setProviderCaseReference("Provider Case Reference");
@@ -1308,7 +1310,7 @@ public class ApplicationMapperTest {
         assertEquals(opponentBefore.getId(), opponent.getId());
         assertEquals(opponentBefore.getAuditTrail(), opponent.getAuditTrail());
 
-        assertEquals(opponentModel.getOrganisationType().getId(), opponent.getOrganisationType());
+        assertEquals(opponentModel.getOrganisationType(), opponent.getOrganisationType());
         assertEquals(opponentModel.getEbsId(), opponent.getEbsId());
         assertEquals(opponentModel.getType(), opponent.getType());
         assertEquals(opponentModel.getTitle(), opponent.getTitle());
@@ -1348,28 +1350,12 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToBaseApplication() {
-        Application application = new Application();
-        application.setLscCaseReference("caseref");
-        application.setCategoryOfLaw("cat1");
-        application.setCategoryOfLawDisplayValue("cat 1");
-        application.setActualStatus("actstat");
-        application.setDisplayStatus("dispstat");
-        application.setClientFirstName("firstname");
-        application.setClientSurname("surname");
-        application.setClientReference("clientref");
-        application.setProviderId("123");
-        application.setProviderDisplayValue("Provider Display Value");
-        application.setOfficeId(1);
-        application.setOfficeDisplayValue("Office 1");
-        application.setSupervisorDisplayValue("Supervisor Display Value");
-        application.setFeeEarnerDisplayValue("Fee Earner Display Value");
-        application.setProviderContactDisplayValue("Provider Contact Display Value");
-        application.setProviderCaseReference("ProviderCase123");
-
+        Application application = getApplication();
 
         BaseApplication result = mapper.toBaseApplication(application);
 
         assertNotNull(result);
+        assertEquals(application.getId().intValue(), result.getId());
         assertEquals(application.getLscCaseReference(), result.getCaseReferenceNumber());
         assertEquals(application.getCategoryOfLaw(), result.getCategoryOfLaw().getId());
         assertEquals(application.getCategoryOfLawDisplayValue(), result.getCategoryOfLaw().getDisplayValue());
@@ -1379,15 +1365,14 @@ public class ApplicationMapperTest {
         assertEquals(application.getClientSurname(), result.getClient().getSurname());
         assertEquals(application.getClientReference(), result.getClient().getReference());
 
-        assertEquals(123, result.getProviderDetails().getProvider().getId());
-        assertEquals("Provider Display Value", result.getProviderDetails().getProvider().getDisplayValue());
-        assertEquals(1, result.getProviderDetails().getOffice().getId());
-        assertEquals("Office 1", result.getProviderDetails().getOffice().getDisplayValue());
-        assertEquals("Supervisor Display Value", result.getProviderDetails().getSupervisor().getDisplayValue());
-        assertEquals("Fee Earner Display Value", result.getProviderDetails().getFeeEarner().getDisplayValue());
-        assertEquals("Provider Contact Display Value", result.getProviderDetails().getProviderContact().getDisplayValue());
-        assertEquals("ProviderCase123", result.getProviderDetails().getProviderCaseReference());
-
+        assertEquals(Integer.valueOf(application.getProviderId()), result.getProviderDetails().getProvider().getId());
+        assertEquals(application.getProviderDisplayValue(), result.getProviderDetails().getProvider().getDisplayValue());
+        assertEquals(application.getOfficeId(), result.getProviderDetails().getOffice().getId());
+        assertEquals(application.getOfficeDisplayValue(), result.getProviderDetails().getOffice().getDisplayValue());
+        assertEquals(application.getSupervisorDisplayValue(), result.getProviderDetails().getSupervisor().getDisplayValue());
+        assertEquals(application.getFeeEarnerDisplayValue(), result.getProviderDetails().getFeeEarner().getDisplayValue());
+        assertEquals(application.getProviderContactDisplayValue(), result.getProviderDetails().getProviderContact().getDisplayValue());
+        assertEquals(application.getProviderCaseReference(), result.getProviderDetails().getProviderCaseReference());
     }
 
     @Test
@@ -1515,7 +1500,7 @@ public class ApplicationMapperTest {
             .middleNames("midnames")
             .nationalInsuranceNumber("nino")
             .organisationName("orgName")
-            .organisationType(new StringDisplayValue().id("orgid").displayValue("org"))
+            .organisationType("orgid")
             .otherInformation("otherInf")
             .partyId("party")
             .publicFundingApplied(Boolean.TRUE)

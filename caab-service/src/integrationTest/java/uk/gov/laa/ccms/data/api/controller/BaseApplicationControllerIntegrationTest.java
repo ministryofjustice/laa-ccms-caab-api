@@ -285,6 +285,8 @@ public abstract class BaseApplicationControllerIntegrationTest {
   }
 
   private void nullModelIds(ApplicationDetail applicationDetail) {
+    applicationDetail.setId(null);
+
     if (applicationDetail.getLinkedCases() != null) {
       for (LinkedCase linkedCase : applicationDetail.getLinkedCases()) {
         linkedCase.setId(null);

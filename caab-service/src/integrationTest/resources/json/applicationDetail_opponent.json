@@ -87,9 +87,7 @@
     "assessed_assets": 50000,
     "assessment_date": null,
     "organisation_name": "Organisation Name",
-    "organisation_type": {
-      "id": "Org"
-    },
+    "organisation_type": "Org",
     "currently_trading": true,
     "contact_name_role": "Contact Role",
     "confirmed": true,
