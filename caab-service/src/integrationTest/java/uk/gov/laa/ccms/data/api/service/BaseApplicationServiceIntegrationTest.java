@@ -45,6 +45,8 @@ public abstract class BaseApplicationServiceIntegrationTest {
   private ApplicationService applicationService;
   @Autowired
   private ApplicationRepository applicationRepository;
+
+  private final Long applicationId = 9876L;
   private final String lscCaseReference = "LSC001";
   private final Integer providerId = 123456;
   private final String providerCaseReference = "PRD_CASE_REF_001";
@@ -139,11 +141,12 @@ public abstract class BaseApplicationServiceIntegrationTest {
 
     // Assert that the fetched application is not null and has the expected values
     assertNotNull(fetchedApplication);
+    assertEquals(savedId, fetchedApplication.getId());
     assertEquals(lscCaseReference, fetchedApplication.getLscCaseReference());
     assertEquals(providerId.toString(), fetchedApplication.getProviderId());
     assertEquals(providerCaseReference, fetchedApplication.getProviderCaseReference());
     assertEquals(providerDisplayValue, fetchedApplication.getProviderDisplayValue());
-    assertEquals(officeId, fetchedApplication.getOfficeId().intValue());
+    assertEquals(officeId, fetchedApplication.getOfficeId());
     assertEquals(officeDisplayValue, fetchedApplication.getOfficeDisplayValue());
     assertEquals(supervisor, fetchedApplication.getSupervisor());
     assertEquals(supervisorDisplayValue, fetchedApplication.getSupervisorDisplayValue());
@@ -232,7 +235,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(builtOpponent.getMiddleNames(), fetchedOpponent.getMiddleNames());
     assertEquals(builtOpponent.getNationalInsuranceNumber(), fetchedOpponent.getNationalInsuranceNumber());
     assertEquals(builtOpponent.getOrganisationName(), fetchedOpponent.getOrganisationName());
-    assertEquals(builtOpponent.getOrganisationType().getId(), fetchedOpponent.getOrganisationType());
+    assertEquals(builtOpponent.getOrganisationType(), fetchedOpponent.getOrganisationType());
     assertEquals(builtOpponent.getOtherInformation(), fetchedOpponent.getOtherInformation());
     assertEquals(builtOpponent.getPublicFundingApplied(), fetchedOpponent.getPublicFundingApplied());
     assertEquals(builtOpponent.getRelationshipToCase(), fetchedOpponent.getRelationshipToCase());
@@ -484,6 +487,8 @@ public abstract class BaseApplicationServiceIntegrationTest {
 
   private ApplicationDetail buildApplication(){
     ApplicationDetail application = buildRequiredApplicationDetail();
+    application.setId(applicationId.intValue());
+
     //provider details
     ApplicationProviderDetails providerDetails = application.getProviderDetails();
     providerDetails.setProviderCaseReference(providerCaseReference);
@@ -597,7 +602,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
         .middleNames("midnames")
         .nationalInsuranceNumber("nino")
         .organisationName("orgName")
-        .organisationType(new StringDisplayValue().id("orgid").displayValue("org"))
+        .organisationType("orgid")
         .otherInformation("otherInf")
         .partyId("party")
         .publicFundingApplied(Boolean.TRUE)
