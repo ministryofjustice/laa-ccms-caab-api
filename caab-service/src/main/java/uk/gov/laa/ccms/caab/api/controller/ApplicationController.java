@@ -84,6 +84,7 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
    * Retrieves the details of a specific application.
    *
    * @param caseReferenceNumber Unique reference number for the case.
+   * @param providerId Reference provided by the case provider.
    * @param providerCaseRef Reference provided by the case provider.
    * @param clientSurname Surname of the client associated with the case.
    * @param clientReference Client's personal reference for the case.
@@ -96,6 +97,7 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
   @Override
   public ResponseEntity<ApplicationDetails> getApplications(
       final String caseReferenceNumber,
+      final String providerId,
       final String providerCaseRef,
       final String clientSurname,
       final String clientReference,
@@ -106,6 +108,7 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
 
     ApplicationDetails applicationDetails = applicationService.getApplications(
         caseReferenceNumber,
+        providerId,
         providerCaseRef,
         clientSurname,
         clientReference,

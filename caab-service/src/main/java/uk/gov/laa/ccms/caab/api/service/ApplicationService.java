@@ -69,11 +69,21 @@ public class ApplicationService {
   /**
    * Get applications which match the provided search criteria.
    *
+   * @param caseReferenceNumber - the case reference number search criteria.
+   * @param providerId - the provider id search criteria.
+   * @param providerCaseRef - the provider case reference search criteria.
+   * @param clientSurname - the client surname search criteria.
+   * @param clientReference - the client reference search criteria.
+   * @param feeEarner - the fee earner search criteria.
+   * @param officeId  - the office id search criteria.
+   * @param status - the status search criteria.
+   * @param pageable - the pageable settings for the query.
    * @return application details containing a page of BaseApplication.
    */
   @Transactional
   public ApplicationDetails getApplications(
       final String caseReferenceNumber,
+      final String providerId,
       final String providerCaseRef,
       final String clientSurname,
       final String clientReference,
@@ -83,6 +93,7 @@ public class ApplicationService {
       final Pageable pageable) {
     Application application = new Application();
     application.setLscCaseReference(caseReferenceNumber);
+    application.setProviderId(providerId);
     application.setProviderCaseReference(providerCaseRef);
     application.setClientSurname(clientSurname);
     application.setClientReference(clientReference);
