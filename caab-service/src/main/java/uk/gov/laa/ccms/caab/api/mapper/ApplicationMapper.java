@@ -184,7 +184,6 @@ public interface ApplicationMapper {
   uk.gov.laa.ccms.caab.model.ScopeLimitation toScopeLimitationModel(
       ScopeLimitation scopeLimitation);
 
-  @Mapping(target = "organisationType", source = "organisationType.id")
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
   @Mapping(target = "appMode", source = "appMode", defaultValue = "true")
@@ -199,7 +198,6 @@ public interface ApplicationMapper {
   uk.gov.laa.ccms.caab.model.Opponent toOpponentModel(Opponent opponent);
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "organisationType", source = "organisationType.id")
   @Mapping(target = "auditTrail", ignore = true)
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
   void updateOpponent(
