@@ -31,7 +31,7 @@ public interface EvidenceMapper {
   @InheritInverseConfiguration
   @Mapping(target = "auditTrail", ignore = true)
   uk.gov.laa.ccms.caab.api.entity.EvidenceDocument toEvidenceDocument(
-      final EvidenceDocumentDetail EvidenceDocumentDetail);
+      final EvidenceDocumentDetail evidenceDocumentDetail);
 
   default String toBase64String(byte[] bytes) {
     return bytes != null ? Base64.getEncoder().encodeToString(bytes) : null;
