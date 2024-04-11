@@ -28,6 +28,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.ApplicationController;
+import uk.gov.laa.ccms.caab.api.controller.LinkedCaseController;
+import uk.gov.laa.ccms.caab.api.controller.OpponentController;
+import uk.gov.laa.ccms.caab.api.controller.PriorAuthorityController;
+import uk.gov.laa.ccms.caab.api.controller.ProceedingController;
+import uk.gov.laa.ccms.caab.api.controller.ScopeLimitationController;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
@@ -44,6 +49,21 @@ public abstract class BaseApplicationControllerIntegrationTest {
 
   @Autowired
   private ApplicationController applicationController;
+
+  @Autowired
+  private LinkedCaseController linkedCaseController;
+
+  @Autowired
+  private OpponentController opponentController;
+
+  @Autowired
+  private PriorAuthorityController priorAuthorityController;
+
+  @Autowired
+  private ProceedingController proceedingController;
+
+  @Autowired
+  private ScopeLimitationController scopeLimitationController;
 
   @Autowired
   private ApplicationService applicationService;
@@ -473,7 +493,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
 
     Proceeding updatedProceeding = loadObjectFromJson("/json/proceeding_new.json", Proceeding.class);
 
-    ResponseEntity<Void> response = applicationController.updateProceeding(proceedingId, caabUserLoginId, updatedProceeding);
+    ResponseEntity<Void> response = proceedingController.updateProceeding(proceedingId, caabUserLoginId, updatedProceeding);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
   }
@@ -498,7 +518,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     Long caseRef = 41L;
     Long proceedingRef = 2L;
 
-    applicationController.removeProceeding(proceedingRef, caabUserLoginId);
+    proceedingController.removeProceeding(proceedingRef, caabUserLoginId);
     ResponseEntity<List<Proceeding>> responseEntity = applicationController.getApplicationProceedings(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -551,7 +571,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     Long caseRef = 41L;
     Long linkedCaseRef = 2L;
 
-    applicationController.removeLinkedCase(linkedCaseRef, caabUserLoginId);
+    linkedCaseController.removeLinkedCase(linkedCaseRef, caabUserLoginId);
     ResponseEntity<List<LinkedCase>> responseEntity = applicationController.getApplicationLinkedCases(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -581,7 +601,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
 
     PriorAuthority updatedPriorAuthority = loadObjectFromJson("/json/prior_authority_new.json", PriorAuthority.class);
 
-    ResponseEntity<Void> response = applicationController.updatePriorAuthority(priorAuthorityId, caabUserLoginId, updatedPriorAuthority);
+    ResponseEntity<Void> response = priorAuthorityController.updatePriorAuthority(priorAuthorityId, caabUserLoginId, updatedPriorAuthority);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
   }
@@ -606,7 +626,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     Long caseRef = 41L;
     Long priorAuthorityRef = 2L;
 
-    applicationController.removePriorAuthority(priorAuthorityRef, caabUserLoginId);
+    priorAuthorityController.removePriorAuthority(priorAuthorityRef, caabUserLoginId);
     ResponseEntity<List<PriorAuthority>> responseEntity = applicationController.getApplicationPriorAuthorities(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -623,7 +643,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
 
     ScopeLimitation scopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitation.class);
 
-    ResponseEntity<Void> response = applicationController.addProceedingScopeLimitation(proceedingId, caabUserLoginId, scopeLimitation);
+    ResponseEntity<Void> response = proceedingController.addProceedingScopeLimitation(proceedingId, caabUserLoginId, scopeLimitation);
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
   }
@@ -635,7 +655,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
 
     ScopeLimitation updatedScopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitation.class);
 
-    ResponseEntity<Void> response = applicationController.updateScopeLimitation(scopeLimitationId, caabUserLoginId, updatedScopeLimitation);
+    ResponseEntity<Void> response = scopeLimitationController.updateScopeLimitation(scopeLimitationId, caabUserLoginId, updatedScopeLimitation);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
   }
@@ -649,7 +669,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
   public void getScopeLimitationsForProceeding() {
     Long proceedingId = 2L;
 
-    ResponseEntity<List<ScopeLimitation>> responseEntity = applicationController.getProceedingsScopeLimitations(proceedingId);
+    ResponseEntity<List<ScopeLimitation>> responseEntity = proceedingController.getProceedingsScopeLimitations(proceedingId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
@@ -666,10 +686,10 @@ public abstract class BaseApplicationControllerIntegrationTest {
   public void removeScopeLimitationFromProceeding() {
     Long scopeLimitationId = 3L;
 
-    ResponseEntity<Void> response = applicationController.removeScopeLimitation(scopeLimitationId, caabUserLoginId);
+    ResponseEntity<Void> response = scopeLimitationController.removeScopeLimitation(scopeLimitationId, caabUserLoginId);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-    ResponseEntity<List<ScopeLimitation>> responseEntity = applicationController.getProceedingsScopeLimitations(2L);
+    ResponseEntity<List<ScopeLimitation>> responseEntity = proceedingController.getProceedingsScopeLimitations(2L);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
@@ -722,7 +742,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
 
     Opponent updatedOpponent = loadObjectFromJson("/json/opponent_new.json", Opponent.class);
 
-    ResponseEntity<Void> response = applicationController.updateOpponent(opponentId, caabUserLoginId, updatedOpponent);
+    ResponseEntity<Void> response = opponentController.updateOpponent(opponentId, caabUserLoginId, updatedOpponent);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
   }
@@ -752,7 +772,7 @@ public abstract class BaseApplicationControllerIntegrationTest {
     Long caseRef = 41L;
     Long opponentRef = 3L;
 
-    ResponseEntity<Void> response = applicationController.removeOpponent(
+    ResponseEntity<Void> response = opponentController.removeOpponent(
         opponentRef, caabUserLoginId);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 

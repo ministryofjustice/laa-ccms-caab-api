@@ -11,18 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.laa.ccms.caab.api.ApplicationsApi;
-import uk.gov.laa.ccms.caab.api.ClientsApi;
-import uk.gov.laa.ccms.caab.api.LinkedCasesApi;
-import uk.gov.laa.ccms.caab.api.OpponentsApi;
-import uk.gov.laa.ccms.caab.api.PriorAuthoritiesApi;
-import uk.gov.laa.ccms.caab.api.ProceedingsApi;
-import uk.gov.laa.ccms.caab.api.ScopeLimitationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
-import uk.gov.laa.ccms.caab.api.service.OpponentService;
-import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
-import uk.gov.laa.ccms.caab.api.service.ProceedingService;
-import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
 import uk.gov.laa.ccms.caab.model.Address;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
@@ -34,7 +23,6 @@ import uk.gov.laa.ccms.caab.model.LinkedCase;
 import uk.gov.laa.ccms.caab.model.Opponent;
 import uk.gov.laa.ccms.caab.model.PriorAuthority;
 import uk.gov.laa.ccms.caab.model.Proceeding;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
 
 /**
  * Represents the main controller handling application-related requests.
@@ -44,15 +32,9 @@ import uk.gov.laa.ccms.caab.model.ScopeLimitation;
  */
 @RestController
 @RequiredArgsConstructor
-public class ApplicationController implements ApplicationsApi, LinkedCasesApi, ProceedingsApi,
-    ScopeLimitationsApi, PriorAuthoritiesApi, ClientsApi, OpponentsApi {
+public class ApplicationController implements ApplicationsApi {
 
   private final ApplicationService applicationService;
-  private final LinkedCaseService linkedCaseService;
-  private final ProceedingService proceedingService;
-  private final PriorAuthorityService priorAuthorityService;
-  private final ScopeLimitationService scopeLimitationService;
-  private final OpponentService opponentService;
 
   /**
    * Creates a new application and returns the URI of the created resource.
@@ -283,38 +265,6 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
-  /**
-   * Updates a linked case.
-   *
-   * @param linkedCaseId the unique identifier of the linked case
-   * @param caabUserLoginId the user login ID used for audit trail
-   * @param linkedCase the updated linked case
-   * @return a ResponseEntity with no content
-   */
-  @Override
-  public ResponseEntity<Void> updateLinkedCase(
-      final Long linkedCaseId,
-      final String caabUserLoginId,
-      final LinkedCase linkedCase) {
-    linkedCaseService.updateLinkedCase(linkedCaseId, linkedCase);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
-  /**
-   * Removes a linked case from a specific application.
-   *
-   * @param linkedCaseId the unique identifier of the linked case
-   * @param caabUserLoginId the user login ID used for audit trail
-   * @return a ResponseEntity indicating the case was successfully removed
-   */
-  @Override
-  public ResponseEntity<Void> removeLinkedCase(
-      final Long linkedCaseId,
-      final String caabUserLoginId) {
-    linkedCaseService.removeLinkedCase(linkedCaseId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
   //proceedings
 
   @Override
@@ -331,59 +281,6 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
       final Long applicationId) {
     List<Proceeding> proceedings = applicationService.getProceedingsForApplication(applicationId);
     return new ResponseEntity<>(proceedings, HttpStatus.OK);
-  }
-
-  @Override
-  public ResponseEntity<Void> removeProceeding(
-      final Long proceedingId,
-      final String caabUserLoginId) {
-    proceedingService.removeProceeding(proceedingId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
-  @Override
-  public ResponseEntity<Void> updateProceeding(
-      final Long proceedingId,
-      final String caabUserLoginId,
-      final Proceeding proceeding) {
-    proceedingService.updateProceeding(proceedingId, proceeding);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
-  //scope limitations
-
-  @Override
-  public ResponseEntity<Void> addProceedingScopeLimitation(
-      final Long proceedingId,
-      final String caabUserLoginId,
-      final ScopeLimitation scopeLimitation) {
-    proceedingService.createScopeLimitationForProceeding(proceedingId, scopeLimitation);
-    return new ResponseEntity<>(HttpStatus.CREATED);
-  }
-
-  @Override
-  public ResponseEntity<List<ScopeLimitation>> getProceedingsScopeLimitations(
-      final Long proceedingId) {
-    List<ScopeLimitation> scopeLimitations =
-        proceedingService.getScopeLimitationsForProceeding(proceedingId);
-    return new ResponseEntity<>(scopeLimitations, HttpStatus.OK);
-  }
-
-  @Override
-  public ResponseEntity<Void> removeScopeLimitation(
-      final Long scopeLimitationId,
-      final String caabUserLoginId) {
-    scopeLimitationService.removeScopeLimitation(scopeLimitationId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
-  @Override
-  public ResponseEntity<Void> updateScopeLimitation(
-      final Long scopeLimitationId,
-      final String caabUserLoginId,
-      final ScopeLimitation scopeLimitation) {
-    scopeLimitationService.updateScopeLimitation(scopeLimitationId, scopeLimitation);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   //prior authorities
@@ -403,23 +300,6 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
     List<PriorAuthority> priorAuthorities =
         applicationService.getPriorAuthoritiesForApplication(id);
     return new ResponseEntity<>(priorAuthorities, HttpStatus.OK);
-  }
-
-  @Override
-  public ResponseEntity<Void> removePriorAuthority(
-      final Long priorAuthorityId,
-      final String caabUserLoginId) {
-    priorAuthorityService.removePriorAuthority(priorAuthorityId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
-  @Override
-  public ResponseEntity<Void> updatePriorAuthority(
-      final Long priorAuthorityId,
-      final String caabUserLoginId,
-      final PriorAuthority priorAuthority) {
-    priorAuthorityService.updatePriorAuthority(priorAuthorityId, priorAuthority);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   //clients
@@ -444,19 +324,5 @@ public class ApplicationController implements ApplicationsApi, LinkedCasesApi, P
       final Long id, final String caabUserLoginId, final Opponent opponent) {
     applicationService.createOpponentForApplication(id, opponent);
     return new ResponseEntity<>(HttpStatus.CREATED);
-  }
-
-  @Override
-  public ResponseEntity<Void> updateOpponent(
-      final Long opponentId, final String caabUserLoginId, final Opponent opponent) {
-    opponentService.updateOpponent(opponentId, opponent);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
-
-  @Override
-  public ResponseEntity<Void> removeOpponent(
-      final Long opponentId, final String caabUserLoginId) {
-    opponentService.removeOpponent(opponentId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
