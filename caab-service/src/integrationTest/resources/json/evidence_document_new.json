@@ -1,0 +1,22 @@
+{
+  "application_or_outcome_id": "98765",
+  "case_reference_number": "caseref",
+  "provider_id": "provid",
+  "document_type": {
+    "id": "doctype",
+    "display_value": "doc type"
+  },
+  "description": "a description",
+  "document_sender": "sender",
+  "file_name": "filename.ext",
+  "file_extension": "ext",
+  "file_data": "dGhlIGZpbGUgZGF0YQ==",
+  "transfer_status": "stat",
+  "transfer_response_code": "code",
+  "transfer_response_description": "the code",
+  "transfer_retry_count": "1",
+  "ccms_module": "A",
+  "evidence_descriptions": "evidence descriptions",
+  "registered_document_id": "regid",
+  "notification_reference": "notref"
+}
