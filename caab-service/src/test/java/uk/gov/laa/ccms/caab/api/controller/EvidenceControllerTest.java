@@ -57,8 +57,9 @@ class EvidenceControllerTest {
     doNothing().when(evidenceService).removeEvidenceDocument(evidenceDocumentId);
 
     this.mockMvc.perform(
-        delete("/evidence/{evidenceDocumentId}", evidenceDocumentId).header("Caab-User-Login-Id",
-            caabUserLoginId)).andExpect(status().isNoContent());
+        delete("/evidence/{evidenceDocumentId}", evidenceDocumentId)
+            .header("Caab-User-Login-Id", caabUserLoginId))
+        .andExpect(status().isNoContent());
 
     verify(evidenceService).removeEvidenceDocument(evidenceDocumentId);
   }
@@ -121,5 +122,28 @@ class EvidenceControllerTest {
             .content(objectMapper.writeValueAsString(evidenceDocumentDetail)))
         .andExpect(status().isCreated()).andExpect(
             header().string("Location", "http://localhost/evidence/" + evidenceDocumentDetail.getId()));
+  }
+
+  @Test
+  public void removeEvidenceDocuments_callsServiceMethod() throws Exception {
+    EvidenceDocumentDetail evidenceDocumentDetail = buildEvidenceDocumentDetail();
+
+    this.mockMvc.perform(delete("/evidence")
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .param("application-or-outcome-id", evidenceDocumentDetail.getApplicationOrOutcomeId())
+            .param("case-reference-number", evidenceDocumentDetail.getCaseReferenceNumber())
+            .param("provider-id", evidenceDocumentDetail.getProviderId())
+            .param("document-type", evidenceDocumentDetail.getDocumentType().getId())
+            .param("transfer-status", evidenceDocumentDetail.getTransferStatus())
+            .param("ccms-module", evidenceDocumentDetail.getCcmsModule())).andDo(print())
+        .andExpect(status().isNoContent());
+
+    verify(evidenceService).removeEvidenceDocuments(
+        evidenceDocumentDetail.getApplicationOrOutcomeId(),
+        evidenceDocumentDetail.getCaseReferenceNumber(),
+        evidenceDocumentDetail.getProviderId(),
+        evidenceDocumentDetail.getDocumentType().getId(),
+        evidenceDocumentDetail.getTransferStatus(),
+        evidenceDocumentDetail.getCcmsModule());
   }
 }

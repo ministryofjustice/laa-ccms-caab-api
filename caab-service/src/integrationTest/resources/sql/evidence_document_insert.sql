@@ -1,4 +1,5 @@
 insert into XXCCMS_EVIDENCE_DOCUMENTS (
+    ID,
     CASE_ID,
     CCMS_MODULE,
     DATE_CREATED,
@@ -10,7 +11,6 @@ insert into XXCCMS_EVIDENCE_DOCUMENTS (
     EVIDENCE_DOC_DESCS,
     FILE_EXTENSION,
     FILE_NAME,
-    ID,
     NOTIFICATION_REFERENCE,
     NO_OF_RETRIES_UNDERTAKEN,
     PROVIDER_ID,
@@ -22,6 +22,34 @@ insert into XXCCMS_EVIDENCE_DOCUMENTS (
     USER_MODIFIED,
     WEBSERVICE_RESPONSE_CODE,
     WEBSERVICE_RESPONSE_DESC
-) values ('caseref', 'B', SYSDATE, null, 'appId', TO_BLOB('23876238476'), 'test', 'doctype', 'description of evidence', 'pdf',
-        'test.pdf', 3, 'notref', 1, 'provid', '123', 'SUCCESS', 'doc type',
+) values (3, 'caseref', 'B', SYSDATE, null, 'appId', TO_BLOB('23876238476'), 'test', 'doctype', 'description of evidence', 'pdf',
+        'test.pdf', 'notref', 1, 'provid', '123', 'SUCCESS', 'doc type',
         'test', 'description', null, 'code', 'the code');
+
+insert into XXCCMS_EVIDENCE_DOCUMENTS (
+    ID,
+    CASE_ID,
+    CCMS_MODULE,
+    DATE_CREATED,
+    DATE_MODIFIED,
+    DOCHANDLER_SESSION_ID,
+    DOCUMENT,
+    DOCUMENT_SENDER,
+    DOCUMENT_TYPE,
+    EVIDENCE_DOC_DESCS,
+    FILE_EXTENSION,
+    FILE_NAME,
+    NOTIFICATION_REFERENCE,
+    NO_OF_RETRIES_UNDERTAKEN,
+    PROVIDER_ID,
+    REGISTERED_DOCUMENT_ID,
+    TRANSFER_STATUS,
+    TYPE_DISPLAY_VALUE,
+    USER_CREATED,
+    USER_FREE_TEXT,
+    USER_MODIFIED,
+    WEBSERVICE_RESPONSE_CODE,
+    WEBSERVICE_RESPONSE_DESC
+) values (4, 'caseref', 'A', SYSDATE, null, 'appId', TO_BLOB('23876238476'), 'test', 'doctype', 'description of evidence', 'pdf',
+          'test.pdf', 'notref', 1, 'provid', '123', 'SUCCESS', 'doc type',
+          'test', 'description', null, 'code', 'the code');

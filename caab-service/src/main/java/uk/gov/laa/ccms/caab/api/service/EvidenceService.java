@@ -7,6 +7,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.EvidenceMapper;
 import uk.gov.laa.ccms.caab.api.repository.EvidenceDocumentRepository;
@@ -46,14 +47,13 @@ public class EvidenceService {
       final String transferStatus,
       final String ccmsModule,
       final Pageable pageable) {
-    uk.gov.laa.ccms.caab.api.entity.EvidenceDocument exampleDocument =
-        new uk.gov.laa.ccms.caab.api.entity.EvidenceDocument();
-    exampleDocument.setApplicationOrOutcomeId(applicationOrOutcomeId);
-    exampleDocument.setCaseReferenceNumber(caseReferenceNumber);
-    exampleDocument.setProviderId(providerId);
-    exampleDocument.setDocumentType(documentType);
-    exampleDocument.setTransferStatus(transferStatus);
-    exampleDocument.setCcmsModule(ccmsModule);
+    EvidenceDocument exampleDocument = buildExampleDocument(
+        applicationOrOutcomeId,
+        caseReferenceNumber,
+        providerId,
+        documentType,
+        transferStatus,
+        ccmsModule);
 
     return mapper.toEvidenceDocumentDetails(repository.findAll(
         Example.of(exampleDocument), pageable));
@@ -103,6 +103,49 @@ public class EvidenceService {
           String.format("EvidenceDocument with id: %s not found", evidenceDocumentId),
           HttpStatus.NOT_FOUND);
     }
+  }
+
+  /**
+   * Remove all evidence documents which match the provided search criteria.
+   *
+   * @param applicationOrOutcomeId - the application or outcome id.
+   * @param caseReferenceNumber - the case reference number.
+   * @param providerId - the provider id.
+   * @param documentType - the document type.
+   * @param transferStatus - the transfer status.
+   * @param ccmsModule - the ccms module.
+   */
+  @Transactional
+  public void removeEvidenceDocuments(
+      final String applicationOrOutcomeId,
+      final String caseReferenceNumber,
+      final String providerId,
+      final String documentType,
+      final String transferStatus,
+      final String ccmsModule) {
+    EvidenceDocument exampleDocument = buildExampleDocument(
+        applicationOrOutcomeId,
+        caseReferenceNumber,
+        providerId,
+        documentType,
+        transferStatus,
+        ccmsModule);
+
+    repository.deleteAll(repository.findAll(Example.of(exampleDocument)));
+  }
+
+  private static EvidenceDocument buildExampleDocument(String applicationOrOutcomeId,
+      String caseReferenceNumber, String providerId, String documentType, String transferStatus,
+      String ccmsModule) {
+    EvidenceDocument exampleDocument =
+        new EvidenceDocument();
+    exampleDocument.setApplicationOrOutcomeId(applicationOrOutcomeId);
+    exampleDocument.setCaseReferenceNumber(caseReferenceNumber);
+    exampleDocument.setProviderId(providerId);
+    exampleDocument.setDocumentType(documentType);
+    exampleDocument.setTransferStatus(transferStatus);
+    exampleDocument.setCcmsModule(ccmsModule);
+    return exampleDocument;
   }
 
 }

@@ -96,13 +96,7 @@ class EvidenceServiceTest {
         verify(mapper).toEvidenceDocumentDetails(evidenceDocumentPage);
 
         // Check that the example EvidenceDocument was initialised based on the method params.
-        EvidenceDocument exampleDocument = exampleArgumentCaptor.getValue().getProbe();
-        assertEquals(evidenceDocument.getApplicationOrOutcomeId(), exampleDocument.getApplicationOrOutcomeId());
-        assertEquals(evidenceDocument.getCaseReferenceNumber(), exampleDocument.getCaseReferenceNumber());
-        assertEquals(evidenceDocument.getProviderId(), exampleDocument.getProviderId());
-        assertEquals(evidenceDocument.getDocumentType(), exampleDocument.getDocumentType());
-        assertEquals(evidenceDocument.getTransferStatus(), exampleDocument.getTransferStatus());
-        assertEquals(evidenceDocument.getCcmsModule(), exampleDocument.getCcmsModule());
+        checkExampleDocument(evidenceDocument, exampleArgumentCaptor.getValue().getProbe());
     }
 
     @Test
@@ -145,6 +139,49 @@ class EvidenceServiceTest {
 
         assertEquals("EvidenceDocument with id: 1 not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void removeEvidenceDocumentDetails_deletesBasedOnExample() {
+        EvidenceDocument evidenceDocument = new EvidenceDocument();
+        evidenceDocument.setApplicationOrOutcomeId("appOutId");
+        evidenceDocument.setCaseReferenceNumber("caseRef");
+        evidenceDocument.setProviderId("provId");
+        evidenceDocument.setDocumentType("docType");
+        evidenceDocument.setTransferStatus("status");
+        evidenceDocument.setCcmsModule("module");
+
+        List<EvidenceDocument> evidenceDocuments =
+            List.of(buildEvidenceDocument());
+
+        final ArgumentCaptor<Example<EvidenceDocument>> exampleArgumentCaptor =
+            ArgumentCaptor.forClass(Example.class);
+
+        when(repository.findAll(exampleArgumentCaptor.capture())).thenReturn(evidenceDocuments);
+
+        evidenceService.removeEvidenceDocuments(
+            evidenceDocument.getApplicationOrOutcomeId(),
+            evidenceDocument.getCaseReferenceNumber(),
+            evidenceDocument.getProviderId(),
+            evidenceDocument.getDocumentType(),
+            evidenceDocument.getTransferStatus(),
+            evidenceDocument.getCcmsModule());
+
+        verify(repository).findAll(any(Example.class));
+        verify(repository).deleteAll(evidenceDocuments);
+
+        // Check that the example EvidenceDocument was initialised based on the method params.
+        checkExampleDocument(evidenceDocument, exampleArgumentCaptor.getValue().getProbe());
+    }
+
+    private static void checkExampleDocument(EvidenceDocument evidenceDocument,
+        EvidenceDocument exampleDocument) {
+        assertEquals(evidenceDocument.getApplicationOrOutcomeId(), exampleDocument.getApplicationOrOutcomeId());
+        assertEquals(evidenceDocument.getCaseReferenceNumber(), exampleDocument.getCaseReferenceNumber());
+        assertEquals(evidenceDocument.getProviderId(), exampleDocument.getProviderId());
+        assertEquals(evidenceDocument.getDocumentType(), exampleDocument.getDocumentType());
+        assertEquals(evidenceDocument.getTransferStatus(), exampleDocument.getTransferStatus());
+        assertEquals(evidenceDocument.getCcmsModule(), exampleDocument.getCcmsModule());
     }
 
 }

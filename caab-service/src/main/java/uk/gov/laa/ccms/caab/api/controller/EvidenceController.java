@@ -80,4 +80,26 @@ public class EvidenceController implements EvidenceApi {
     evidenceService.removeEvidenceDocument(evidenceDocumentId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
+
+  @Override
+  public ResponseEntity<Void> removeEvidenceDocuments(
+      final String caabUserLoginId,
+      final String applicationOrOutcomeId,
+      final String caseReferenceNumber,
+      final String providerId,
+      final String documentType,
+      final String transferStatus,
+      final String ccmsModule) {
+
+    evidenceService.removeEvidenceDocuments(
+        applicationOrOutcomeId,
+        caseReferenceNumber,
+        providerId,
+        documentType,
+        transferStatus,
+        ccmsModule);
+
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
 }

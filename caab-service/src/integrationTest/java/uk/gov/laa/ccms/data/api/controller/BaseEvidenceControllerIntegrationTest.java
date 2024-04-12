@@ -76,7 +76,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
     assertNotNull(responseEntity.getBody().getContent());
-    assertEquals(1, responseEntity.getBody().getContent().size());
+    assertEquals(2, responseEntity.getBody().getContent().size());
 
     EvidenceDocumentDetail retrievedEvidenceDocumentDetails =
         evidenceService.getEvidenceDocument(3L);
@@ -130,7 +130,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
   @Sql(scripts = "/sql/evidence_document_insert.sql")
   public void testRemoveEvidenceDocument() {
 
-    // Call the getEvidenceDocuments method directly
+    // Call the removeEvidenceDocuments method directly
     ResponseEntity<Void> responseEntity =
         evidenceController.removeEvidenceDocument(3L, caabUserLoginId);
 
@@ -151,5 +151,70 @@ public abstract class BaseEvidenceControllerIntegrationTest
     assertEquals(0, queriedDocuments.getContent().size());
   }
 
+  @Test
+  @Sql(scripts = "/sql/evidence_document_insert.sql")
+  public void testRemoveEvidenceDocuments_usingAllFields() {
 
+    // Call the removeEvidenceDocuments method directly
+    ResponseEntity<Void> responseEntity =
+        evidenceController.removeEvidenceDocuments(
+            "Caab-user-login-id",
+            "appId",
+            "caseref",
+            "provid",
+            "doctype",
+            "SUCCESS",
+            "B"
+        );
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    // Check that only 1 of the EvidenceDocuments (with ccms module B) has been deleted.
+    EvidenceDocumentDetails queriedDocuments =
+        evidenceController.getEvidenceDocuments(
+            "appId",
+            "caseref",
+            "provid",
+            "doctype",
+            "SUCCESS",
+            null,
+            Pageable.unpaged()
+        ).getBody();
+
+    assertEquals(1, queriedDocuments.getContent().size());
+  }
+
+  @Test
+  @Sql(scripts = "/sql/evidence_document_insert.sql")
+  public void testRemoveEvidenceDocuments_byCaseRef() {
+
+    // Call the removeEvidenceDocuments method directly
+    ResponseEntity<Void> responseEntity =
+        evidenceController.removeEvidenceDocuments(
+            "Caab-user-login-id",
+            null,
+            "caseref",
+            null,
+            null,
+            null,
+            null
+        );
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    EvidenceDocumentDetails queriedDocuments =
+        evidenceController.getEvidenceDocuments(
+            null,
+            "caseref",
+            null,
+            null,
+            null,
+            null,
+            Pageable.unpaged()
+        ).getBody();
+
+    assertEquals(0, queriedDocuments.getContent().size());
+  }
 }
