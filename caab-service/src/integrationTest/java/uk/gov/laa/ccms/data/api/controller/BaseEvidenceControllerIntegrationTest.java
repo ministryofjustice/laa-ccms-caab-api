@@ -2,50 +2,27 @@ package uk.gov.laa.ccms.data.api.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.net.URI;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.EvidenceController;
 import uk.gov.laa.ccms.caab.api.service.EvidenceService;
-import uk.gov.laa.ccms.caab.model.AuditDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
 
-public abstract class BaseEvidenceControllerIntegrationTest {
+public abstract class BaseEvidenceControllerIntegrationTest
+    extends AbstractControllerIntegrationTest {
 
   @Autowired
   private EvidenceController evidenceController;
 
   @Autowired
   private EvidenceService evidenceService;
-
-  private final String caabUserLoginId = "audit@user.com";
-
-  @BeforeEach
-  public void setup() {
-    currentUserHolder.set(caabUserLoginId);
-  }
-
-  /**
-   * Loads the JSON file from the classpath and parses it into a specified object.
-   *
-   * @param jsonFilePath The path to the JSON file to load
-   */
-  private <T> T loadObjectFromJson(String jsonFilePath, Class<T> objectType) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    ClassPathResource resource = new ClassPathResource(jsonFilePath);
-    return objectMapper.readValue(resource.getInputStream(), objectType);
-  }
 
   @Test
   public void testCreateEvidenceDocument() throws Exception {
@@ -175,17 +152,4 @@ public abstract class BaseEvidenceControllerIntegrationTest {
   }
 
 
-  /**
-   * Used to assert that the audit detail is set correctly.
-   *
-   * @param auditDetail The audit trail to check
-   * @param expectedAuditUser The expected audit user
-   */
-  private void assertAuditTrail(AuditDetail auditDetail, String expectedAuditUser) {
-    assertNotNull(auditDetail);
-    assertEquals(expectedAuditUser, auditDetail.getCreatedBy());
-    assertEquals(expectedAuditUser, auditDetail.getLastSavedBy());
-    assertNotNull(auditDetail.getCreated());
-    assertNotNull(auditDetail.getLastSaved());
-  }
 }
