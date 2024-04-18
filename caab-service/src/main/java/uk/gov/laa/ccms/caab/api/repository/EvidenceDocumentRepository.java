@@ -1,6 +1,7 @@
 package uk.gov.laa.ccms.caab.api.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
 
 /**
@@ -13,6 +14,7 @@ import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
  * amongst other common operations found within
  * {@link JpaRepository}.</p>
  */
-public interface EvidenceDocumentRepository extends JpaRepository<EvidenceDocument, Long> {
+public interface EvidenceDocumentRepository extends JpaRepository<EvidenceDocument, Long>,
+    JpaSpecificationExecutor<EvidenceDocument> {
 
 }

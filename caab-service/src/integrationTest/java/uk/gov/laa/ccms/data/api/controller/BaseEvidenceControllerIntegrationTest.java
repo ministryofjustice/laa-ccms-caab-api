@@ -95,8 +95,8 @@ public abstract class BaseEvidenceControllerIntegrationTest
             "caseref",
             "provid",
             "doctype",
-            "SUCCESS",
             "B",
+            null,
             Pageable.unpaged()
         );
 
@@ -108,6 +108,34 @@ public abstract class BaseEvidenceControllerIntegrationTest
 
     EvidenceDocumentDetail retrievedEvidenceDocumentDetails =
         evidenceService.getEvidenceDocument(3L);
+
+    assertEquals(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().get(0));
+  }
+
+  @Test
+  @Sql(scripts = "/sql/evidence_document_insert.sql")
+  public void testGetEvidenceDocuments_transferPending_filtersCorrectly() {
+
+    // Call the getEvidenceDocuments method directly
+    ResponseEntity<EvidenceDocumentDetails> responseEntity =
+        evidenceController.getEvidenceDocuments(
+            "appId",
+            null,
+            null,
+            null,
+            null,
+            Boolean.TRUE,
+            Pageable.unpaged()
+        );
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody().getContent());
+    assertEquals(1, responseEntity.getBody().getContent().size());
+
+    EvidenceDocumentDetail retrievedEvidenceDocumentDetails =
+        evidenceService.getEvidenceDocument(4L);
 
     assertEquals(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().get(0));
   }
@@ -143,8 +171,8 @@ public abstract class BaseEvidenceControllerIntegrationTest
             "caseref",
             "provid",
             "doctype",
-            "SUCCESS",
             "B",
+            null,
             Pageable.unpaged()
         ).getBody();
 
@@ -163,8 +191,8 @@ public abstract class BaseEvidenceControllerIntegrationTest
             "caseref",
             "provid",
             "doctype",
-            "SUCCESS",
-            "B"
+            "B",
+            null
         );
 
     assertNotNull(responseEntity);
@@ -177,7 +205,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
             "caseref",
             "provid",
             "doctype",
-            "SUCCESS",
+            null,
             null,
             Pageable.unpaged()
         ).getBody();
@@ -216,5 +244,38 @@ public abstract class BaseEvidenceControllerIntegrationTest
         ).getBody();
 
     assertEquals(0, queriedDocuments.getContent().size());
+  }
+
+  @Test
+  @Sql(scripts = "/sql/evidence_document_insert.sql")
+  public void testRemoveEvidenceDocuments_byCaseRef_transferPending_filtersCorrectly() {
+
+    // Call the removeEvidenceDocuments method directly
+    ResponseEntity<Void> responseEntity =
+        evidenceController.removeEvidenceDocuments(
+            "Caab-user-login-id",
+            null,
+            "caseref",
+            null,
+            null,
+            null,
+            Boolean.TRUE
+        );
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    EvidenceDocumentDetails queriedDocuments =
+        evidenceController.getEvidenceDocuments(
+            null,
+            "caseref",
+            null,
+            null,
+            null,
+            null,
+            Pageable.unpaged()
+        ).getBody();
+
+    assertEquals(1, queriedDocuments.getContent().size());
   }
 }
