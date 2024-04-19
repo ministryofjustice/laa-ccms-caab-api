@@ -1140,16 +1140,16 @@ paths:
           schema:
             type: 'string'
             example: 'type'
-        - name: 'transfer-status'
-          in: 'query'
-          schema:
-            type: 'string'
-            example: 'status'
         - name: 'ccms-module'
           in: 'query'
           schema:
             type: 'string'
             example: 'module'
+        - name: 'transfer-pending'
+          in: 'query'
+          schema:
+            type: 'boolean'
+            example: 'true'
       responses:
         '200':
           description: 'Successful operation'
@@ -1220,16 +1220,16 @@ paths:
           schema:
             type: 'string'
             example: 'type'
-        - name: 'transfer-status'
-          in: 'query'
-          schema:
-            type: 'string'
-            example: 'status'
         - name: 'ccms-module'
           in: 'query'
           schema:
             type: 'string'
             example: 'module'
+        - name: 'transfer-pending'
+          in: 'query'
+          schema:
+            type: 'boolean'
+            example: 'true'
         - name: 'Caab-User-Login-Id'
           in: header
           required: true

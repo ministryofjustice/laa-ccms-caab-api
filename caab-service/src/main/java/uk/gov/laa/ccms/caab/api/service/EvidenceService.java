@@ -1,10 +1,16 @@
 package uk.gov.laa.ccms.caab.api.service;
 
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
@@ -32,31 +38,32 @@ public class EvidenceService {
    * Get a Page of EvidenceDocuments for the supplied search criteria.
    *
    * @param applicationOrOutcomeId - the application or outcome id.
-   * @param caseReferenceNumber - the case reference number.
-   * @param providerId - the provider id.
-   * @param documentType - the document type.
-   * @param transferStatus - the transfer status.
-   * @param ccmsModule - the ccms module.
-   * @param pageable - the pageable settings.
+   * @param caseReferenceNumber    - the case reference number.
+   * @param providerId             - the provider id.
+   * @param documentType           - the document type.
+   * @param ccmsModule             - the ccms module.
+   * @param transferPending        - filter on documents which are yet to be transferred.
+   * @param pageable               - the pageable settings.
    * @return EvidenceDocumentDetails wrapping a page of EvidenceDocuments.
    */
   public EvidenceDocumentDetails getEvidenceDocuments(final String applicationOrOutcomeId,
       final String caseReferenceNumber,
       final String providerId,
       final String documentType,
-      final String transferStatus,
       final String ccmsModule,
+      final Boolean transferPending,
       final Pageable pageable) {
-    EvidenceDocument exampleDocument = buildExampleDocument(
+    Example<EvidenceDocument> exampleDocument = buildExampleDocument(
         applicationOrOutcomeId,
         caseReferenceNumber,
         providerId,
         documentType,
-        transferStatus,
         ccmsModule);
 
-    return mapper.toEvidenceDocumentDetails(repository.findAll(
-        Example.of(exampleDocument), pageable));
+    return mapper.toEvidenceDocumentDetails(
+        repository.findAll(
+            buildQuerySpecification(exampleDocument, transferPending),
+            pageable));
   }
 
   /**
@@ -88,8 +95,8 @@ public class EvidenceService {
   }
 
   /**
-   * Removes an evidence document entry.
-   * If the evidence is not found, a CaabApiException is thrown.
+   * Removes an evidence document entry. If the evidence is not found, a CaabApiException is
+   * thrown.
    *
    * @param evidenceDocumentId The unique identifier of the evidence to be removed.
    * @throws CaabApiException If the evidence with the specified ID is not found.
@@ -109,11 +116,11 @@ public class EvidenceService {
    * Remove all evidence documents which match the provided search criteria.
    *
    * @param applicationOrOutcomeId - the application or outcome id.
-   * @param caseReferenceNumber - the case reference number.
-   * @param providerId - the provider id.
-   * @param documentType - the document type.
-   * @param transferStatus - the transfer status.
-   * @param ccmsModule - the ccms module.
+   * @param caseReferenceNumber    - the case reference number.
+   * @param providerId             - the provider id.
+   * @param documentType           - the document type.
+   * @param ccmsModule             - the ccms module.
+   * @param transferPending        - filter on documents which are yet to be transferred.
    */
   @Transactional
   public void removeEvidenceDocuments(
@@ -121,31 +128,50 @@ public class EvidenceService {
       final String caseReferenceNumber,
       final String providerId,
       final String documentType,
-      final String transferStatus,
-      final String ccmsModule) {
-    EvidenceDocument exampleDocument = buildExampleDocument(
+      final String ccmsModule,
+      final Boolean transferPending) {
+    Example<EvidenceDocument> exampleDocument = buildExampleDocument(
         applicationOrOutcomeId,
         caseReferenceNumber,
         providerId,
         documentType,
-        transferStatus,
         ccmsModule);
 
-    repository.deleteAll(repository.findAll(Example.of(exampleDocument)));
+    repository.deleteAll(
+        repository.findAll(buildQuerySpecification(exampleDocument, transferPending)));
   }
 
-  private static EvidenceDocument buildExampleDocument(String applicationOrOutcomeId,
-      String caseReferenceNumber, String providerId, String documentType, String transferStatus,
-      String ccmsModule) {
+  private Example<EvidenceDocument> buildExampleDocument(
+      final String applicationOrOutcomeId,
+      final String caseReferenceNumber,
+      final String providerId,
+      final String documentType,
+      final String ccmsModule) {
     EvidenceDocument exampleDocument =
         new EvidenceDocument();
     exampleDocument.setApplicationOrOutcomeId(applicationOrOutcomeId);
     exampleDocument.setCaseReferenceNumber(caseReferenceNumber);
     exampleDocument.setProviderId(providerId);
     exampleDocument.setDocumentType(documentType);
-    exampleDocument.setTransferStatus(transferStatus);
     exampleDocument.setCcmsModule(ccmsModule);
-    return exampleDocument;
+    return Example.of(exampleDocument);
   }
 
+  private Specification<EvidenceDocument> buildQuerySpecification(
+      final Example<EvidenceDocument> evidenceDocument,
+      final Boolean transferPending) {
+    return (root, query, builder) -> {
+      final List<Predicate> predicates = new ArrayList<>();
+
+      if (transferPending != null) {
+        Path<Object> transferStatus = root.get("transferStatus");
+        predicates.add(transferPending
+            ? builder.isNull(transferStatus) : builder.isNotNull(transferStatus));
+      }
+
+      predicates.add(
+          QueryByExamplePredicateBuilder.getPredicate(root, builder, evidenceDocument));
+      return builder.and(predicates.toArray(new Predicate[0]));
+    };
+  }
 }

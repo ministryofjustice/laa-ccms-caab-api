@@ -32,8 +32,8 @@ public class EvidenceController implements EvidenceApi {
       final String caseReferenceNumber,
       final String providerId,
       final String documentType,
-      final String transferStatus,
       final String ccmsModule,
+      final Boolean transferPending,
       final Pageable pageable) {
 
     EvidenceDocumentDetails evidenceDocumentDetails = evidenceService.getEvidenceDocuments(
@@ -41,8 +41,8 @@ public class EvidenceController implements EvidenceApi {
         caseReferenceNumber,
         providerId,
         documentType,
-        transferStatus,
         ccmsModule,
+        transferPending,
         pageable);
 
     return new ResponseEntity<>(evidenceDocumentDetails, HttpStatus.OK);
@@ -88,16 +88,16 @@ public class EvidenceController implements EvidenceApi {
       final String caseReferenceNumber,
       final String providerId,
       final String documentType,
-      final String transferStatus,
-      final String ccmsModule) {
+      final String ccmsModule,
+      final Boolean transferPending) {
 
     evidenceService.removeEvidenceDocuments(
         applicationOrOutcomeId,
         caseReferenceNumber,
         providerId,
         documentType,
-        transferStatus,
-        ccmsModule);
+        ccmsModule,
+        transferPending);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

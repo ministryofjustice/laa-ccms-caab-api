@@ -15,14 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
@@ -60,24 +59,16 @@ class EvidenceServiceTest {
     }
 
     @Test
-    void getEvidenceDocumentDetails_queriesBasedOnExample() {
-        EvidenceDocument evidenceDocument = new EvidenceDocument();
-        evidenceDocument.setApplicationOrOutcomeId("appOutId");
-        evidenceDocument.setCaseReferenceNumber("caseRef");
-        evidenceDocument.setProviderId("provId");
-        evidenceDocument.setDocumentType("docType");
-        evidenceDocument.setTransferStatus("status");
-        evidenceDocument.setCcmsModule("module");
+    void getEvidenceDocumentDetails_queriesBySpecification() {
+        EvidenceDocument evidenceDocument = buildEvidenceDocument();
 
         EvidenceDocumentDetails expectedResponse = new EvidenceDocumentDetails();
 
         Page<EvidenceDocument> evidenceDocumentPage = new PageImpl<>(
             List.of(buildEvidenceDocument()));
 
-        final ArgumentCaptor<Example<EvidenceDocument>> exampleArgumentCaptor =
-            ArgumentCaptor.forClass(Example.class);
-
-        when(repository.findAll(exampleArgumentCaptor.capture(), eq(Pageable.unpaged()))).thenReturn(evidenceDocumentPage);
+        when(repository.findAll(any(Specification.class),
+            eq(Pageable.unpaged()))).thenReturn(evidenceDocumentPage);
         when(mapper.toEvidenceDocumentDetails(evidenceDocumentPage)).thenReturn(expectedResponse);
 
         EvidenceDocumentDetails result = evidenceService.getEvidenceDocuments(
@@ -85,18 +76,15 @@ class EvidenceServiceTest {
             evidenceDocument.getCaseReferenceNumber(),
             evidenceDocument.getProviderId(),
             evidenceDocument.getDocumentType(),
-            evidenceDocument.getTransferStatus(),
             evidenceDocument.getCcmsModule(),
+            Boolean.TRUE,
             Pageable.unpaged());
 
         assertNotNull(result);
         assertEquals(expectedResponse, result);
 
-        verify(repository).findAll(any(Example.class), eq(Pageable.unpaged()));
+        verify(repository).findAll(any(Specification.class), eq(Pageable.unpaged()));
         verify(mapper).toEvidenceDocumentDetails(evidenceDocumentPage);
-
-        // Check that the example EvidenceDocument was initialised based on the method params.
-        checkExampleDocument(evidenceDocument, exampleArgumentCaptor.getValue().getProbe());
     }
 
     @Test
@@ -143,46 +131,27 @@ class EvidenceServiceTest {
 
     @Test
     void removeEvidenceDocumentDetails_deletesBasedOnExample() {
-        EvidenceDocument evidenceDocument = new EvidenceDocument();
-        evidenceDocument.setApplicationOrOutcomeId("appOutId");
-        evidenceDocument.setCaseReferenceNumber("caseRef");
-        evidenceDocument.setProviderId("provId");
-        evidenceDocument.setDocumentType("docType");
-        evidenceDocument.setTransferStatus("status");
-        evidenceDocument.setCcmsModule("module");
+        EvidenceDocument evidenceDocument = buildEvidenceDocument();
 
         List<EvidenceDocument> evidenceDocuments =
             List.of(buildEvidenceDocument());
 
-        final ArgumentCaptor<Example<EvidenceDocument>> exampleArgumentCaptor =
-            ArgumentCaptor.forClass(Example.class);
-
-        when(repository.findAll(exampleArgumentCaptor.capture())).thenReturn(evidenceDocuments);
+        when(repository.findAll(any(Specification.class))).thenReturn(evidenceDocuments);
 
         evidenceService.removeEvidenceDocuments(
             evidenceDocument.getApplicationOrOutcomeId(),
             evidenceDocument.getCaseReferenceNumber(),
             evidenceDocument.getProviderId(),
             evidenceDocument.getDocumentType(),
-            evidenceDocument.getTransferStatus(),
-            evidenceDocument.getCcmsModule());
+            evidenceDocument.getCcmsModule(),
+            Boolean.TRUE);
 
-        verify(repository).findAll(any(Example.class));
+        verify(repository).findAll(any(Specification.class));
         verify(repository).deleteAll(evidenceDocuments);
 
-        // Check that the example EvidenceDocument was initialised based on the method params.
-        checkExampleDocument(evidenceDocument, exampleArgumentCaptor.getValue().getProbe());
     }
 
-    private static void checkExampleDocument(EvidenceDocument evidenceDocument,
-        EvidenceDocument exampleDocument) {
-        assertEquals(evidenceDocument.getApplicationOrOutcomeId(), exampleDocument.getApplicationOrOutcomeId());
-        assertEquals(evidenceDocument.getCaseReferenceNumber(), exampleDocument.getCaseReferenceNumber());
-        assertEquals(evidenceDocument.getProviderId(), exampleDocument.getProviderId());
-        assertEquals(evidenceDocument.getDocumentType(), exampleDocument.getDocumentType());
-        assertEquals(evidenceDocument.getTransferStatus(), exampleDocument.getTransferStatus());
-        assertEquals(evidenceDocument.getCcmsModule(), exampleDocument.getCcmsModule());
-    }
+
 
 }
 

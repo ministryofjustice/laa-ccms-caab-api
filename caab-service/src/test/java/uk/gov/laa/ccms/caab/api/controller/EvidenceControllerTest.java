@@ -69,12 +69,14 @@ class EvidenceControllerTest {
     EvidenceDocumentDetail evidenceDocumentDetail = buildEvidenceDocumentDetail();
 
     when(
-        evidenceService.getEvidenceDocuments(eq(evidenceDocumentDetail.getApplicationOrOutcomeId()),
+        evidenceService.getEvidenceDocuments(
+            eq(evidenceDocumentDetail.getApplicationOrOutcomeId()),
             eq(evidenceDocumentDetail.getCaseReferenceNumber()),
             eq(evidenceDocumentDetail.getProviderId()),
             eq(evidenceDocumentDetail.getDocumentType().getId()),
-            eq(evidenceDocumentDetail.getTransferStatus()),
-            eq(evidenceDocumentDetail.getCcmsModule()), any(Pageable.class))).thenReturn(
+            eq(evidenceDocumentDetail.getCcmsModule()),
+            eq(Boolean.TRUE),
+            any(Pageable.class))).thenReturn(
         new EvidenceDocumentDetails());
 
     this.mockMvc.perform(get("/evidence").param("application-or-outcome-id",
@@ -82,8 +84,9 @@ class EvidenceControllerTest {
             .param("case-reference-number", evidenceDocumentDetail.getCaseReferenceNumber())
             .param("provider-id", evidenceDocumentDetail.getProviderId())
             .param("document-type", evidenceDocumentDetail.getDocumentType().getId())
-            .param("transfer-status", evidenceDocumentDetail.getTransferStatus())
-            .param("ccms-module", evidenceDocumentDetail.getCcmsModule())).andDo(print())
+            .param("ccms-module", evidenceDocumentDetail.getCcmsModule())
+            .param("transfer-pending", Boolean.TRUE.toString()))
+        .andDo(print())
         .andExpect(status().isOk());
 
     verify(evidenceService).getEvidenceDocuments(
@@ -91,7 +94,8 @@ class EvidenceControllerTest {
         eq(evidenceDocumentDetail.getCaseReferenceNumber()),
         eq(evidenceDocumentDetail.getProviderId()),
         eq(evidenceDocumentDetail.getDocumentType().getId()),
-        eq(evidenceDocumentDetail.getTransferStatus()), eq(evidenceDocumentDetail.getCcmsModule()),
+        eq(evidenceDocumentDetail.getCcmsModule()),
+        eq(Boolean.TRUE),
         any(Pageable.class));
   }
 
@@ -134,8 +138,9 @@ class EvidenceControllerTest {
             .param("case-reference-number", evidenceDocumentDetail.getCaseReferenceNumber())
             .param("provider-id", evidenceDocumentDetail.getProviderId())
             .param("document-type", evidenceDocumentDetail.getDocumentType().getId())
-            .param("transfer-status", evidenceDocumentDetail.getTransferStatus())
-            .param("ccms-module", evidenceDocumentDetail.getCcmsModule())).andDo(print())
+            .param("ccms-module", evidenceDocumentDetail.getCcmsModule())
+            .param("transfer-pending", Boolean.TRUE.toString()))
+        .andDo(print())
         .andExpect(status().isNoContent());
 
     verify(evidenceService).removeEvidenceDocuments(
@@ -143,7 +148,7 @@ class EvidenceControllerTest {
         evidenceDocumentDetail.getCaseReferenceNumber(),
         evidenceDocumentDetail.getProviderId(),
         evidenceDocumentDetail.getDocumentType().getId(),
-        evidenceDocumentDetail.getTransferStatus(),
-        evidenceDocumentDetail.getCcmsModule());
+        evidenceDocumentDetail.getCcmsModule(),
+        Boolean.TRUE);
   }
 }
