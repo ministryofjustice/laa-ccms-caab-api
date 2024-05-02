@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.data.api.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import org.junit.jupiter.api.Test;
@@ -45,44 +46,44 @@ public abstract class BaseCaseOutcomeControllerIntegrationTest
     assertEquals(retrievedCaseOutcomeDetail, responseEntity.getBody().getContent().get(0));
   }
 
-//  @Test
-//  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql","/sql/case_outcome_insert.sql"})
-//  public void testGetCaseOutcomes_byCaseReferenceNumberAndProviderId_queriesCorrectly() {
-//
-//    // Call the getCaseOutcomes method directly
-//    ResponseEntity<CaseOutcomeDetails> responseEntity =
-//        caseOutcomeController.getCaseOutcomes(
-//            "caseRef",
-//            "providerId2");
-//
-//    assertNotNull(responseEntity);
-//    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//    assertNotNull(responseEntity.getBody());
-//    assertNotNull(responseEntity.getBody().getContent());
-//    assertEquals(1, responseEntity.getBody().getContent().size());
-//
-//    CaseOutcomeDetail retrievedCaseOutcomeDetail =
-//        caseOutcomeService.getCaseOutcome(2L);
-//
-//    assertEquals(retrievedCaseOutcomeDetail, responseEntity.getBody().getContent().get(0));
-//  }
-//
-//  @Test
-//  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql","/sql/case_outcome_insert.sql"})
-//  public void testGetCaseOutcomes_unknownCaseReferenceNumber_queriesCorrectly() {
-//
-//    // Call the getCaseOutcomes method directly
-//    ResponseEntity<CaseOutcomeDetails> responseEntity =
-//        caseOutcomeController.getCaseOutcomes(
-//            "nonsense",
-//            null);
-//
-//    assertNotNull(responseEntity);
-//    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//    assertNotNull(responseEntity.getBody());
-//    assertNotNull(responseEntity.getBody().getContent());
-//    assertTrue(responseEntity.getBody().getContent().isEmpty());
-//  }
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql","/sql/case_outcome_insert.sql"})
+  public void testGetCaseOutcomes_byCaseReferenceNumberAndProviderId_queriesCorrectly() {
+
+    // Call the getCaseOutcomes method directly
+    ResponseEntity<CaseOutcomeDetails> responseEntity =
+        caseOutcomeController.getCaseOutcomes(
+            "caseRef",
+            "providerId2");
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody().getContent());
+    assertEquals(1, responseEntity.getBody().getContent().size());
+
+    CaseOutcomeDetail retrievedCaseOutcomeDetail =
+        caseOutcomeService.getCaseOutcome(2L);
+
+    assertEquals(retrievedCaseOutcomeDetail, responseEntity.getBody().getContent().get(0));
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql","/sql/case_outcome_insert.sql"})
+  public void testGetCaseOutcomes_unknownCaseReferenceNumber_queriesCorrectly() {
+
+    // Call the getCaseOutcomes method directly
+    ResponseEntity<CaseOutcomeDetails> responseEntity =
+        caseOutcomeController.getCaseOutcomes(
+            "nonsense",
+            null);
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody().getContent());
+    assertTrue(responseEntity.getBody().getContent().isEmpty());
+  }
 
   @Test
   public void testCreateCaseOutcome() throws Exception {
