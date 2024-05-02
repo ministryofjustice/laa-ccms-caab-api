@@ -9,7 +9,7 @@ import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.OpponentRepository;
 import uk.gov.laa.ccms.caab.api.repository.PriorAuthorityRepository;
-import uk.gov.laa.ccms.caab.model.Opponent;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 
 /**
  * Service responsible for handling prior-authorities operations.
@@ -54,7 +54,7 @@ public class OpponentService {
   @Transactional
   public void updateOpponent(
       final Long opponentId,
-      final Opponent opponentModel) {
+      final OpponentDetail opponentModel) {
 
     uk.gov.laa.ccms.caab.api.entity.Opponent opponentEntity =
         repository.findById(opponentId)

@@ -23,8 +23,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.service.ProceedingService;
-import uk.gov.laa.ccms.caab.model.Proceeding;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -66,7 +66,7 @@ class ProceedingControllerTest {
   @Test
   public void updateProceeding_UpdatesProceeding() throws Exception {
     Long proceedingId = 2L;
-    Proceeding proceeding = new Proceeding();
+    ProceedingDetail proceeding = new ProceedingDetail();
 
 
     doNothing().when(proceedingService).updateProceeding(proceedingId, proceeding);
@@ -83,7 +83,7 @@ class ProceedingControllerTest {
   @Test
   public void addProceedingScopeLimitation_CreatesScopeLimitation() throws Exception {
     Long proceedingId = 1L;
-    ScopeLimitation scopeLimitation = new ScopeLimitation();
+    ScopeLimitationDetail scopeLimitation = new ScopeLimitationDetail();
 
     doNothing().when(proceedingService).createScopeLimitationForProceeding(proceedingId, scopeLimitation);
 
@@ -99,7 +99,7 @@ class ProceedingControllerTest {
   @Test
   public void getApplicationScopeLimitations_ReturnsScopeLimitations() throws Exception {
     Long proceedingId = 1L;
-    List<ScopeLimitation> scopeLimitations = List.of(new ScopeLimitation());
+    List<ScopeLimitationDetail> scopeLimitations = List.of(new ScopeLimitationDetail());
 
     when(proceedingService.getScopeLimitationsForProceeding(proceedingId)).thenReturn(scopeLimitations);
 

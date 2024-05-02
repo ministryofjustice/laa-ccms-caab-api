@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ScopeLimitationRepository;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 /**
  * Service responsible for handling scope-limitations operations.
@@ -56,7 +56,7 @@ public class ScopeLimitationService {
   @Transactional
   public void updateScopeLimitation(
       final Long scopeLimitationId,
-      final ScopeLimitation scopeLimitationModel) {
+      final ScopeLimitationDetail scopeLimitationModel) {
 
     uk.gov.laa.ccms.caab.api.entity.ScopeLimitation scopeLimitationEntity =
         repository.findById(scopeLimitationId)

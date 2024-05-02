@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.LinkedCaseRepository;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
 
 /**
  * Service responsible for handling linked-case operations.
@@ -56,7 +56,7 @@ public class LinkedCaseService {
   @Transactional
   public void updateLinkedCase(
       final Long linkedCaseId,
-      final LinkedCase linkedCaseModel) {
+      final LinkedCaseDetail linkedCaseModel) {
 
     uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
         repository.findById(linkedCaseId)

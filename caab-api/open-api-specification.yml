@@ -172,7 +172,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/baseClient'
+              $ref: '#/components/schemas/baseClientDetail'
       parameters:
         - name: 'client-reference-id'
           in: 'path'
@@ -347,7 +347,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/address"
+                $ref: "#/components/schemas/addressDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -366,7 +366,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/address'
+              $ref: '#/components/schemas/addressDetail'
       parameters:
         - name: 'id'
           in: 'path'
@@ -412,7 +412,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/costStructure"
+                $ref: "#/components/schemas/costStructureDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -444,7 +444,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/costStructure"
+              $ref: "#/components/schemas/costStructureDetail"
       responses:
         '200':
           description: 'Case updated successfully'
@@ -478,7 +478,7 @@ paths:
               schema:
                 type: 'array'
                 items:
-                  $ref: "#/components/schemas/linkedCase"
+                  $ref: "#/components/schemas/linkedCaseDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -510,7 +510,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/linkedCase"
+              $ref: "#/components/schemas/linkedCaseDetail"
       responses:
         '201':
           description: 'Case added successfully'
@@ -575,7 +575,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/linkedCase"
+              $ref: "#/components/schemas/linkedCaseDetail"
       responses:
         '200':
           description: 'Case updated successfully'
@@ -609,7 +609,7 @@ paths:
               schema:
                 type: 'array'
                 items:
-                  $ref: "#/components/schemas/proceeding"
+                  $ref: "#/components/schemas/proceedingDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -641,7 +641,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/proceeding"
+              $ref: "#/components/schemas/proceedingDetail"
       responses:
         '201':
           description: 'Case added successfully'
@@ -706,7 +706,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/proceeding"
+              $ref: "#/components/schemas/proceedingDetail"
       responses:
         '200':
           description: 'Case updated successfully'
@@ -740,7 +740,7 @@ paths:
               schema:
                 type: 'array'
                 items:
-                  $ref: "#/components/schemas/scopeLimitation"
+                  $ref: "#/components/schemas/scopeLimitationDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -772,7 +772,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/scopeLimitation"
+              $ref: "#/components/schemas/scopeLimitationDetail"
       responses:
         '201':
           description: 'Case added successfully'
@@ -837,7 +837,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/scopeLimitation"
+              $ref: "#/components/schemas/scopeLimitationDetail"
       responses:
         '200':
           description: 'Case updated successfully'
@@ -871,7 +871,7 @@ paths:
               schema:
                 type: 'array'
                 items:
-                  $ref: "#/components/schemas/priorAuthority"
+                  $ref: "#/components/schemas/priorAuthorityDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -903,7 +903,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/priorAuthority"
+              $ref: "#/components/schemas/priorAuthorityDetail"
       responses:
         '201':
           description: 'Prior Authority added successfully'
@@ -968,7 +968,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/priorAuthority"
+              $ref: "#/components/schemas/priorAuthorityDetail"
       responses:
         '200':
           description: 'Case updated successfully'
@@ -1003,7 +1003,7 @@ paths:
               schema:
                 type: 'array'
                 items:
-                  $ref: "#/components/schemas/opponent"
+                  $ref: "#/components/schemas/opponentDetail"
         '400':
           description: 'Bad request'
         '401':
@@ -1035,7 +1035,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/opponent"
+              $ref: "#/components/schemas/opponentDetail"
       responses:
         '201':
           description: 'Opponent added successfully'
@@ -1100,7 +1100,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/opponent"
+              $ref: "#/components/schemas/opponentDetail"
       responses:
         '200':
           description: 'Opponent updated successfully'
@@ -1305,6 +1305,161 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /case-outcomes:
+    get:
+      tags:
+        - caseoutcome
+      summary: 'Get Case Outcomes'
+      operationId: 'getCaseOutcomes'
+      x-spring-paginated: false
+      parameters:
+        - name: 'case-reference-number'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'provider-id'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/caseOutcomeDetails"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    post:
+      tags:
+        - caseoutcome
+      summary: 'Create Case Outcome'
+      operationId: 'createCaseOutcome'
+      requestBody:
+        description: Create Case Outcome
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/caseOutcomeDetail'
+      parameters:
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    delete:
+      tags:
+        - caseoutcome
+      summary: 'Remove Case Outcomes'
+      operationId: 'removeCaseOutcomes'
+      parameters:
+        - name: 'case-reference-number'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'provider-id'
+          in: 'query'
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      responses:
+        '204':
+          description: 'No Content'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+  /case-outcomes/{case-outcome-id}:
+    get:
+      tags:
+        - caseoutcome
+      summary: 'Get Case Outcome'
+      operationId: 'getCaseOutcome'
+      x-spring-paginated: false
+      parameters:
+        - name: 'case-outcome-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/caseOutcomeDetail"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    delete:
+      tags:
+        - caseoutcome
+      summary: 'Remove a case outcome'
+      operationId: 'removeCaseOutcome'
+      parameters:
+        - name: 'case-outcome-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+        - name: 'Caab-User-Login-Id'
+          in: header
+          required: true
+          schema:
+            type: 'string'
+          example: 'SOMEUSER@COMPANY.CO.UK'
+      responses:
+        '204':
+          description: 'No Content'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+
 components:
   schemas:
     intDisplayValue:
@@ -1327,7 +1482,7 @@ components:
       type: 'object'
       properties:
         devolved_powers:
-            $ref: "#/components/schemas/devolvedPowers"
+            $ref: "#/components/schemas/devolvedPowersDetail"
     booleanDisplayValue:
       type: 'object'
       properties:
@@ -1335,7 +1490,7 @@ components:
           type: 'boolean'
         display_value:
           type: 'string'
-    costStructure:
+    costStructureDetail:
       type: 'object'
       properties:
         default_cost_limitation:
@@ -1347,12 +1502,12 @@ components:
         cost_entries:
           type: 'array'
           items:
-            $ref: "#/components/schemas/costEntry"
+            $ref: "#/components/schemas/costEntryDetail"
         current_provider_billed_amount:
           type: 'number'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    costEntry:
+    costEntryDetail:
       type: 'object'
       properties:
         amount_billed:
@@ -1374,30 +1529,30 @@ components:
           default: 'true'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    baseClient:
+    baseClientDetail:
       type: 'object'
       properties:
         first_name:
           type: 'string'
         surname:
           type: 'string'
-    client:
+    clientDetail:
       allOf:
-        - $ref: "#/components/schemas/baseClient"
+        - $ref: "#/components/schemas/baseClientDetail"
       type: 'object'
       properties:
         reference:
           type: 'string'
           required:
             - reference
-    costLimit:
+    costLimitDetail:
       type: 'object'
       properties:
         changed:
           type: 'boolean'
         limit_at_time_of_merits:
           type: 'number'
-    devolvedPowers:
+    devolvedPowersDetail:
       type: 'object'
       properties:
         used:
@@ -1407,9 +1562,11 @@ components:
           format: 'date'
         contract_flag:
           type: 'string'
-    address:
+    addressDetail:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         no_fixed_abode:
           type: 'boolean'
         postcode:
@@ -1432,7 +1589,7 @@ components:
           type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    scopeLimitation:
+    scopeLimitationDetail:
       type: 'object'
       properties:
         id:
@@ -1453,9 +1610,11 @@ components:
           type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    proceedingOutcome:
+    proceedingOutcomeDetail:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         date_of_issue:
           type: 'string'
           format: 'date'
@@ -1490,7 +1649,9 @@ components:
           $ref: "#/components/schemas/stringDisplayValue"
         matter_type:
           $ref: "#/components/schemas/stringDisplayValue"
-    proceeding:
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
+    proceedingDetail:
       type: 'object'
       properties:
         id:
@@ -1524,7 +1685,7 @@ components:
         scope_limitations:
           type: 'array'
           items:
-            $ref: "#/components/schemas/scopeLimitation"
+            $ref: "#/components/schemas/scopeLimitationDetail"
         default_scope_limitation:
           type: 'string'
         stage:
@@ -1541,7 +1702,7 @@ components:
         proceeding_case_id:
           type: 'string'
         outcome:
-          $ref: "#/components/schemas/proceedingOutcome"
+          $ref: "#/components/schemas/proceedingOutcomeDetail"
         order_type_req_flag:
           type: 'boolean'
         order_type_display_flag:
@@ -1554,7 +1715,7 @@ components:
             type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    linkedCase:
+    linkedCaseDetail:
       type: 'object'
       properties:
         id:
@@ -1564,7 +1725,7 @@ components:
         relation_to_case:
           type: 'string'
         client:
-          $ref: "#/components/schemas/client"
+          $ref: "#/components/schemas/clientDetail"
         provider_case_reference:
           type: 'string'
         category_of_law:
@@ -1575,7 +1736,7 @@ components:
           type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    priorAuthority:
+    priorAuthorityDetail:
       type: 'object'
       properties:
         id:
@@ -1597,10 +1758,10 @@ components:
         items:
           type: 'array'
           items:
-            $ref: "#/components/schemas/referenceDataItem"
+            $ref: "#/components/schemas/referenceDataItemDetail"
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    referenceDataItem:
+    referenceDataItemDetail:
       type: 'object'
       properties:
         id:
@@ -1615,7 +1776,7 @@ components:
           type: 'string'
         value:
           $ref: "#/components/schemas/stringDisplayValue"
-    opponent:
+    opponentDetail:
       type: 'object'
       properties:
         id:
@@ -1638,7 +1799,7 @@ components:
         national_insurance_number:
           type: 'string'
         address:
-          $ref: "#/components/schemas/address"
+          $ref: "#/components/schemas/addressDetail"
         relationship_to_case:
           type: 'string'
         relationship_to_client:
@@ -1706,9 +1867,11 @@ components:
           type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    recovery:
+    recoveryDetail:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         award_amount:
           type: 'number'
           default: 0.00
@@ -1752,15 +1915,19 @@ components:
           default: 0.00
         conditions_of_offer:
           type: 'string'
-        details_of_offer:
+        offer_details:
           type: 'string'
         award_type:
           type: 'string'
         description:
           type: 'string'
-    timeRecovery:
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
+    timeRecoveryDetail:
       type: 'object'
       properties:
+        id:
+          type: 'integer'
         award_type:
           type: 'string'
         description:
@@ -1775,20 +1942,26 @@ components:
           format: 'date'
         time_related_recovery_details:
           type: 'string'
-    liableParty:
-      type: 'object'
-      properties:
-        award_type:
-          type: 'string'
-        opponent_id:
-          type: 'string'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    baseAward:
+    liablePartyDetail:
+      type: 'object'
+      properties:
+        id:
+          type: 'integer'
+        award_type:
+          type: 'string'
+        opponent:
+          $ref: "#/components/schemas/opponentDetail"
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
+    baseAwardDetail:
       type: 'object'
       discriminator:
         propertyName: 'discriminator'
       properties:
+        id:
+          type: 'integer'
         award_type:
           type: 'string'
         date_of_order:
@@ -1821,12 +1994,12 @@ components:
         liable_parties:
           type: 'array'
           items:
-            $ref: '#/components/schemas/liableParty'
+            $ref: '#/components/schemas/liablePartyDetail'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
-    costAward:
+    costAwardDetail:
       allOf:
-        - $ref: '#/components/schemas/baseAward'
+        - $ref: '#/components/schemas/baseAwardDetail'
       type: 'object'
       properties:
         court_assessment_status:
@@ -1864,10 +2037,10 @@ components:
         address_line_3:
           type: 'string'
         recovery:
-          $ref: "#/components/schemas/recovery"
-    financialAward:
+          $ref: "#/components/schemas/recoveryDetail"
+    financialAwardDetail:
       allOf:
-        - $ref: '#/components/schemas/baseAward'
+        - $ref: '#/components/schemas/baseAwardDetail'
       type: 'object'
       properties:
         interim_award:
@@ -1880,7 +2053,7 @@ components:
         order_served_date:
           type: 'string'
           format: 'date'
-        statutory_charge_exemption_reason:
+        statutory_charge_exempt_reason:
           type: 'string'
         other_details:
           type: 'string'
@@ -1891,15 +2064,15 @@ components:
         address_line_3:
           type: 'string'
         recovery:
-          $ref: "#/components/schemas/recovery"
-    landAward:
+          $ref: "#/components/schemas/recoveryDetail"
+    landAwardDetail:
       allOf:
-        - $ref: '#/components/schemas/baseAward'
+        - $ref: '#/components/schemas/baseAwardDetail'
       type: 'object'
       properties:
         description:
           type: 'string'
-        title_no:
+        title_number:
           type: 'string'
         valuation_amount:
           type: 'number'
@@ -1925,11 +2098,11 @@ components:
           type: 'string'
         no_recovery_details:
           type: 'string'
-        stat_charge_exempt_reason:
+        statutory_charge_exempt_reason:
           type: 'string'
         land_charge_registration:
           type: 'string'
-        registration_ref:
+        registration_reference:
           type: 'string'
         recovery_of_award_time_related:
           type: 'boolean'
@@ -1940,10 +2113,10 @@ components:
         address_line_3:
           type: 'string'
         time_recovery:
-          $ref: "#/components/schemas/timeRecovery"
-    otherAssetAward:
+          $ref: "#/components/schemas/timeRecoveryDetail"
+    otherAssetAwardDetail:
       allOf:
-        - $ref: '#/components/schemas/baseAward'
+        - $ref: '#/components/schemas/baseAwardDetail'
       type: 'object'
       properties:
         description:
@@ -1972,37 +2145,51 @@ components:
           type: 'string'
         no_recovery_details:
           type: 'string'
-        stat_charge_exempt_reason:
+        statutory_charge_exempt_reason:
           type: 'string'
         recovery_of_award_time_related:
           type: 'boolean'
         time_recovery:
-          $ref: "#/components/schemas/timeRecovery"
-    caseOutcome:
+          $ref: "#/components/schemas/timeRecoveryDetail"
+    caseOutcomeDetails:
       type: 'object'
       properties:
+        content:
+          type: 'array'
+          default: [ ]
+          items:
+            $ref: '#/components/schemas/caseOutcomeDetail'
+    caseOutcomeDetail:
+      type: 'object'
+      properties:
+        id:
+          type: 'integer'
         case_reference_number:
           type: 'string'
         cost_awards:
           type: 'array'
           items:
-            $ref: "#/components/schemas/costAward"
+            $ref: "#/components/schemas/costAwardDetail"
         financial_awards:
           type: 'array'
           items:
-            $ref: "#/components/schemas/financialAward"
+            $ref: "#/components/schemas/financialAwardDetail"
         land_awards:
           type: 'array'
           items:
-            $ref: "#/components/schemas/landAward"
+            $ref: "#/components/schemas/landAwardDetail"
         other_asset_awards:
           type: 'array'
           items:
-            $ref: "#/components/schemas/otherAssetAward"
+            $ref: "#/components/schemas/otherAssetAwardDetail"
         proceeding_outcomes:
           type: 'array'
           items:
-            $ref: "#/components/schemas/proceedingOutcome"
+            $ref: "#/components/schemas/proceedingOutcomeDetail"
+        opponents:
+          type: 'array'
+          items:
+            $ref: "#/components/schemas/opponentDetail"
         pre_certificate_costs:
           type: 'number'
           default: 0.00
@@ -2012,7 +2199,7 @@ components:
         discharge_reason:
           type: 'string'
         discharge_case_ind:
-          type: 'string'
+          type: 'boolean'
         client_continue_ind:
           type: 'boolean'
         other_details:
@@ -2023,6 +2210,8 @@ components:
           type: 'string'
         provider_id:
           type: 'string'
+        audit_trail:
+          $ref: "#/components/schemas/auditDetail"
     assessmentResult:
       type: object
       properties:
@@ -2107,8 +2296,8 @@ components:
           type: 'array'
           default: []
           items:
-            $ref: '#/components/schemas/baseApplication'
-    baseApplication:
+            $ref: '#/components/schemas/baseApplicationDetail'
+    baseApplicationDetail:
       type: 'object'
       properties:
         id:
@@ -2120,12 +2309,12 @@ components:
         status:
           $ref: "#/components/schemas/stringDisplayValue"
         client:
-          $ref: "#/components/schemas/client"
+          $ref: "#/components/schemas/clientDetail"
         provider_details:
           $ref: "#/components/schemas/applicationProviderDetails"
     applicationDetail:
       allOf:
-        - $ref: "#/components/schemas/baseApplication"
+        - $ref: "#/components/schemas/baseApplicationDetail"
       type: 'object'
       properties:
         relation_to_linked_case:
@@ -2139,19 +2328,19 @@ components:
         merits_assessment_amended:
           type: 'boolean'
         cost_limit:
-          $ref: "#/components/schemas/costLimit"
+          $ref: "#/components/schemas/costLimitDetail"
         application_type:
           $ref: "#/components/schemas/applicationType"
         merits_reassessment_required:
             type: 'boolean'
         correspondence_address:
-          $ref: "#/components/schemas/address"
+          $ref: "#/components/schemas/addressDetail"
         costs:
-          $ref: "#/components/schemas/costStructure"
+          $ref: "#/components/schemas/costStructureDetail"
         proceedings:
           type: 'array'
           items:
-            $ref: "#/components/schemas/proceeding"
+            $ref: "#/components/schemas/proceedingDetail"
         lead_proceeding_changed:
           type: 'boolean'
         app_mode:
@@ -2174,15 +2363,15 @@ components:
         linked_cases:
           type: 'array'
           items:
-            $ref: "#/components/schemas/linkedCase"
+            $ref: "#/components/schemas/linkedCaseDetail"
         prior_authorities:
           type: 'array'
           items:
-            $ref: "#/components/schemas/priorAuthority"
+            $ref: "#/components/schemas/priorAuthorityDetail"
         opponents:
           type: 'array'
           items:
-            $ref: "#/components/schemas/opponent"
+            $ref: "#/components/schemas/opponentDetail"
         certificate:
           $ref: "#/components/schemas/stringDisplayValue"
         date_created:
@@ -2191,13 +2380,13 @@ components:
         amendment_proceedings_in_ebs:
           type: 'array'
           items:
-            $ref: "#/components/schemas/proceeding"
+            $ref: "#/components/schemas/proceedingDetail"
         available_functions:
           type: 'array'
           items:
             type: 'string'
         case_outcome:
-          $ref: "#/components/schemas/caseOutcome"
+          $ref: "#/components/schemas/caseOutcomeDetail"
         means_assessment:
           $ref: "#/components/schemas/assessmentResult"
         merits_assessment:

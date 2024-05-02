@@ -13,10 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.LinkedCaseRepository;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
 
 @ExtendWith(MockitoExtension.class)
 class LinkedCaseServiceTest {
@@ -60,9 +61,9 @@ class LinkedCaseServiceTest {
   @Test
   void updateLinkedCaseForApplication_whenCaseExists_updatesLinkedCase() {
       Long linkedCaseId = 2L;
-      LinkedCase linkedCaseModel = new LinkedCase();
+      LinkedCaseDetail linkedCaseModel = new LinkedCaseDetail();
 
-      uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity = new uk.gov.laa.ccms.caab.api.entity.LinkedCase();
+      LinkedCase linkedCaseEntity = new LinkedCase();
       linkedCaseEntity.setId(linkedCaseId);
 
       when(linkedCaseRepository.findById(linkedCaseId)).thenReturn(Optional.of(linkedCaseEntity));
@@ -78,9 +79,9 @@ class LinkedCaseServiceTest {
   @Test
   void updateLinkedCaseForApplication_whenCaseNotExists_throwsException() {
       Long linkedCaseId = 2L;
-      LinkedCase linkedCaseModel = new LinkedCase();
+      LinkedCaseDetail linkedCaseModel = new LinkedCaseDetail();
 
-      uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity = new uk.gov.laa.ccms.caab.api.entity.LinkedCase();
+      LinkedCase linkedCaseEntity = new LinkedCase();
       linkedCaseEntity.setId(linkedCaseId);
 
       when(linkedCaseRepository.findById(linkedCaseId)).thenReturn(Optional.empty());

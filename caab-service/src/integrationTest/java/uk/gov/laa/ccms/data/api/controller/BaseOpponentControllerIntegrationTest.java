@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.OpponentController;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.model.Opponent;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 
 public abstract class BaseOpponentControllerIntegrationTest
     extends AbstractControllerIntegrationTest {
@@ -27,7 +27,7 @@ public abstract class BaseOpponentControllerIntegrationTest
   public void updateOpponent() throws IOException {
     Long opponentId = 3L;
 
-    Opponent updatedOpponent = loadObjectFromJson("/json/opponent_new.json", Opponent.class);
+    OpponentDetail updatedOpponent = loadObjectFromJson("/json/opponent_new.json", OpponentDetail.class);
 
     ResponseEntity<Void> response = opponentController.updateOpponent(opponentId, caabUserLoginId, updatedOpponent);
 
@@ -41,7 +41,7 @@ public abstract class BaseOpponentControllerIntegrationTest
     Long opponentId = 3L;
 
     opponentController.removeOpponent(opponentId, caabUserLoginId);
-    List<Opponent> opponents = applicationService.getOpponentsForApplication(caseRef);
+    List<OpponentDetail> opponents = applicationService.getOpponentsForApplication(caseRef);
     assertEquals(0, opponents.size());
   }
 

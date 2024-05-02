@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.ScopeLimitationController;
 import uk.gov.laa.ccms.caab.api.service.ProceedingService;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 public abstract class BaseScopeLimitiationControllerIntegrationTest
     extends AbstractControllerIntegrationTest {
@@ -27,7 +27,7 @@ public abstract class BaseScopeLimitiationControllerIntegrationTest
   public void updateScopeLimitation() throws IOException {
     Long scopeLimitationId = 3L;
 
-    ScopeLimitation updatedScopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitation.class);
+    ScopeLimitationDetail updatedScopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitationDetail.class);
 
     ResponseEntity<Void> response = scopeLimitationController.updateScopeLimitation(scopeLimitationId, caabUserLoginId, updatedScopeLimitation);
 
@@ -41,7 +41,7 @@ public abstract class BaseScopeLimitiationControllerIntegrationTest
     Long scopeLimitationId = 3L;
 
     scopeLimitationController.removeScopeLimitation(scopeLimitationId, caabUserLoginId);
-    List<ScopeLimitation> scopeLimitations = proceedingService.getScopeLimitationsForProceeding(proceedingId);
+    List<ScopeLimitationDetail> scopeLimitations = proceedingService.getScopeLimitationsForProceeding(proceedingId);
     assertEquals(0, scopeLimitations.size());
   }
 

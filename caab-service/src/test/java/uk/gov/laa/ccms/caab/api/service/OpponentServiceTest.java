@@ -13,10 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.OpponentRepository;
-import uk.gov.laa.ccms.caab.model.Opponent;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 
 @ExtendWith(MockitoExtension.class)
 class OpponentServiceTest {
@@ -57,8 +58,8 @@ class OpponentServiceTest {
   @Test
   void updateOpponent_whenExists_updatesOpponent() {
     Long opponentId = 1L;
-    Opponent opponentModel = new Opponent();
-    uk.gov.laa.ccms.caab.api.entity.Opponent opponentEntity = new uk.gov.laa.ccms.caab.api.entity.Opponent();
+    OpponentDetail opponentModel = new OpponentDetail();
+    Opponent opponentEntity = new Opponent();
     opponentEntity.setId(opponentId);
 
     when(opponentRepository.findById(opponentId)).thenReturn(Optional.of(opponentEntity));
@@ -74,7 +75,7 @@ class OpponentServiceTest {
   @Test
   void updateOpponent_whenNotExists_throwsException() {
     Long opponentId = 1L;
-    Opponent opponentModel = new Opponent();
+    OpponentDetail opponentModel = new OpponentDetail();
 
     when(opponentRepository.findById(opponentId)).thenReturn(Optional.empty());
 

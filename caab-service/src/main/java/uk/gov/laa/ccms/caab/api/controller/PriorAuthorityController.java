@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.laa.ccms.caab.api.PriorAuthoritiesApi;
 import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
 
 /**
  * Controller handling prior authorities-related requests.
@@ -33,7 +33,7 @@ public class PriorAuthorityController implements PriorAuthoritiesApi {
   public ResponseEntity<Void> updatePriorAuthority(
       final Long priorAuthorityId,
       final String caabUserLoginId,
-      final PriorAuthority priorAuthority) {
+      final PriorAuthorityDetail priorAuthority) {
     priorAuthorityService.updatePriorAuthority(priorAuthorityId, priorAuthority);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

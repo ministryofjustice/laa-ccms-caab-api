@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.service.OpponentService;
-import uk.gov.laa.ccms.caab.model.Opponent;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -61,7 +61,7 @@ class OpponentControllerTest {
   @Test
   public void updateOpponent_UpdatesOpponent() throws Exception {
     Long opponentId = 2L;
-    Opponent opponent = new Opponent();
+    OpponentDetail opponent = new OpponentDetail();
 
     doNothing().when(opponentService).updateOpponent(opponentId, opponent);
 

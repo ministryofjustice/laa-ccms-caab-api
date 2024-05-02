@@ -7,12 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ProceedingRepository;
-import uk.gov.laa.ccms.caab.model.Proceeding;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 /**
  * Service responsible for handling proceedings operations.
@@ -60,7 +59,7 @@ public class ProceedingService {
   @Transactional
   public void updateProceeding(
       final Long proceedingId,
-      final Proceeding proceedingModel) {
+      final ProceedingDetail proceedingModel) {
 
     uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity =
         repository.findById(proceedingId)
@@ -83,7 +82,7 @@ public class ProceedingService {
    * @return the proceeding's scope limitations.
    */
   @Transactional
-  public List<ScopeLimitation> getScopeLimitationsForProceeding(final Long id) {
+  public List<ScopeLimitationDetail> getScopeLimitationsForProceeding(final Long id) {
     return repository.findById(id)
         .map(uk.gov.laa.ccms.caab.api.entity.Proceeding::getScopeLimitations)
         .orElseThrow(() -> new CaabApiException(
@@ -105,7 +104,7 @@ public class ProceedingService {
   @Transactional
   public void createScopeLimitationForProceeding(
       final Long proceedingId,
-      final ScopeLimitation scopeLimitation) {
+      final ScopeLimitationDetail scopeLimitation) {
 
     uk.gov.laa.ccms.caab.api.entity.Proceeding proceeding = repository.findById(proceedingId)
         .orElseThrow(() -> new CaabApiException(

@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.PriorAuthorityRepository;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
 
 @ExtendWith(MockitoExtension.class)
 class PriorAuthorityServiceTest {
@@ -58,7 +58,7 @@ class PriorAuthorityServiceTest {
   @Test
   void updatePriorAuthority_whenAuthorityExists_updatesPriorAuthority() {
     Long priorAuthorityId = 1L;
-    PriorAuthority priorAuthorityModel = new PriorAuthority();
+    PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail();
 
     uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity = new uk.gov.laa.ccms.caab.api.entity.PriorAuthority();
     priorAuthorityEntity.setId(priorAuthorityId);
@@ -79,7 +79,7 @@ class PriorAuthorityServiceTest {
   @Test
   void updatePriorAuthority_whenAuthorityNotExists_throwsException() {
     Long priorAuthorityId = 1L;
-    PriorAuthority priorAuthorityModel = new PriorAuthority();
+    PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail();
 
     when(priorAuthorityRepository.findById(priorAuthorityId)).thenReturn(Optional.empty());
 

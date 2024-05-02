@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.laa.ccms.caab.api.ScopeLimitationsApi;
 import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 /**
  * Controller handling scope limitation-related requests.
@@ -33,7 +33,7 @@ public class ScopeLimitationController implements ScopeLimitationsApi {
   public ResponseEntity<Void> updateScopeLimitation(
       final Long scopeLimitationId,
       final String caabUserLoginId,
-      final ScopeLimitation scopeLimitation) {
+      final ScopeLimitationDetail scopeLimitation) {
     scopeLimitationService.updateScopeLimitation(scopeLimitationId, scopeLimitation);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
