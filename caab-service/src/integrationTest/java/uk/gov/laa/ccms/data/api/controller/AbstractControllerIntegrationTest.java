@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -83,7 +84,8 @@ public class AbstractControllerIntegrationTest {
    * @param jsonFilePath The path to the JSON file to load
    */
   protected <T> T loadObjectFromJson(String jsonFilePath, Class<T> objectType) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     ClassPathResource resource = new ClassPathResource(jsonFilePath);
     return objectMapper.readValue(resource.getInputStream(), objectType);
   }

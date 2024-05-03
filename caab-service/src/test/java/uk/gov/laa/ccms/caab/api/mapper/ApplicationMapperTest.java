@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildAddress;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOpponent;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOpponentModel;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -14,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +29,6 @@ import org.springframework.data.domain.PageImpl;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
-import uk.gov.laa.ccms.caab.api.entity.CaseOutcome;
 import uk.gov.laa.ccms.caab.api.entity.CostEntry;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
@@ -1306,8 +1307,8 @@ public class ApplicationMapperTest {
     @Test
     void testUpdateOpponent() {
         Date date = new Date();
-        Opponent opponentBefore = buildOpponent(date);
-        Opponent opponent = buildOpponent(date);
+        Opponent opponentBefore = buildOpponent(1L, date);
+        Opponent opponent = buildOpponent(1L, date);
 
         OpponentDetail opponentModel = buildOpponentModel(createdAt);
 
@@ -1411,116 +1412,5 @@ public class ApplicationMapperTest {
         auditTrail.setCreatedBy("CreatedBy");
         auditTrail.setLastSavedBy("LastSavedBy");
         return auditTrail;
-    }
-
-    @NotNull
-    private static Address buildAddress() {
-        Address address = new Address();
-        address.setPostCode("InitialPostcode");
-        address.setHouseNameNumber("InitialHouseNameNumber");
-        address.setNoFixedAbode(true);
-        address.setAddressLine1("InitialAddressLine1");
-        address.setAddressLine2("InitialAddressLine2");
-        address.setCity("InitialCity");
-        address.setCounty("InitialCounty");
-        address.setCountry("InitialCountry");
-        address.setCareOf("InitialCareOf");
-        address.setPreferredAddress("InitialPreferredAddress");
-        return address;
-    }
-
-    private Opponent buildOpponent(Date date) {
-        Opponent opponent = new Opponent();
-        opponent.setId(Long.valueOf("11111"));
-        opponent.setAmendment(true);
-        opponent.setApplication(new Application());
-        opponent.setAppMode(false);
-        opponent.setAssessedAssets(BigDecimal.TEN);
-        opponent.setAssessedIncome(BigDecimal.ONE);
-        opponent.setAssessedIncomeFrequency("freq");
-        opponent.setAssessmentDate(date);
-        opponent.setAuditTrail(new AuditTrail());
-        opponent.setAward(true);
-        opponent.setCertificateNumber("certnum");
-        opponent.setConfirmed(false);
-        opponent.setContactNameRole("namerole");
-        opponent.setCourtOrderedMeansAssessment(true);
-        opponent.setCurrentlyTrading(false);
-        opponent.setDateOfBirth(date);
-        opponent.setDeleteInd(true);
-        opponent.setEbsId("ebs1");
-        opponent.setEmailAddress("emailadd");
-        opponent.setEmployerAddress("empaddr");
-        opponent.setEmployerName("name");
-        opponent.setEmploymentStatus("empStat");
-        opponent.setFaxNumber("faxnum");
-        opponent.setFirstName("first");
-        opponent.setId(Long.parseLong("1"));
-        opponent.setLegalAided(true);
-        opponent.setMiddleNames("middle");
-        opponent.setNationalInsuranceNumber("nino");
-        opponent.setOrganisationName("org");
-        opponent.setOrganisationType("orgtype");
-        opponent.setOtherInformation("otherinf");
-        opponent.setCaseOutcome(new CaseOutcome());
-        opponent.setPublicFundingApplied(false);
-        opponent.setRelationshipToCase("rel2case");
-        opponent.setRelationshipToClient("rel2client");
-        opponent.setSharedInd(true);
-        opponent.setSurname("sur");
-        opponent.setTelephoneHome("telhome");
-        opponent.setTelephoneMobile("telmob");
-        opponent.setTelephoneWork("telwork");
-        opponent.setTitle("ttl");
-        opponent.setType("thetype");
-
-        return opponent;
-    }
-
-    public OpponentDetail buildOpponentModel(java.util.Date date) {
-        return new OpponentDetail()
-            .address(new AddressDetail().addressLine1("add1"))
-            .amendment(Boolean.TRUE)
-            .appMode(Boolean.FALSE)
-            .assessedAssets(BigDecimal.TEN)
-            .assessedIncome(BigDecimal.ONE)
-            .assessedIncomeFrequency("freq")
-            .assessmentDate(date)
-            .auditTrail(new AuditDetail())
-            .award(Boolean.TRUE)
-            .certificateNumber("cert")
-            .confirmed(Boolean.FALSE)
-            .contactNameRole("conNameRole")
-            .courtOrderedMeansAssessment(Boolean.TRUE)
-            .currentlyTrading(Boolean.TRUE)
-            .dateOfBirth(date)
-            .deleteInd(Boolean.FALSE)
-            .displayAddress("address 1")
-            .displayName("disp name")
-            .ebsId("ebsid")
-            .emailAddress("emailAdd")
-            .employerName("empName")
-            .employerAddress("empAddr")
-            .employmentStatus("empSt")
-            .faxNumber("fax")
-            .firstName("firstname")
-            .id(2222)
-            .legalAided(Boolean.TRUE)
-            .middleNames("midnames")
-            .nationalInsuranceNumber("nino")
-            .organisationName("orgName")
-            .organisationType("orgid")
-            .otherInformation("otherInf")
-            .partyId("party")
-            .publicFundingApplied(Boolean.TRUE)
-            .relationshipToCase("relToCase")
-            .relationshipToClient("relToClient")
-            .sharedInd(Boolean.TRUE)
-            .surname("surname")
-            .telephoneHome("telHome")
-            .telephoneMobile("telMob")
-            .telephoneWork("telWork")
-            .title("thetitle")
-            .type("thetype");
     }
 }

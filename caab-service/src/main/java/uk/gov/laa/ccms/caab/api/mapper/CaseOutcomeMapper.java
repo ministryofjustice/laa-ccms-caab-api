@@ -2,14 +2,19 @@ package uk.gov.laa.ccms.caab.api.mapper;
 
 
 import java.util.List;
+import java.util.Optional;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Context;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import uk.gov.laa.ccms.caab.api.entity.CaseOutcome;
 import uk.gov.laa.ccms.caab.api.entity.CostAward;
 import uk.gov.laa.ccms.caab.api.entity.FinancialAward;
 import uk.gov.laa.ccms.caab.api.entity.LandAward;
 import uk.gov.laa.ccms.caab.api.entity.LiableParty;
+import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.OtherAssetAward;
 import uk.gov.laa.ccms.caab.api.entity.ProceedingOutcome;
 import uk.gov.laa.ccms.caab.api.entity.Recovery;
@@ -52,7 +57,22 @@ public interface CaseOutcomeMapper {
   }
 
   @Mapping(target = "caseReferenceNumber", source = "lscCaseReference")
+  @Mapping(target = "opponentIds", source = "opponents")
   CaseOutcomeDetail toCaseOutcomeDetail(final CaseOutcome caseOutcome);
+
+  /**
+   * Map a List of Opponent entities to a List of opponent ids.
+   * @param opponents - the opponent entities
+   * @return List of Integer opponent ids.
+   */
+  default List<Integer> toOpponentIds(final List<Opponent> opponents) {
+    return Optional.ofNullable(opponents)
+        .map(o -> o.stream()
+            .map(opponent -> Optional.ofNullable(opponent.getId())
+                .map(Long::intValue)
+                .orElse(null)).toList())
+        .orElse(null);
+  }
 
   @Mapping(target = "stageEnd.id", source = "stageEnd")
   @Mapping(target = "stageEnd.displayValue", source = "stageEndDisplayValue")
@@ -62,6 +82,7 @@ public interface CaseOutcomeMapper {
   @Mapping(target = "proceedingType", ignore = true)
   ProceedingOutcomeDetail toProceedingOutcomeDetail(final ProceedingOutcome proceedingOutcome);
 
+  @Mapping(target = "opponentId", source = "opponent.id")
   LiablePartyDetail toLiablePartyDetail(final LiableParty liableParty);
 
   @Mapping(target = "conditionsOfOffer", ignore = true)
@@ -92,31 +113,94 @@ public interface CaseOutcomeMapper {
   @InheritInverseConfiguration
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  CaseOutcome toCaseOutcome(final CaseOutcomeDetail caseOutcomeDetail);
+  @Mapping(target = "opponents", source = "opponentIds")
+  CaseOutcome toCaseOutcome(final CaseOutcomeDetail caseOutcomeDetail,
+      @Context final List<Opponent> allOpponents);
+
+  /**
+   * Finalise the CaseOutcome entity and its children with all required
+   * relationships.
+   *
+   * @param caseOutcome - the case outcome.
+   */
+  @AfterMapping
+  default void finaliseCaseOutcome(@MappingTarget final CaseOutcome caseOutcome) {
+    Optional.ofNullable(caseOutcome.getOpponents())
+        .ifPresent(opponents -> opponents.forEach(
+            opponent -> opponent.setCaseOutcome(caseOutcome)));
+
+    Optional.ofNullable(caseOutcome.getCostAwards())
+        .ifPresent(awards -> awards.forEach(
+            award -> {
+              award.setCaseOutcome(caseOutcome);
+
+              Optional.ofNullable(award.getLiableParties())
+                  .ifPresent(liableParties -> liableParties.forEach(
+                      liableParty -> liableParty.setCostAward(award)));
+            }));
+
+    Optional.ofNullable(caseOutcome.getFinancialAwards())
+        .ifPresent(awards -> awards.forEach(
+            award -> {
+              award.setCaseOutcome(caseOutcome);
+
+              Optional.ofNullable(award.getLiableParties())
+                  .ifPresent(liableParties -> liableParties.forEach(
+                      liableParty -> liableParty.setFinancialAward(award)));
+            }));
+
+    Optional.ofNullable(caseOutcome.getLandAwards())
+        .ifPresent(awards -> awards.forEach(
+            award -> {
+              award.setCaseOutcome(caseOutcome);
+
+              Optional.ofNullable(award.getLiableParties())
+                  .ifPresent(liableParties -> liableParties.forEach(
+                      liableParty -> liableParty.setLandAward(award)));
+            }));
+
+    Optional.ofNullable(caseOutcome.getOtherAssetAwards())
+        .ifPresent(awards -> awards.forEach(
+            award -> {
+              award.setCaseOutcome(caseOutcome);
+
+              Optional.ofNullable(award.getLiableParties())
+                  .ifPresent(liableParties -> liableParties.forEach(
+                      liableParty -> liableParty.setOtherAssetAward(award)));
+            }));
+
+    Optional.ofNullable(caseOutcome.getProceedingOutcomes())
+        .ifPresent(proceedingOutcomes -> proceedingOutcomes.forEach(
+            proceedingOutcome -> proceedingOutcome.setCaseOutcome(caseOutcome)));
+  }
 
   @InheritInverseConfiguration
   @Mapping(target = "caseOutcome", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  CostAward toCostAward(final CostAwardDetail costAwardDetail);
+  CostAward toCostAward(final CostAwardDetail costAwardDetail,
+      @Context final List<Opponent> allOpponents);
 
   @InheritInverseConfiguration
   @Mapping(target = "caseOutcome", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  FinancialAward toFinancialAward(final FinancialAwardDetail financialAwardDetail);
+  FinancialAward toFinancialAward(final FinancialAwardDetail financialAwardDetail,
+      @Context final List<Opponent> allOpponents);
 
   @InheritInverseConfiguration
   @Mapping(target = "caseOutcome", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  LandAward toLandAward(final LandAwardDetail landAwardDetail);
+  LandAward toLandAward(final LandAwardDetail landAwardDetail,
+      @Context final List<Opponent> allOpponents);
 
   @InheritInverseConfiguration
   @Mapping(target = "caseOutcome", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  OtherAssetAward toOtherAssetAward(final OtherAssetAwardDetail otherAssetAwardDetail);
+  OtherAssetAward toOtherAssetAward(final OtherAssetAwardDetail otherAssetAwardDetail,
+      @Context final List<Opponent> allOpponents);
 
   @InheritInverseConfiguration
   @Mapping(target = "caseOutcome", ignore = true)
@@ -125,13 +209,15 @@ public interface CaseOutcomeMapper {
   ProceedingOutcome toProceedingOutcome(final ProceedingOutcomeDetail proceedingOutcomeDetail);
 
   @InheritInverseConfiguration
+  @Mapping(target = "opponent", source = "opponentId")
   @Mapping(target = "costAward", ignore = true)
   @Mapping(target = "financialAward", ignore = true)
   @Mapping(target = "landAward", ignore = true)
   @Mapping(target = "otherAssetAward", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
-  LiableParty toLiableParty(final LiablePartyDetail liablePartyDetail);
+  LiableParty toLiableParty(final LiablePartyDetail liablePartyDetail,
+      @Context final List<Opponent> allOpponents);
 
   @InheritInverseConfiguration
   @Mapping(target = "id", ignore = true)
@@ -142,4 +228,19 @@ public interface CaseOutcomeMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "auditTrail", ignore = true)
   TimeRecovery toTimeRecovery(final TimeRecoveryDetail timeRecoverDetail);
+
+  /**
+   * Find the Opponent entity with the specified id.
+   *
+   * @param opponentId - the id to find.
+   * @param allOpponents - the list of all Opponents.
+   * @return the matching Opponent or null.
+   */
+  default Opponent findOpponent(final Long opponentId,
+      @Context final List<Opponent> allOpponents) {
+    return allOpponents.stream()
+        .filter(opponent -> opponent.getId().equals(opponentId))
+        .findFirst()
+        .orElse(null);
+  }
 }

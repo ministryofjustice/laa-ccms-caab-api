@@ -1,19 +1,29 @@
 package uk.gov.laa.ccms.caab.api.service;
 
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.entity.CaseOutcome;
+import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.mapper.CaseOutcomeMapper;
 import uk.gov.laa.ccms.caab.api.repository.CaseOutcomeRepository;
+import uk.gov.laa.ccms.caab.api.repository.OpponentRepository;
+import uk.gov.laa.ccms.caab.model.BaseAwardDetail;
 import uk.gov.laa.ccms.caab.model.CaseOutcomeDetail;
 import uk.gov.laa.ccms.caab.model.CaseOutcomeDetails;
+import uk.gov.laa.ccms.caab.model.LiablePartyDetail;
 
 /**
  * Service responsible for handling case outcome operations.
@@ -26,7 +36,9 @@ import uk.gov.laa.ccms.caab.model.CaseOutcomeDetails;
 @Slf4j
 public class CaseOutcomeService {
 
-  private final CaseOutcomeRepository repository;
+  private final CaseOutcomeRepository caseOutcomeRepository;
+
+  private final OpponentRepository opponentRepository;
 
   private final CaseOutcomeMapper mapper;
 
@@ -48,7 +60,7 @@ public class CaseOutcomeService {
     caseOutcome.setProviderId(providerId);
 
     return mapper.toCaseOutcomeDetails(
-        repository.findAll(Example.of(caseOutcome)));
+        caseOutcomeRepository.findAll(Example.of(caseOutcome)));
 
   }
 
@@ -61,7 +73,7 @@ public class CaseOutcomeService {
   @Transactional
   public CaseOutcomeDetail getCaseOutcome(final Long id) {
 
-    return repository.findById(id)
+    return caseOutcomeRepository.findById(id)
         .map(mapper::toCaseOutcomeDetail)
         .orElseThrow(() -> new CaabApiException(
             String.format("Failed to find case outcome with id: %s", id),
@@ -74,56 +86,47 @@ public class CaseOutcomeService {
    * @param caseOutcomeDetail - the case outcome to create.
    * @return the id of the newly created evidence document.
    */
+  @Transactional
   public Long createCaseOutcome(final CaseOutcomeDetail caseOutcomeDetail) {
-    CaseOutcome caseOutcome = mapper.toCaseOutcome(caseOutcomeDetail);
+    // Build a Set of all opponentIds across the CaseOutcome and the liable parties for each
+    // award type.
+    List<Integer> caseOutcomeOpponentIds =
+        Optional.ofNullable(caseOutcomeDetail.getOpponentIds())
+            .orElse(new ArrayList<>());
 
-    // Add the parent/child relationships
-    Optional.ofNullable(caseOutcome.getOpponents()).ifPresent(
-        opponents -> opponents.forEach(opponent -> opponent.setCaseOutcome(caseOutcome)));
+    final Set<Integer> allOpponentIds = new HashSet<>(caseOutcomeOpponentIds);
+    allOpponentIds.addAll(getLiablePartyOpponentIds(caseOutcomeDetail.getCostAwards()));
+    allOpponentIds.addAll(getLiablePartyOpponentIds(caseOutcomeDetail.getFinancialAwards()));
+    allOpponentIds.addAll(getLiablePartyOpponentIds(caseOutcomeDetail.getLandAwards()));
+    allOpponentIds.addAll(getLiablePartyOpponentIds(caseOutcomeDetail.getOtherAssetAwards()));
 
-    Optional.ofNullable(caseOutcome.getCostAwards()).ifPresent(
-        awards -> awards.forEach(award -> {
-          award.setCaseOutcome(caseOutcome);
+    // Now retrieve the Opponent entity for each opponentId.
+    List<Opponent> allOpponents = allOpponentIds.stream().map(this::getOpponentEntity).toList();
 
-          Optional.ofNullable(award.getLiableParties())
-              .ifPresent(liableParties -> liableParties.forEach(
-                  liableParty -> liableParty.setCostAward(award)));
-        }));
+    final CaseOutcome caseOutcome = mapper.toCaseOutcome(caseOutcomeDetail, allOpponents);
 
-    Optional.ofNullable(caseOutcome.getFinancialAwards()).ifPresent(
-        awards -> awards.forEach(award -> {
-          award.setCaseOutcome(caseOutcome);
-
-          Optional.ofNullable(award.getLiableParties()).ifPresent(
-              liableParties -> liableParties.forEach(liableParty ->
-                  liableParty.setFinancialAward(award)));
-        }));
-
-    Optional.ofNullable(caseOutcome.getLandAwards()).ifPresent(
-        awards -> awards.forEach(award -> {
-          award.setCaseOutcome(caseOutcome);
-
-          Optional.ofNullable(award.getLiableParties()).ifPresent(
-              liableParties -> liableParties.forEach(liableParty ->
-                  liableParty.setLandAward(award)));
-        }));
-
-    Optional.ofNullable(caseOutcome.getOtherAssetAwards()).ifPresent(
-        awards -> awards.forEach(award -> {
-          award.setCaseOutcome(caseOutcome);
-
-          Optional.ofNullable(award.getLiableParties()).ifPresent(
-              liableParties -> liableParties.forEach(liableParty ->
-                  liableParty.setOtherAssetAward(award)));
-        }));
-
-    caseOutcome.getProceedingOutcomes().forEach(
-        proceedingOutcome -> proceedingOutcome.setCaseOutcome(caseOutcome));
-
-    uk.gov.laa.ccms.caab.api.entity.CaseOutcome createdCaseOutcome =
-        repository.save(caseOutcome);
+    CaseOutcome createdCaseOutcome = caseOutcomeRepository.save(caseOutcome);
 
     return createdCaseOutcome.getId();
+  }
+
+  private List<Integer> getLiablePartyOpponentIds(List<? extends BaseAwardDetail> awardDetails) {
+    return Optional.ofNullable(awardDetails)
+        .map(costAwardDetails -> costAwardDetails.stream()
+            .flatMap(awards -> Optional.ofNullable(awards.getLiableParties())
+                .map(liableParties -> liableParties.stream()
+                    .map(LiablePartyDetail::getOpponentId))
+                .orElse(Stream.empty())
+            )
+            .toList())
+        .orElse(Collections.emptyList());
+  }
+
+  private Opponent getOpponentEntity(Integer id) {
+    return opponentRepository.findById(id.longValue())
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Failed to find Opponent with id: %s", id),
+            HttpStatus.NOT_FOUND));
   }
 
   /**
@@ -135,8 +138,8 @@ public class CaseOutcomeService {
    */
   @Transactional
   public void removeCaseOutcome(final Long caseOutcomeId) {
-    if (repository.existsById(caseOutcomeId)) {
-      repository.deleteById(caseOutcomeId);
+    if (caseOutcomeRepository.existsById(caseOutcomeId)) {
+      caseOutcomeRepository.deleteById(caseOutcomeId);
     } else {
       throw new CaabApiException(
           String.format("CaseOutcome with id: %s not found", caseOutcomeId),
@@ -158,8 +161,8 @@ public class CaseOutcomeService {
     caseOutcome.setLscCaseReference(caseReferenceNumber);
     caseOutcome.setProviderId(providerId);
 
-    repository.deleteAll(
-        repository.findAll(Example.of(caseOutcome)));
+    caseOutcomeRepository.deleteAll(
+        caseOutcomeRepository.findAll(Example.of(caseOutcome)));
   }
 
 }

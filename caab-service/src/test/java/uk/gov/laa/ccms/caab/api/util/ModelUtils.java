@@ -6,6 +6,8 @@ import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import uk.gov.laa.ccms.caab.api.entity.Address;
+import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.entity.BaseAward;
 import uk.gov.laa.ccms.caab.api.entity.CaseOutcome;
@@ -19,6 +21,7 @@ import uk.gov.laa.ccms.caab.api.entity.OtherAssetAward;
 import uk.gov.laa.ccms.caab.api.entity.ProceedingOutcome;
 import uk.gov.laa.ccms.caab.api.entity.Recovery;
 import uk.gov.laa.ccms.caab.api.entity.TimeRecovery;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
 import uk.gov.laa.ccms.caab.model.CaseOutcomeDetail;
 import uk.gov.laa.ccms.caab.model.CostAwardDetail;
@@ -34,6 +37,116 @@ import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 import uk.gov.laa.ccms.caab.model.TimeRecoveryDetail;
 
 public class ModelUtils {
+
+  public static Address buildAddress() {
+    Address address = new Address();
+    address.setPostCode("InitialPostcode");
+    address.setHouseNameNumber("InitialHouseNameNumber");
+    address.setNoFixedAbode(true);
+    address.setAddressLine1("InitialAddressLine1");
+    address.setAddressLine2("InitialAddressLine2");
+    address.setCity("InitialCity");
+    address.setCounty("InitialCounty");
+    address.setCountry("InitialCountry");
+    address.setCareOf("InitialCareOf");
+    address.setPreferredAddress("InitialPreferredAddress");
+    return address;
+  }
+
+  public static Opponent buildOpponent(Long id, Date date) {
+    Opponent opponent = new Opponent();
+    opponent.setId(id);
+    opponent.setAmendment(true);
+    opponent.setApplication(new Application());
+    opponent.setAppMode(false);
+    opponent.setAssessedAssets(BigDecimal.TEN);
+    opponent.setAssessedIncome(BigDecimal.ONE);
+    opponent.setAssessedIncomeFrequency("freq");
+    opponent.setAssessmentDate(date);
+    opponent.setAuditTrail(new AuditTrail());
+    opponent.setAward(true);
+    opponent.setCertificateNumber("certnum");
+    opponent.setConfirmed(false);
+    opponent.setContactNameRole("namerole");
+    opponent.setCourtOrderedMeansAssessment(true);
+    opponent.setCurrentlyTrading(false);
+    opponent.setDateOfBirth(date);
+    opponent.setDeleteInd(true);
+    opponent.setEbsId("ebs1");
+    opponent.setEmailAddress("emailadd");
+    opponent.setEmployerAddress("empaddr");
+    opponent.setEmployerName("name");
+    opponent.setEmploymentStatus("empStat");
+    opponent.setFaxNumber("faxnum");
+    opponent.setFirstName("first");
+    opponent.setLegalAided(true);
+    opponent.setMiddleNames("middle");
+    opponent.setNationalInsuranceNumber("nino");
+    opponent.setOrganisationName("org");
+    opponent.setOrganisationType("orgtype");
+    opponent.setOtherInformation("otherinf");
+    opponent.setCaseOutcome(new CaseOutcome());
+    opponent.setPublicFundingApplied(false);
+    opponent.setRelationshipToCase("rel2case");
+    opponent.setRelationshipToClient("rel2client");
+    opponent.setSharedInd(true);
+    opponent.setSurname("sur");
+    opponent.setTelephoneHome("telhome");
+    opponent.setTelephoneMobile("telmob");
+    opponent.setTelephoneWork("telwork");
+    opponent.setTitle("ttl");
+    opponent.setType("thetype");
+
+    return opponent;
+  }
+
+  public static OpponentDetail buildOpponentModel(java.util.Date date) {
+    return new OpponentDetail()
+        .address(new AddressDetail().addressLine1("add1"))
+        .amendment(Boolean.TRUE)
+        .appMode(Boolean.FALSE)
+        .assessedAssets(BigDecimal.TEN)
+        .assessedIncome(BigDecimal.ONE)
+        .assessedIncomeFrequency("freq")
+        .assessmentDate(date)
+        .auditTrail(new AuditDetail())
+        .award(Boolean.TRUE)
+        .certificateNumber("cert")
+        .confirmed(Boolean.FALSE)
+        .contactNameRole("conNameRole")
+        .courtOrderedMeansAssessment(Boolean.TRUE)
+        .currentlyTrading(Boolean.TRUE)
+        .dateOfBirth(date)
+        .deleteInd(Boolean.FALSE)
+        .displayAddress("address 1")
+        .displayName("disp name")
+        .ebsId("ebsid")
+        .emailAddress("emailAdd")
+        .employerName("empName")
+        .employerAddress("empAddr")
+        .employmentStatus("empSt")
+        .faxNumber("fax")
+        .firstName("firstname")
+        .id(2222)
+        .legalAided(Boolean.TRUE)
+        .middleNames("midnames")
+        .nationalInsuranceNumber("nino")
+        .organisationName("orgName")
+        .organisationType("orgid")
+        .otherInformation("otherInf")
+        .partyId("party")
+        .publicFundingApplied(Boolean.TRUE)
+        .relationshipToCase("relToCase")
+        .relationshipToClient("relToClient")
+        .sharedInd(Boolean.TRUE)
+        .surname("surname")
+        .telephoneHome("telHome")
+        .telephoneMobile("telMob")
+        .telephoneWork("telWork")
+        .title("thetitle")
+        .type("thetype");
+  }
+
   public static EvidenceDocument buildEvidenceDocument() {
     EvidenceDocument evidenceDocument = new EvidenceDocument();
     evidenceDocument.setApplicationOrOutcomeId("appOutId");
@@ -311,7 +424,7 @@ public class ModelUtils {
         .addLandAwardsItem(buildLandAwardDetail())
         .legalCosts(BigDecimal.TEN)
         .officeCode("off")
-        .addOpponentsItem(new OpponentDetail())
+        .opponentIds(List.of(1, 2))
         .addOtherAssetAwardsItem(buildOtherAssetAwardDetail())
         .otherDetails("other dets")
         .preCertificateCosts(BigDecimal.TEN)
@@ -338,7 +451,7 @@ public class ModelUtils {
         .ebsId("ebsid")
         .effectiveDate(new Date())
         .id(536)
-        .addLiablePartiesItem(buildLiablePartyDetail())
+        .addLiablePartiesItem(buildLiablePartyDetail(4))
         .noRecoveryDetails("norecov")
         .opponentsToSelect(Boolean.FALSE)
         .recoveredAmount(BigDecimal.TEN)
@@ -375,7 +488,7 @@ public class ModelUtils {
         .id(456)
         .landChargeRegistration("reg")
         .addLiablePartiesItem(
-            buildLiablePartyDetail())
+            buildLiablePartyDetail(3))
         .mortgageAmountDue(BigDecimal.ONE)
         .noRecoveryDetails("norecov")
         .opponentsToSelect(Boolean.TRUE)
@@ -412,7 +525,7 @@ public class ModelUtils {
         .id(456)
         .interimAward("interim")
         .addLiablePartiesItem(
-            buildLiablePartyDetail())
+            buildLiablePartyDetail(2))
         .opponentsToSelect(Boolean.FALSE)
         .orderServedDate(new Date())
         .otherDetails("other dets")
@@ -442,8 +555,7 @@ public class ModelUtils {
         .id(123)
         .interestAwardedRate(BigDecimal.ONE)
         .interestStartDate(new Date())
-        .addLiablePartiesItem(
-            buildLiablePartyDetail())
+        .addLiablePartiesItem(buildLiablePartyDetail(1))
         .opponentsToSelect(Boolean.TRUE)
         .orderServedDate(new Date())
         .otherDetails("other dets")
@@ -454,12 +566,12 @@ public class ModelUtils {
         .updateAllowed(Boolean.FALSE);
   }
 
-  public static LiablePartyDetail buildLiablePartyDetail() {
+  public static LiablePartyDetail buildLiablePartyDetail(final Integer opponentId) {
     return new LiablePartyDetail()
         .auditTrail(buildAuditDetail())
         .awardType("type")
         .id(234)
-        .opponent(new OpponentDetail());
+        .opponentId(opponentId);
   }
 
   public static ProceedingOutcomeDetail buildProceedingOutcomeDetail() {

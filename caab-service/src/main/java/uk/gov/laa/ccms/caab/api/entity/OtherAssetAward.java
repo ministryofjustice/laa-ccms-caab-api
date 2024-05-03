@@ -133,6 +133,6 @@ public class OtherAssetAward extends BaseAward {
   /**
    * liable parties tied to the Award.
    */
-  @OneToMany(mappedBy = "otherAssetAward")
+  @OneToMany(mappedBy = "otherAssetAward", cascade = CascadeType.ALL)
   protected List<LiableParty> liableParties;
 }

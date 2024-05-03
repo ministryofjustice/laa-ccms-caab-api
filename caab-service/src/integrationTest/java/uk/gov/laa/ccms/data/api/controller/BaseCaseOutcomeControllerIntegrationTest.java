@@ -86,6 +86,7 @@ public abstract class BaseCaseOutcomeControllerIntegrationTest
   }
 
   @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql"})
   public void testCreateCaseOutcome() throws Exception {
 
     CaseOutcomeDetail caseOutcomeDetail = loadObjectFromJson(

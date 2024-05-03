@@ -14,6 +14,7 @@ import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildLandAward;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildLandAwardDetail;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildLiableParty;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildLiablePartyDetail;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOpponent;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOtherAssetAward;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOtherAssetAwardDetail;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildProceedingOutcome;
@@ -22,7 +23,7 @@ import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildRecovery;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildRecoveryDetail;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildTimeRecoveryDetail;
 
-import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import uk.gov.laa.ccms.caab.api.entity.CostAward;
 import uk.gov.laa.ccms.caab.api.entity.FinancialAward;
 import uk.gov.laa.ccms.caab.api.entity.LandAward;
 import uk.gov.laa.ccms.caab.api.entity.LiableParty;
+import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.OtherAssetAward;
 import uk.gov.laa.ccms.caab.api.entity.ProceedingOutcome;
 import uk.gov.laa.ccms.caab.api.entity.Recovery;
@@ -66,8 +68,15 @@ public class CaseOutcomeMapperTest {
     @InjectMocks
     private final CaseOutcomeMapper mapper = new CaseOutcomeMapperImpl();
 
+    private List<Opponent> allOpponents;
+
     @BeforeEach
     void setup() {
+        allOpponents = List.of(
+            buildOpponent(1L, new Date()),
+            buildOpponent(2L, new Date()),
+            buildOpponent(3L, new Date()),
+            buildOpponent(4L, new Date()));
     }
 
     @Test
@@ -353,7 +362,7 @@ public class CaseOutcomeMapperTest {
     void testToCaseOutcome() {
         CaseOutcomeDetail caseOutcomeDetail = buildCaseOutcomeDetail();
 
-        CaseOutcome result = mapper.toCaseOutcome(caseOutcomeDetail);
+        CaseOutcome result = mapper.toCaseOutcome(caseOutcomeDetail, allOpponents);
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -364,16 +373,36 @@ public class CaseOutcomeMapperTest {
 
         assertNotNull(caseOutcomeDetail.getCostAwards());
         assertEquals(1, result.getCostAwards().size());
+        assertEquals(result, result.getCostAwards().get(0).getCaseOutcome());
+        assertNotNull(result.getCostAwards().get(0).getLiableParties());
+        assertEquals(result.getCostAwards().get(0), result.getCostAwards().get(0).getLiableParties().get(0).getCostAward());
+
         assertNotNull(caseOutcomeDetail.getFinancialAwards());
         assertEquals(1, result.getFinancialAwards().size());
+        assertEquals(result, result.getFinancialAwards().get(0).getCaseOutcome());
+        assertNotNull(result.getFinancialAwards().get(0).getLiableParties());
+        assertEquals(result.getFinancialAwards().get(0), result.getFinancialAwards().get(0).getLiableParties().get(0).getFinancialAward());
+
         assertNotNull(caseOutcomeDetail.getLandAwards());
         assertEquals(1, result.getLandAwards().size());
+        assertEquals(result, result.getLandAwards().get(0).getCaseOutcome());
+        assertNotNull(result.getLandAwards().get(0).getLiableParties());
+        assertEquals(result.getLandAwards().get(0), result.getLandAwards().get(0).getLiableParties().get(0).getLandAward());
+
         assertNotNull(caseOutcomeDetail.getOtherAssetAwards());
         assertEquals(1, result.getOtherAssetAwards().size());
-        assertNotNull(caseOutcomeDetail.getOpponents());
-        assertEquals(1, result.getOpponents().size());
+        assertEquals(result, result.getOtherAssetAwards().get(0).getCaseOutcome());
+        assertNotNull(result.getOtherAssetAwards().get(0).getLiableParties());
+        assertEquals(result.getOtherAssetAwards().get(0), result.getOtherAssetAwards().get(0).getLiableParties().get(0).getOtherAssetAward());
+
+        assertNotNull(result.getOpponents());
+        assertEquals(2, result.getOpponents().size());
+        assertEquals(result, result.getOpponents().get(0).getCaseOutcome());
+        assertEquals(result, result.getOpponents().get(1).getCaseOutcome());
         assertNotNull(caseOutcomeDetail.getProceedingOutcomes());
         assertEquals(1, result.getProceedingOutcomes().size());
+        assertEquals(result, result.getProceedingOutcomes().get(0).getCaseOutcome());
+
 
         assertEquals(caseOutcomeDetail.getDischargeCaseInd(), result.getDischargeCaseInd());
         assertEquals(caseOutcomeDetail.getDischargeReason(), result.getDischargeReason());
@@ -389,7 +418,7 @@ public class CaseOutcomeMapperTest {
     void testToCostAward() {
         CostAwardDetail award = buildCostAwardDetail();
 
-        CostAward result = mapper.toCostAward(award);
+        CostAward result = mapper.toCostAward(award, allOpponents);
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -429,7 +458,7 @@ public class CaseOutcomeMapperTest {
     void testToFinancialAward() {
         FinancialAwardDetail award = buildFinancialAwardDetail();
 
-        FinancialAward result = mapper.toFinancialAward(award);
+        FinancialAward result = mapper.toFinancialAward(award, allOpponents);
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -466,7 +495,7 @@ public class CaseOutcomeMapperTest {
     void testToLandAward() {
         LandAwardDetail award = buildLandAwardDetail();
 
-        LandAward result = mapper.toLandAward(award);
+        LandAward result = mapper.toLandAward(award, allOpponents);
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -511,7 +540,7 @@ public class CaseOutcomeMapperTest {
     void testToOtherAssetAward() {
         OtherAssetAwardDetail award = buildOtherAssetAwardDetail();
 
-        OtherAssetAward result = mapper.toOtherAssetAward(award);
+        OtherAssetAward result = mapper.toOtherAssetAward(award, allOpponents);
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -596,16 +625,17 @@ public class CaseOutcomeMapperTest {
 
     @Test
     void testToLiableParty() {
-        LiablePartyDetail liablePartyDetail = buildLiablePartyDetail();
+        Integer opponentId = 1;
+        LiablePartyDetail liablePartyDetail = buildLiablePartyDetail(opponentId);
 
-        LiableParty result = mapper.toLiableParty(liablePartyDetail);
+        LiableParty result = mapper.toLiableParty(liablePartyDetail, allOpponents);
 
         assertNotNull(result);
         assertNull(result.getId());
         checkAuditTrail(result.getAuditTrail());
 
         assertEquals(liablePartyDetail.getAwardType(), result.getAwardType());
-        assertNotNull(liablePartyDetail.getOpponent());
+        assertEquals(opponentId, liablePartyDetail.getOpponentId());
     }
 
     @Test

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,7 +84,7 @@ class CaseOutcomeServiceTest {
         CaseOutcomeDetail caseOutcomeDetail = new CaseOutcomeDetail();
         CaseOutcome caseOutcome = buildCaseOutcome();
 
-        when(mapper.toCaseOutcome(caseOutcomeDetail)).thenReturn(caseOutcome);
+        when(mapper.toCaseOutcome(eq(caseOutcomeDetail), any(List.class))).thenReturn(caseOutcome);
         when(repository.save(caseOutcome)).thenReturn(caseOutcome);
 
         Long result = caseOutcomeService.createCaseOutcome(caseOutcomeDetail);
@@ -91,7 +92,7 @@ class CaseOutcomeServiceTest {
         assertNotNull(result);
         assertEquals(caseOutcome.getId(), result);
 
-        verify(mapper).toCaseOutcome(caseOutcomeDetail);
+        verify(mapper).toCaseOutcome(eq(caseOutcomeDetail), any(List.class));
         verify(repository).save(caseOutcome);
     }
 

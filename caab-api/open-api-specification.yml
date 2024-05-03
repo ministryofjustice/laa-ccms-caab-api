@@ -1951,8 +1951,8 @@ components:
           type: 'integer'
         award_type:
           type: 'string'
-        opponent:
-          $ref: "#/components/schemas/opponentDetail"
+        opponent_id:
+          type: 'integer'
         audit_trail:
           $ref: "#/components/schemas/auditDetail"
     baseAwardDetail:
@@ -2186,10 +2186,10 @@ components:
           type: 'array'
           items:
             $ref: "#/components/schemas/proceedingOutcomeDetail"
-        opponents:
+        opponent_ids:
           type: 'array'
           items:
-            $ref: "#/components/schemas/opponentDetail"
+            type: 'integer'
         pre_certificate_costs:
           type: 'number'
           default: 0.00

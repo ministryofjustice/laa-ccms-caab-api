@@ -131,7 +131,7 @@ public class CaseOutcome {
   /**
    * The related opponents for this outcome.
    */
-  @OneToMany(mappedBy = "caseOutcome")
+  @OneToMany(mappedBy = "caseOutcome", cascade = CascadeType.ALL)
   private List<Opponent> opponents;
 
   /**
