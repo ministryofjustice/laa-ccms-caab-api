@@ -18,21 +18,9 @@
       "liable_parties": [
         {
           "award_type": "type",
-          "opponent_id": 3,
-          "audit_trail": {
-            "created": "2024-05-02T20:16:20.000+00:00",
-            "created_by": "testUser",
-            "last_saved": "2024-05-02T20:16:20.000+00:00",
-            "last_saved_by": "testUser"
-          }
+          "opponent_id": 3
         }
       ],
-      "audit_trail": {
-        "created": "2024-05-02T20:16:20.000+00:00",
-        "created_by": "testUser",
-        "last_saved": "2024-05-02T20:16:20.000+00:00",
-        "last_saved_by": "testUser"
-      },
       "court_assessment_status": "status",
       "pre_certificate_lsc_cost": 200,
       "pre_certificate_other_cost": 300,
@@ -64,13 +52,7 @@
         "conditions_of_offer": null,
         "offer_details": "details",
         "award_type": "type",
-        "description": "description",
-        "audit_trail": {
-          "created": "2024-05-02T20:16:20.000+00:00",
-          "created_by": "testUser",
-          "last_saved": "2024-05-02T20:16:20.000+00:00",
-          "last_saved_by": "testUser"
-        }
+        "description": "description"
       }
     }
   ],
@@ -92,21 +74,9 @@
       "liable_parties": [
         {
           "award_type": "type",
-          "opponent_id": 3,
-          "audit_trail": {
-            "created": "2024-05-02T20:16:20.000+00:00",
-            "created_by": "testUser",
-            "last_saved": "2024-05-02T20:16:20.000+00:00",
-            "last_saved_by": "testUser"
-          }
+          "opponent_id": 3
         }
       ],
-      "audit_trail": {
-        "created": "2024-05-02T20:16:20.000+00:00",
-        "created_by": "testUser",
-        "last_saved": "2024-05-02T20:16:20.000+00:00",
-        "last_saved_by": "testUser"
-      },
       "interim_award": "interim",
       "amount": 0.0,
       "award_justifications": "just",
@@ -134,13 +104,7 @@
         "conditions_of_offer": null,
         "offer_details": "details",
         "award_type": "type",
-        "description": "description",
-        "audit_trail": {
-          "created": "2024-05-02T20:16:20.000+00:00",
-          "created_by": "testUser",
-          "last_saved": "2024-05-02T20:16:20.000+00:00",
-          "last_saved_by": "testUser"
-        }
+        "description": "description"
       }
     }
   ],
@@ -162,21 +126,9 @@
       "liable_parties": [
         {
           "award_type": "type",
-          "opponent_id": 3,
-          "audit_trail": {
-            "created": "2024-05-02T20:16:20.000+00:00",
-            "created_by": "testUser",
-            "last_saved": "2024-05-02T20:16:20.000+00:00",
-            "last_saved_by": "testUser"
-          }
+          "opponent_id": 3
         }
       ],
-      "audit_trail": {
-        "created": "2024-05-02T20:16:20.000+00:00",
-        "created_by": "testUser",
-        "last_saved": "2024-05-02T20:16:20.000+00:00",
-        "last_saved_by": "testUser"
-      },
       "title_number": "title",
       "valuation_amount": 100,
       "valuation_criteria": "crit",
@@ -200,13 +152,7 @@
         "award_amount": 600,
         "triggering_event": "event",
         "effective_date": "2024-05-02T20:16:20.000+00:00",
-        "time_related_recovery_details": "details",
-        "audit_trail": {
-          "created": "2024-05-02T20:16:20.000+00:00",
-          "created_by": "testUser",
-          "last_saved": "2024-05-02T20:16:20.000+00:00",
-          "last_saved_by": "testUser"
-        }
+        "time_related_recovery_details": "details"
       }
     }
   ],
@@ -228,21 +174,9 @@
       "liable_parties": [
         {
           "award_type": "type",
-          "opponent_id": 3,
-          "audit_trail": {
-            "created": "2024-05-02T20:16:20.000+00:00",
-            "created_by": "testUser",
-            "last_saved": "2024-05-02T20:16:20.000+00:00",
-            "last_saved_by": "testUser"
-          }
+          "opponent_id": 3
         }
       ],
-      "audit_trail": {
-        "created": "2024-05-02T20:16:20.000+00:00",
-        "created_by": "testUser",
-        "last_saved": "2024-05-02T20:16:20.000+00:00",
-        "last_saved_by": "testUser"
-      },
       "valuation_amount": 100,
       "valuation_criteria": "crit",
       "valuation_date": "2024-05-02T20:16:20.000+00:00",
@@ -262,13 +196,7 @@
         "award_amount": 600,
         "triggering_event": "event",
         "effective_date": "2024-05-02T20:16:20.000+00:00",
-        "time_related_recovery_details": "details",
-        "audit_trail": {
-          "created": "2024-05-02T20:16:20.000+00:00",
-          "created_by": "testUser",
-          "last_saved": "2024-05-02T20:16:20.000+00:00",
-          "last_saved_by": "testUser"
-        }
+        "time_related_recovery_details": "details"
       }
     }
   ],
@@ -295,13 +223,7 @@
       "proceeding_case_id": "procCaseId",
       "outcome_court_case_no": "caseNo",
       "proceeding_type": null,
-      "matter_type": null,
-      "audit_trail": {
-        "created": "2024-05-02T20:16:20.000+00:00",
-        "created_by": "testUser",
-        "last_saved": "2024-05-02T20:16:20.000+00:00",
-        "last_saved_by": "testUser"
-      }
+      "matter_type": null
     }
   ],
   "opponent_ids": [3],
@@ -313,11 +235,5 @@
   "other_details": "other details",
   "office_code": "officeCode",
   "unique_file_no": "fileNo",
-  "provider_id": "providerId1",
-  "audit_trail": {
-    "created": "2024-05-02T20:16:20.000+00:00",
-    "created_by": "testUser",
-    "last_saved": "2024-05-02T20:16:20.000+00:00",
-    "last_saved_by": "testUser"
-  }
+  "provider_id": "providerId1"
 }
