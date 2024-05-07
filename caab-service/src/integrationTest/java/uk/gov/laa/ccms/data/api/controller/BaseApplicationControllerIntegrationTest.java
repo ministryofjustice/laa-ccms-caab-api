@@ -213,6 +213,10 @@ public abstract class BaseApplicationControllerIntegrationTest
   private void nullModelIds(ApplicationDetail applicationDetail) {
     applicationDetail.setId(null);
 
+    if (applicationDetail.getCorrespondenceAddress() != null) {
+      applicationDetail.getCorrespondenceAddress().setId(null);
+    }
+
     if (applicationDetail.getLinkedCases() != null) {
       for (LinkedCaseDetail linkedCase : applicationDetail.getLinkedCases()) {
         linkedCase.setId(null);
@@ -244,6 +248,10 @@ public abstract class BaseApplicationControllerIntegrationTest
     if (applicationDetail.getOpponents() != null) {
       for (OpponentDetail opponent : applicationDetail.getOpponents()) {
         opponent.setId(null);
+
+        if (opponent.getAddress() != null) {
+          opponent.getAddress().setId(null);
+        }
       }
     }
   }
