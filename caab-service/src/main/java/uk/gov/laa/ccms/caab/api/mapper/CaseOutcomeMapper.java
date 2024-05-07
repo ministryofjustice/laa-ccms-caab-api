@@ -62,6 +62,7 @@ public interface CaseOutcomeMapper {
 
   /**
    * Map a List of Opponent entities to a List of opponent ids.
+   *
    * @param opponents - the opponent entities
    * @return List of Integer opponent ids.
    */
