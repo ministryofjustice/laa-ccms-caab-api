@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -99,19 +100,24 @@ class CaseOutcomeServiceTest {
     @Test
     void removeCaseOutcome_whenExists_removesEntry() {
         Long caseOutcomeId = 1L;
-        when(repository.existsById(caseOutcomeId)).thenReturn(true);
-        doNothing().when(repository).deleteById(caseOutcomeId);
+        CaseOutcome caseOutcome = buildCaseOutcome();
+
+        when(repository.findById(caseOutcomeId)).thenReturn(Optional.of(caseOutcome));
+        doNothing().when(repository).delete(caseOutcome);
 
         caseOutcomeService.removeCaseOutcome(caseOutcomeId);
 
-        verify(repository).existsById(caseOutcomeId);
-        verify(repository).deleteById(caseOutcomeId);
+        // Check that the associated Opponent has had its foreign key cleared.
+        assertNull(caseOutcome.getOpponents().get(0).getCaseOutcome());
+
+        verify(repository).findById(caseOutcomeId);
+        verify(repository).delete(caseOutcome);
     }
 
     @Test
     void removeCaseOutcome_whenNotExists_throwsException() {
         Long caseOutcomeId = 1L;
-        when(repository.existsById(caseOutcomeId)).thenReturn(false);
+        when(repository.findById(caseOutcomeId)).thenReturn(Optional.empty());
 
         CaabApiException exception = assertThrows(CaabApiException.class, () ->
             caseOutcomeService.removeCaseOutcome(caseOutcomeId));
@@ -125,7 +131,7 @@ class CaseOutcomeServiceTest {
         CaseOutcome caseOutcome = buildCaseOutcome();
 
         List<CaseOutcome> caseOutcomes =
-            List.of(buildCaseOutcome());
+            List.of(caseOutcome);
 
         when(repository.findAll(any(Example.class))).thenReturn(caseOutcomes);
 
@@ -133,8 +139,11 @@ class CaseOutcomeServiceTest {
             caseOutcome.getLscCaseReference(),
             caseOutcome.getProviderId());
 
+        // Check that the associated Opponent has had its foreign key cleared.
+        assertNull(caseOutcome.getOpponents().get(0).getCaseOutcome());
+
         verify(repository).findAll(any(Example.class));
-        verify(repository).deleteAll(caseOutcomes);
+        verify(repository).delete(caseOutcome);
 
     }
 

@@ -164,7 +164,7 @@ public class CaseOutcomeService {
         .forEach(this::deleteCaseOutcome);
   }
 
-  public void deleteCaseOutcome(final CaseOutcome caseOutcomeEntity) {
+  private void deleteCaseOutcome(final CaseOutcome caseOutcomeEntity) {
     // Clear the association between CaseOutcome and Opponent.
     Optional.ofNullable(caseOutcomeEntity.getOpponents())
         .ifPresent(opponents -> opponents.forEach(opponent -> opponent.setCaseOutcome(null)));

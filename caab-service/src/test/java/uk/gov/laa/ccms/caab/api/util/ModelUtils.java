@@ -211,7 +211,11 @@ public class ModelUtils {
     caseOutcome.setLegalCosts(BigDecimal.TEN);
     caseOutcome.setLscCaseReference("caseref");
     caseOutcome.setOfficeCode("offcode");
-    caseOutcome.setOpponents(List.of(new Opponent()));
+
+    Opponent opponent = buildOpponent(1L, new Date());
+    opponent.setCaseOutcome(caseOutcome);
+    caseOutcome.setOpponents(List.of(opponent));
+
     caseOutcome.setOtherAssetAwards(List.of(buildOtherAssetAward()));
     caseOutcome.setOtherDetails("otherdets");
     caseOutcome.setPreCertificateCosts(BigDecimal.TEN);
