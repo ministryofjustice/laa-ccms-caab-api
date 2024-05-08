@@ -138,13 +138,12 @@ public class CaseOutcomeService {
    */
   @Transactional
   public void removeCaseOutcome(final Long caseOutcomeId) {
-    if (caseOutcomeRepository.existsById(caseOutcomeId)) {
-      caseOutcomeRepository.deleteById(caseOutcomeId);
-    } else {
-      throw new CaabApiException(
-          String.format("CaseOutcome with id: %s not found", caseOutcomeId),
-          HttpStatus.NOT_FOUND);
-    }
+    caseOutcomeRepository.findById(caseOutcomeId)
+        .ifPresentOrElse(this::deleteCaseOutcome, () -> {
+          throw new CaabApiException(
+            String.format("CaseOutcome with id: %s not found", caseOutcomeId),
+            HttpStatus.NOT_FOUND);
+        });
   }
 
   /**
@@ -161,8 +160,16 @@ public class CaseOutcomeService {
     caseOutcome.setLscCaseReference(caseReferenceNumber);
     caseOutcome.setProviderId(providerId);
 
-    caseOutcomeRepository.deleteAll(
-        caseOutcomeRepository.findAll(Example.of(caseOutcome)));
+    caseOutcomeRepository.findAll(Example.of(caseOutcome))
+        .forEach(this::deleteCaseOutcome);
+  }
+
+  public void deleteCaseOutcome(final CaseOutcome caseOutcomeEntity) {
+    // Clear the association between CaseOutcome and Opponent.
+    Optional.ofNullable(caseOutcomeEntity.getOpponents())
+        .ifPresent(opponents -> opponents.forEach(opponent -> opponent.setCaseOutcome(null)));
+
+    caseOutcomeRepository.delete(caseOutcomeEntity);
   }
 
 }

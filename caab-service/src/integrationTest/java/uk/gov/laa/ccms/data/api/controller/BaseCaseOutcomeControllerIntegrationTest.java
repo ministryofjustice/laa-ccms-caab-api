@@ -153,7 +153,7 @@ public abstract class BaseCaseOutcomeControllerIntegrationTest
 
   @Test
   @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql","/sql/case_outcome_insert.sql"})
-  public void testRemoveCaseOutcome() throws Exception {
+  public void testRemoveCaseOutcome() {
 
     String auditUser = "audit@user.com";
 
@@ -170,6 +170,28 @@ public abstract class BaseCaseOutcomeControllerIntegrationTest
 
     // Check that only 1 record remains for the test caseReference
     assertEquals(1, queriedOutcomes.getContent().size());
+
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql","/sql/case_outcome_insert.sql"})
+  public void testRemoveCaseOutcomes() {
+
+    String auditUser = "audit@user.com";
+
+    ResponseEntity<Void> responseEntity =
+        caseOutcomeController.removeCaseOutcomes(auditUser, "caseRef", null);
+
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    CaseOutcomeDetails queriedOutcomes =
+        caseOutcomeService.getCaseOutcomes(
+            "caseRef",
+            null);
+
+    // Check that all records were removed for the test case reference.
+    assertTrue(queriedOutcomes.getContent().isEmpty());
 
   }
 
