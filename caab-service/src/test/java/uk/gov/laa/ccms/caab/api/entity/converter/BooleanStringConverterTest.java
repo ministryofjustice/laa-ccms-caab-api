@@ -31,7 +31,7 @@ public class BooleanStringConverterTest {
   }
 
   @Test
-  void testToDomainValue_nullValue_returnsNull() {
+  void testToDomainValue_unknownValue_throwsException() {
     BooleanStringConverter booleanStringConverter = new BooleanStringConverter(
         new String[]{"Y"}, new String[]{"N"});
 
@@ -40,7 +40,7 @@ public class BooleanStringConverterTest {
   }
 
   @Test
-  void testToDomainValue_unknownValue_throwsException() {
+  void testToDomainValue_nullValue_returnsNull() {
     BooleanStringConverter booleanStringConverter = new BooleanStringConverter(
         new String[]{"Y"}, new String[]{"N"});
 
