@@ -3,9 +3,11 @@ package uk.gov.laa.ccms.caab.api.entity.converter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -26,8 +28,23 @@ public class BooleanStringConverterTest {
 
     Arrays.stream(trueVals).forEach(s -> assertTrue(booleanStringConverter.toDomainValue(s)));
     Arrays.stream(falseVals).forEach(s -> assertFalse(booleanStringConverter.toDomainValue(s)));
-    assertNull(booleanStringConverter.toDomainValue("unknownval"));
-    assertNull(booleanStringConverter.toDomainValue(null));
+  }
+
+  @Test
+  void testToDomainValue_nullValue_returnsNull() {
+    BooleanStringConverter booleanStringConverter = new BooleanStringConverter(
+        new String[]{"Y"}, new String[]{"N"});
+
+    assertThrows( RuntimeException.class, () -> booleanStringConverter.toDomainValue(
+        "unknownval"));
+  }
+
+  @Test
+  void testToDomainValue_unknownValue_throwsException() {
+    BooleanStringConverter booleanStringConverter = new BooleanStringConverter(
+        new String[]{"Y"}, new String[]{"N"});
+
+    assertNull( booleanStringConverter.toDomainValue(null));
   }
 
   @ParameterizedTest

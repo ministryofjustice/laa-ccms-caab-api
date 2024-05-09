@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.entity.converter;
 
 import jakarta.persistence.AttributeConverter;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.type.descriptor.converter.spi.BasicValueConverter;
@@ -71,9 +72,18 @@ public class BooleanStringConverter implements
       return null;
     }
 
-    return Arrays.asList(trueValues).contains(relationalForm)
-        ? Boolean.TRUE :
-        (Arrays.asList(falseValues).contains(relationalForm) ? Boolean.FALSE : null);
+    return containsRelationalForm(trueValues, relationalForm, Boolean.TRUE)
+        .orElseGet(() -> containsRelationalForm(falseValues, relationalForm, Boolean.FALSE)
+            .orElseThrow(() -> new RuntimeException(
+                String.format("Unknown boolean relational value %s", relationalForm))));
+  }
+
+  private Optional<Boolean> containsRelationalForm(final String[] values,
+      final String relationalForm, final Boolean response) {
+    return Arrays.stream(values)
+        .filter(s -> s.equals(relationalForm))
+        .findFirst()
+        .map(s -> response);
   }
 
   /**
