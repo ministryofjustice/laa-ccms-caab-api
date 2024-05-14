@@ -28,18 +28,24 @@ import org.springframework.http.HttpStatus;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
+import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
+import uk.gov.laa.ccms.caab.api.entity.Opponent;
+import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
+import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
-import uk.gov.laa.ccms.caab.model.BaseClient;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
-import uk.gov.laa.ccms.caab.model.Opponent;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
-import uk.gov.laa.ccms.caab.model.Proceeding;
+import uk.gov.laa.ccms.caab.model.BaseClientDetail;
+import uk.gov.laa.ccms.caab.model.CostStructureDetail;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
@@ -116,7 +122,7 @@ class ApplicationServiceTest {
 
     @Test
     void updateClient_updatesClientInformation() {
-        BaseClient baseClient = new BaseClient();
+        BaseClientDetail baseClient = new BaseClientDetail();
         baseClient.setFirstName("John");
         baseClient.setSurname("Doe");
         String reference = "clientRef";
@@ -306,14 +312,14 @@ class ApplicationServiceTest {
     @Test
     void getLinkedCasesForApplication_whenExists_returnsLinkedCases() {
         Long id = 1L;
-        List<LinkedCase> expectedLinkedCases = Arrays.asList(new LinkedCase(), new LinkedCase()); // Assuming some mock linked cases
+        List<LinkedCaseDetail> expectedLinkedCases = Arrays.asList(new LinkedCaseDetail(), new LinkedCaseDetail()); // Assuming some mock linked cases
         Application application = new Application();
         application.setLinkedCases(new ArrayList<>()); // Set linked cases in the application
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
         when(applicationMapper.toLinkedCaseModelList(any())).thenReturn(expectedLinkedCases);
 
-        List<LinkedCase> result = applicationService.getLinkedCasesForApplication(id);
+        List<LinkedCaseDetail> result = applicationService.getLinkedCasesForApplication(id);
 
         verify(applicationRepository).findById(id);
         verify(applicationMapper).toLinkedCaseModelList(application.getLinkedCases());
@@ -339,14 +345,14 @@ class ApplicationServiceTest {
     @Test
     void getApplicationCorrespondenceAddress_whenExists_returnsAddress() {
         Long id = 1L;
-        uk.gov.laa.ccms.caab.model.Address expectedAddress = new uk.gov.laa.ccms.caab.model.Address(); // Mock address
+        AddressDetail expectedAddress = new AddressDetail(); // Mock address
         Application application = new Application();
         application.setCorrespondenceAddress(new Address()); // Set a mock address in the application
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
         when(applicationMapper.toAddressModel(any())).thenReturn(expectedAddress);
 
-        uk.gov.laa.ccms.caab.model.Address result = applicationService.getApplicationCorrespondenceAddress(id);
+        AddressDetail result = applicationService.getApplicationCorrespondenceAddress(id);
 
         verify(applicationRepository).findById(id);
         verify(applicationMapper).toAddressModel(application.getCorrespondenceAddress());
@@ -372,7 +378,7 @@ class ApplicationServiceTest {
     @Test
     void putCorrespondenceAddress_whenExists_updatesAddress() {
         Long id = 1L;
-        uk.gov.laa.ccms.caab.model.Address newAddress = new uk.gov.laa.ccms.caab.model.Address(); // Mock new address
+        AddressDetail newAddress = new AddressDetail(); // Mock new address
         Application application = new Application();
 
         when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
@@ -387,7 +393,7 @@ class ApplicationServiceTest {
     @Test
     void putCorrespondenceAddress_whenNotExists_throwsException() {
         Long id = 1L;
-        uk.gov.laa.ccms.caab.model.Address newAddress = new uk.gov.laa.ccms.caab.model.Address();
+        AddressDetail newAddress = new AddressDetail();
 
         when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -404,11 +410,11 @@ class ApplicationServiceTest {
     @Test
     void createLinkedCaseForApplication_whenApplicationExists_createsLinkedCase() {
         Long applicationId = 1L;
-        LinkedCase linkedCase = new LinkedCase();
+        LinkedCaseDetail linkedCase = new LinkedCaseDetail();
         Application application = new Application();
         application.setLinkedCases(new ArrayList<>());
 
-        uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity = new uk.gov.laa.ccms.caab.api.entity.LinkedCase();
+        LinkedCase linkedCaseEntity = new LinkedCase();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
         when(applicationMapper.toLinkedCase(linkedCase)).thenReturn(linkedCaseEntity);
@@ -424,7 +430,7 @@ class ApplicationServiceTest {
     @Test
     void createLinkedCaseForApplication_whenApplicationNotExists_throwsException() {
         Long applicationId = 1L;
-        LinkedCase linkedCase = new LinkedCase();
+        LinkedCaseDetail linkedCase = new LinkedCaseDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
@@ -481,13 +487,13 @@ class ApplicationServiceTest {
         Long applicationId = 1L;
         Application application = new Application();
         application.setProceedings(new ArrayList<>());
-        Proceeding proceedingModel = new Proceeding();
-        application.getProceedings().add(new uk.gov.laa.ccms.caab.api.entity.Proceeding());
+        ProceedingDetail proceedingModel = new ProceedingDetail();
+        application.getProceedings().add(new Proceeding());
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
         when(applicationMapper.toProceedingModel(any())).thenReturn(proceedingModel);
 
-        List<Proceeding> result = applicationService.getProceedingsForApplication(applicationId);
+        List<ProceedingDetail> result = applicationService.getProceedingsForApplication(applicationId);
 
         verify(applicationRepository).findById(applicationId);
         verify(applicationMapper, times(application.getProceedings().size())).toProceedingModel(any());
@@ -512,9 +518,9 @@ class ApplicationServiceTest {
     @Test
     void createProceedingForApplication_WhenApplicationExists_CreatesProceeding() {
         Long applicationId = 1L;
-        Proceeding proceeding = new Proceeding();
+        ProceedingDetail proceeding = new ProceedingDetail();
         Application application = new Application();
-        uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity = new uk.gov.laa.ccms.caab.api.entity.Proceeding();
+        Proceeding proceedingEntity = new Proceeding();
         application.setProceedings(new ArrayList<>());
         proceedingEntity.setScopeLimitations(new ArrayList<>());
 
@@ -532,7 +538,7 @@ class ApplicationServiceTest {
     @Test
     void createProceedingForApplication_WhenApplicationNotExists_ThrowsException() {
         Long applicationId = 1L;
-        Proceeding proceeding = new Proceeding();
+        ProceedingDetail proceeding = new ProceedingDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
@@ -548,13 +554,13 @@ class ApplicationServiceTest {
         Long applicationId = 1L;
         Application application = new Application();
         application.setPriorAuthorities(new ArrayList<>());
-        PriorAuthority priorAuthorityModel = new PriorAuthority();
-        application.getPriorAuthorities().add(new uk.gov.laa.ccms.caab.api.entity.PriorAuthority());
+        PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail();
+        application.getPriorAuthorities().add(new PriorAuthority());
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
         when(applicationMapper.toPriorAuthorityModel(any())).thenReturn(priorAuthorityModel);
 
-        List<PriorAuthority> result = applicationService.getPriorAuthoritiesForApplication(applicationId);
+        List<PriorAuthorityDetail> result = applicationService.getPriorAuthoritiesForApplication(applicationId);
 
         verify(applicationRepository).findById(applicationId);
         verify(applicationMapper, times(application.getPriorAuthorities().size())).toPriorAuthorityModel(any());
@@ -579,9 +585,9 @@ class ApplicationServiceTest {
     @Test
     void createPriorAuthorityForApplication_WhenApplicationExists_CreatesPriorAuthority() {
         Long applicationId = 1L;
-        PriorAuthority priorAuthority = new PriorAuthority();
+        PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
         Application application = new Application();
-        uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity = new uk.gov.laa.ccms.caab.api.entity.PriorAuthority();
+        PriorAuthority priorAuthorityEntity = new PriorAuthority();
         application.setPriorAuthorities(new ArrayList<>());
         priorAuthorityEntity.setItems(new ArrayList<>());
 
@@ -599,7 +605,7 @@ class ApplicationServiceTest {
     @Test
     void createPriorAuthorityForApplication_WhenApplicationNotExists_ThrowsException() {
         Long applicationId = 1L;
-        PriorAuthority priorAuthority = new PriorAuthority();
+        PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
@@ -615,12 +621,12 @@ class ApplicationServiceTest {
         Long applicationId = 1L;
         Application application = new Application();
         application.setCosts(new CostStructure());
-        uk.gov.laa.ccms.caab.model.CostStructure expectedCostStructure = new uk.gov.laa.ccms.caab.model.CostStructure();
+        CostStructureDetail expectedCostStructure = new CostStructureDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
         when(applicationMapper.toCostStructureModel(application.getCosts())).thenReturn(expectedCostStructure);
 
-        uk.gov.laa.ccms.caab.model.CostStructure result = applicationService.getApplicationCostStructure(applicationId);
+        CostStructureDetail result = applicationService.getApplicationCostStructure(applicationId);
 
         verify(applicationRepository).findById(applicationId);
         verify(applicationMapper).toCostStructureModel(application.getCosts());
@@ -644,7 +650,7 @@ class ApplicationServiceTest {
     @Test
     void putCostStructure_WhenExists_UpdatesCostStructure() {
         Long applicationId = 1L;
-        uk.gov.laa.ccms.caab.model.CostStructure costStructure = new uk.gov.laa.ccms.caab.model.CostStructure();
+        CostStructureDetail costStructure = new CostStructureDetail();
         Application application = new Application();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
@@ -659,7 +665,7 @@ class ApplicationServiceTest {
     @Test
     void putCostStructure_WhenNotExists_ThrowsException() {
         Long applicationId = 1L;
-        uk.gov.laa.ccms.caab.model.CostStructure costStructure = new uk.gov.laa.ccms.caab.model.CostStructure();
+        CostStructureDetail costStructure = new CostStructureDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
@@ -676,14 +682,14 @@ class ApplicationServiceTest {
 
         Application application = new Application();
         application.setOpponents(new ArrayList<>());
-        application.getOpponents().add(new uk.gov.laa.ccms.caab.api.entity.Opponent());
+        application.getOpponents().add(new Opponent());
 
-        Opponent opponentModel = new Opponent();
+        OpponentDetail opponentModel = new OpponentDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
         when(applicationMapper.toOpponentModel(any())).thenReturn(opponentModel);
 
-        List<Opponent> result = applicationService.getOpponentsForApplication(applicationId);
+        List<OpponentDetail> result = applicationService.getOpponentsForApplication(applicationId);
 
         verify(applicationRepository).findById(applicationId);
         verify(applicationMapper, times(application.getOpponents().size())).toOpponentModel(any());
@@ -708,9 +714,9 @@ class ApplicationServiceTest {
     @Test
     void createOpponentForApplication_WhenApplicationExists_CreatesOpponent() {
         Long applicationId = 1L;
-        Opponent opponent = new Opponent();
+        OpponentDetail opponent = new OpponentDetail();
         Application application = new Application();
-        uk.gov.laa.ccms.caab.api.entity.Opponent opponentEntity = new uk.gov.laa.ccms.caab.api.entity.Opponent();
+        Opponent opponentEntity = new Opponent();
         application.setOpponents(new ArrayList<>());
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
@@ -727,7 +733,7 @@ class ApplicationServiceTest {
     @Test
     void createOpponentForApplication_WhenApplicationNotExists_ThrowsException() {
         Long applicationId = 1L;
-        Opponent opponent = new Opponent();
+        OpponentDetail opponent = new OpponentDetail();
 
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 

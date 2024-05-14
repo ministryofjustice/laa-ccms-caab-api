@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.PriorAuthorityController;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
 
 public abstract class BasePriorAuthorityControllerIntegrationTest
     extends AbstractControllerIntegrationTest {
@@ -28,7 +28,7 @@ public abstract class BasePriorAuthorityControllerIntegrationTest
   public void updatePriorAuthority() throws IOException {
     Long priorAuthorityId = 2L;
 
-    PriorAuthority updatedPriorAuthority = loadObjectFromJson("/json/prior_authority_new.json", PriorAuthority.class);
+    PriorAuthorityDetail updatedPriorAuthority = loadObjectFromJson("/json/prior_authority_new.json", PriorAuthorityDetail.class);
 
     ResponseEntity<Void> response = priorAuthorityController.updatePriorAuthority(priorAuthorityId, caabUserLoginId, updatedPriorAuthority);
 
@@ -42,7 +42,7 @@ public abstract class BasePriorAuthorityControllerIntegrationTest
     Long priorAuthorityRef = 2L;
 
     priorAuthorityController.removePriorAuthority(priorAuthorityRef, caabUserLoginId);
-    List<PriorAuthority> priorAuthorities = applicationService.getPriorAuthoritiesForApplication(caseRef);
+    List<PriorAuthorityDetail> priorAuthorities = applicationService.getPriorAuthoritiesForApplication(caseRef);
     assertEquals(0, priorAuthorities.size());
   }
 }

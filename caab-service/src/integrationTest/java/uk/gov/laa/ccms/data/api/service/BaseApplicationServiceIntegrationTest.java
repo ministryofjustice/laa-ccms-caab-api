@@ -26,17 +26,17 @@ import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.model.Address;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
-import uk.gov.laa.ccms.caab.model.Client;
-import uk.gov.laa.ccms.caab.model.CostLimit;
-import uk.gov.laa.ccms.caab.model.CostStructure;
-import uk.gov.laa.ccms.caab.model.DevolvedPowers;
+import uk.gov.laa.ccms.caab.model.ClientDetail;
+import uk.gov.laa.ccms.caab.model.CostLimitDetail;
+import uk.gov.laa.ccms.caab.model.CostStructureDetail;
+import uk.gov.laa.ccms.caab.model.DevolvedPowersDetail;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
-import uk.gov.laa.ccms.caab.model.Opponent;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 public abstract class BaseApplicationServiceIntegrationTest {
@@ -191,7 +191,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
   @Transactional
   public void testSaveApplication_opponent(){
     ApplicationDetail application = buildRequiredApplicationDetail();
-    Opponent builtOpponent = buildOpponent(new Date());
+    OpponentDetail builtOpponent = buildOpponent(new Date());
     application.setOpponents(new ArrayList<>());
     application.getOpponents().add(builtOpponent);
 
@@ -481,7 +481,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
     application.setCaseReferenceNumber(lscCaseReference);
     application.setProviderDetails(new ApplicationProviderDetails().provider(new IntDisplayValue().id(providerId)));
     application.setCategoryOfLaw(new StringDisplayValue().id(categoryOfLaw));
-    application.setClient(new Client().reference(clientReference));
+    application.setClient(new ClientDetail().reference(clientReference));
     return application;
   }
 
@@ -517,7 +517,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
         .displayValue(displayStatus);
     application.setStatus(statusObj);
 
-    Client clientObj = new Client()
+    ClientDetail clientObj = new ClientDetail()
         .reference(clientReference)
         .firstName(clientFirstName)
         .surname(clientSurname);
@@ -526,12 +526,12 @@ public abstract class BaseApplicationServiceIntegrationTest {
     application.setAmendment(amendment);
     application.setMeansAssessmentAmended(meansAssessmentAmended);
     application.setMeritsAssessmentAmended(meritsAssessmentAmended);
-    CostLimit costLimitObj = new CostLimit()
+    CostLimitDetail costLimitObj = new CostLimitDetail()
         .changed(costLimitChanged)
         .limitAtTimeOfMerits(costLimitAtTimeOfMerits);
     application.setCostLimit(costLimitObj);
 
-    DevolvedPowers devolvedPowersObj = new DevolvedPowers()
+    DevolvedPowersDetail devolvedPowersObj = new DevolvedPowersDetail()
         .used(devolvedPowersUsed)
         .dateUsed(dateDevolvedPowersUsed)
         .contractFlag(devolvedPowersContractFlag);
@@ -548,16 +548,16 @@ public abstract class BaseApplicationServiceIntegrationTest {
     return application;
   }
 
-  private CostStructure buildCosts(){
-    CostStructure costs = new CostStructure();
+  private CostStructureDetail buildCosts(){
+    CostStructureDetail costs = new CostStructureDetail();
     costs.setDefaultCostLimitation(defaultCostLimitation);
     costs.setGrantedCostLimitation(grantedCostLimitation);
     costs.setRequestedCostLimitation(requestedCostLimitation);
     return costs;
   }
 
-  private Address buildAddress(){
-    Address address = new Address();
+  private AddressDetail buildAddress(){
+    AddressDetail address = new AddressDetail();
     address.setNoFixedAbode(noFixedAbode);
     address.setPostcode(postCode);
     address.setHouseNameOrNumber(houseNameNumber);
@@ -571,8 +571,8 @@ public abstract class BaseApplicationServiceIntegrationTest {
     return address;
   }
 
-  public uk.gov.laa.ccms.caab.model.Opponent buildOpponent(java.util.Date date) {
-    return new uk.gov.laa.ccms.caab.model.Opponent()
+  public OpponentDetail buildOpponent(java.util.Date date) {
+    return new OpponentDetail()
         .address(buildAddress())
         .amendment(Boolean.TRUE)
         .appMode(Boolean.FALSE)

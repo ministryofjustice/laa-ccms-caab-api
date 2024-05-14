@@ -17,11 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ProceedingRepository;
-import uk.gov.laa.ccms.caab.model.Proceeding;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -63,8 +64,8 @@ class ProceedingServiceTest {
   @Test
   void updateProceeding_whenExists_updatesProceeding() {
     Long proceedingId = 1L;
-    Proceeding proceedingModel = new Proceeding();
-    uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity = new uk.gov.laa.ccms.caab.api.entity.Proceeding();
+    ProceedingDetail proceedingModel = new ProceedingDetail();
+    Proceeding proceedingEntity = new Proceeding();
     proceedingEntity.setId(proceedingId);
     uk.gov.laa.ccms.caab.api.entity.ScopeLimitation scopeLimitationEntity = new uk.gov.laa.ccms.caab.api.entity.ScopeLimitation();
     proceedingEntity.setScopeLimitations(List.of(scopeLimitationEntity));
@@ -82,7 +83,7 @@ class ProceedingServiceTest {
   @Test
   void updateProceeding_whenNotExists_throwsException() {
     Long proceedingId = 1L;
-    Proceeding proceedingModel = new Proceeding();
+    ProceedingDetail proceedingModel = new ProceedingDetail();
 
     when(proceedingRepository.findById(proceedingId)).thenReturn(Optional.empty());
 
@@ -96,14 +97,14 @@ class ProceedingServiceTest {
   @Test
   void getScopeLimitationsForProceeding_whenExists_returnsScopeLimitations() {
     Long proceedingId = 1L;
-    uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity = new uk.gov.laa.ccms.caab.api.entity.Proceeding();
+    Proceeding proceedingEntity = new Proceeding();
     uk.gov.laa.ccms.caab.api.entity.ScopeLimitation scopeLimitationEntity = new uk.gov.laa.ccms.caab.api.entity.ScopeLimitation();
     proceedingEntity.setScopeLimitations(List.of(scopeLimitationEntity));
 
     when(proceedingRepository.findById(proceedingId)).thenReturn(Optional.of(proceedingEntity));
-    when(applicationMapper.toScopeLimitationModel(any())).thenAnswer(i -> new ScopeLimitation());
+    when(applicationMapper.toScopeLimitationModel(any())).thenAnswer(i -> new ScopeLimitationDetail());
 
-    List<ScopeLimitation> result = proceedingService.getScopeLimitationsForProceeding(proceedingId);
+    List<ScopeLimitationDetail> result = proceedingService.getScopeLimitationsForProceeding(proceedingId);
 
     assertFalse(result.isEmpty());
     verify(proceedingRepository).findById(proceedingId);
@@ -125,8 +126,8 @@ class ProceedingServiceTest {
   @Test
   void createScopeLimitationForProceeding_whenProceedingExists_createsScopeLimitation() {
     Long proceedingId = 1L;
-    ScopeLimitation scopeLimitation = new ScopeLimitation();
-    uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity = new uk.gov.laa.ccms.caab.api.entity.Proceeding();
+    ScopeLimitationDetail scopeLimitation = new ScopeLimitationDetail();
+    Proceeding proceedingEntity = new Proceeding();
     uk.gov.laa.ccms.caab.api.entity.ScopeLimitation scopeLimitationEntity = new uk.gov.laa.ccms.caab.api.entity.ScopeLimitation();
     List<uk.gov.laa.ccms.caab.api.entity.ScopeLimitation> scopeLimitationEntities = new ArrayList<>();
     scopeLimitationEntities.add(scopeLimitationEntity);
@@ -139,13 +140,13 @@ class ProceedingServiceTest {
     proceedingService.createScopeLimitationForProceeding(proceedingId, scopeLimitation);
 
     verify(proceedingRepository).findById(proceedingId);
-    verify(proceedingRepository).save(any(uk.gov.laa.ccms.caab.api.entity.Proceeding.class));
+    verify(proceedingRepository).save(any(Proceeding.class));
   }
 
   @Test
   void createScopeLimitationForProceeding_whenProceedingNotExists_throwsException() {
     Long proceedingId = 1L;
-    ScopeLimitation scopeLimitation = new ScopeLimitation();
+    ScopeLimitationDetail scopeLimitation = new ScopeLimitationDetail();
 
     when(proceedingRepository.findById(proceedingId)).thenReturn(Optional.empty());
 

@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -48,7 +48,7 @@ class LinkedCaseControllerTest {
     @Test
     public void updateLinkedCase_noContent() throws Exception {
         Long linkedCaseId = 2L;
-        LinkedCase linkedCase = new LinkedCase(); // Set up updated linked case details as required
+        LinkedCaseDetail linkedCase = new LinkedCaseDetail(); // Set up updated linked case details as required
 
         doNothing().when(linkedCaseService).updateLinkedCase(linkedCaseId, linkedCase);
 

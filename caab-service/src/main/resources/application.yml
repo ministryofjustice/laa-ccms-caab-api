@@ -10,3 +10,13 @@ spring:
     hibernate:
       ddl-auto: none
     open-in-view: false
+
+laa:
+  ccms:
+    caab:
+      converters:
+        boolean:
+          true_values:
+            Y,Yes
+          false_values:
+            N,No

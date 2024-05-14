@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildAddress;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOpponent;
+import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildOpponentModel;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -14,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +29,6 @@ import org.springframework.data.domain.PageImpl;
 import uk.gov.laa.ccms.caab.api.entity.Address;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
-import uk.gov.laa.ccms.caab.api.entity.CaseOutcome;
 import uk.gov.laa.ccms.caab.api.entity.CostEntry;
 import uk.gov.laa.ccms.caab.api.entity.CostStructure;
 import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
@@ -36,17 +37,26 @@ import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
 import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
 import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
-import uk.gov.laa.ccms.caab.model.BaseApplication;
+import uk.gov.laa.ccms.caab.model.BaseApplicationDetail;
 import uk.gov.laa.ccms.caab.model.BooleanDisplayValue;
-import uk.gov.laa.ccms.caab.model.Client;
-import uk.gov.laa.ccms.caab.model.CostLimit;
-import uk.gov.laa.ccms.caab.model.DevolvedPowers;
+import uk.gov.laa.ccms.caab.model.ClientDetail;
+import uk.gov.laa.ccms.caab.model.CostEntryDetail;
+import uk.gov.laa.ccms.caab.model.CostLimitDetail;
+import uk.gov.laa.ccms.caab.model.CostStructureDetail;
+import uk.gov.laa.ccms.caab.model.DevolvedPowersDetail;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ReferenceDataItemDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,7 +100,7 @@ public class ApplicationMapperTest {
         detail.setProviderDetails(providerDetails);
         detail.setCategoryOfLaw(new StringDisplayValue().id("categoryLawId").displayValue("categoryLawDisp"));
         detail.setStatus(new StringDisplayValue().id("statusId").displayValue("statusDisp"));
-        detail.setClient(new Client().firstName("clientFirst").surname("clientSurname").reference("clientRef"));
+        detail.setClient(new ClientDetail().firstName("clientFirst").surname("clientSurname").reference("clientRef"));
         detail.setApplicationType(new ApplicationType().id("appTypeId").displayValue("appTypeDisp"));
         detail.setMeritsReassessmentRequired(true);
         detail.setLeadProceedingChanged(true);
@@ -98,7 +108,7 @@ public class ApplicationMapperTest {
         detail.setMeritsAssessmentAmended(true);
         detail.setAmendment(true);
 
-        CostLimit costLimit = new CostLimit()
+        CostLimitDetail costLimit = new CostLimitDetail()
             .changed(true)
             .limitAtTimeOfMerits(BigDecimal.valueOf(123));
         detail.setCostLimit(costLimit);
@@ -152,7 +162,7 @@ public class ApplicationMapperTest {
         applicationDetail.setCategoryOfLaw(new StringDisplayValue().id("C123").displayValue("Category of Law"));
         applicationDetail.setStatus(new StringDisplayValue().id("ST123").displayValue("Status"));
 
-        Client client = new Client();
+        ClientDetail client = new ClientDetail();
         client.setFirstName("John");
         client.setSurname("Doe");
         client.setReference("Ref123");
@@ -208,11 +218,11 @@ public class ApplicationMapperTest {
         // Construct an ApplicationDetail instance with costEntry
         ApplicationDetail applicationDetail = new ApplicationDetail();
 
-        uk.gov.laa.ccms.caab.model.CostEntry costEntryModel = new uk.gov.laa.ccms.caab.model.CostEntry();
+        CostEntryDetail costEntryModel = new CostEntryDetail();
         costEntryModel.setRequestedCosts(BigDecimal.valueOf(1000));
         costEntryModel.setCostCategory("Legal Fees");
 
-        uk.gov.laa.ccms.caab.model.CostStructure costStructureModel = new uk.gov.laa.ccms.caab.model.CostStructure();
+        CostStructureDetail costStructureModel = new CostStructureDetail();
         costStructureModel.setCostEntries(Collections.singletonList(costEntryModel));
         applicationDetail.setCosts(costStructureModel);
 
@@ -257,7 +267,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void testProceedingMapping() {
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingModel = new uk.gov.laa.ccms.caab.model.Proceeding();
+        ProceedingDetail proceedingModel = new ProceedingDetail();
         StringDisplayValue matterType = new StringDisplayValue()
             .id("MT")
             .displayValue("MatterType");
@@ -332,8 +342,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void testProceedingMapping_checkBooleanDefaults() {
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingModel =
-            new uk.gov.laa.ccms.caab.model.Proceeding();
+        ProceedingDetail proceedingModel =
+            new ProceedingDetail();
 
         Proceeding proceeding = mapper.toProceeding(proceedingModel);
         assertFalse(proceeding.getLeadProceedingInd());
@@ -350,7 +360,7 @@ public class ApplicationMapperTest {
         proceeding.setStage("Stage1");
 
         // Convert Proceeding to ProceedingDetail
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingDetail = mapper.toProceedingModel(proceeding);
+        ProceedingDetail proceedingDetail = mapper.toProceedingModel(proceeding);
 
         // Assertions
         assertEquals("Stage1", proceedingDetail.getStage());
@@ -365,7 +375,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToPriorAuthority(){
-        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityModel = new uk.gov.laa.ccms.caab.model.PriorAuthority();
+        PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail();
         priorAuthorityModel.setEbsId("EBSID");
         priorAuthorityModel.setStatus("Status");
         priorAuthorityModel.setType(new StringDisplayValue().id("T").displayValue("Type"));
@@ -402,7 +412,7 @@ public class ApplicationMapperTest {
 
         priorAuthority.setAuditTrail(auditTrail);
 
-        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityDetail
+        PriorAuthorityDetail priorAuthorityDetail
             = mapper.toPriorAuthorityModel(priorAuthority);
 
         //TODO
@@ -416,8 +426,8 @@ public class ApplicationMapperTest {
     @Test
     public void testToReferenceDataItem(){
 
-        uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItemModel =
-            new uk.gov.laa.ccms.caab.model.ReferenceDataItem();
+        ReferenceDataItemDetail referenceDataItemModel =
+            new ReferenceDataItemDetail();
 
         referenceDataItemModel.setCode(new StringDisplayValue()
             .id("C")
@@ -454,7 +464,7 @@ public class ApplicationMapperTest {
         referenceDataItem.setMandatory(true);
         referenceDataItem.setLovLookUp("Lookup");
 
-        uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItemModel = mapper.toReferenceDataItemModel(referenceDataItem);
+        ReferenceDataItemDetail referenceDataItemModel = mapper.toReferenceDataItemModel(referenceDataItem);
 
         assertEquals("C", referenceDataItemModel.getCode().getId());
         assertEquals("V", referenceDataItemModel.getValue().getId());
@@ -471,7 +481,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToScopeLimitation() {
-        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel = new uk.gov.laa.ccms.caab.model.ScopeLimitation();
+        ScopeLimitationDetail scopeLimitationModel = new ScopeLimitationDetail();
         scopeLimitationModel.setScopeLimitation(new StringDisplayValue().id("SL").displayValue("ScopeLimitation"));
         scopeLimitationModel.setScopeLimitationWording("Wording");
         scopeLimitationModel.setDelegatedFuncApplyInd(new BooleanDisplayValue().flag(true).displayValue(""));
@@ -491,8 +501,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToScopeLimitation_checkBooleanDefaults() {
-        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitationModel =
-            new uk.gov.laa.ccms.caab.model.ScopeLimitation();
+        ScopeLimitationDetail scopeLimitationModel =
+            new ScopeLimitationDetail();
 
         ScopeLimitation scopeLimitation = mapper.toScopeLimitation(scopeLimitationModel);
 
@@ -516,7 +526,7 @@ public class ApplicationMapperTest {
         scopeLimitationEntity.setScopeLimitationWording("Wording");
         scopeLimitationEntity.setDefaultInd(true);
 
-        uk.gov.laa.ccms.caab.model.ScopeLimitation scopeLimitation = mapper.toScopeLimitationModel(scopeLimitationEntity);
+        ScopeLimitationDetail scopeLimitation = mapper.toScopeLimitationModel(scopeLimitationEntity);
 
         assertEquals("SL", scopeLimitation.getScopeLimitation().getId());
         assertEquals("ScopeLimitation", scopeLimitation.getScopeLimitation().getDisplayValue());
@@ -533,7 +543,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToOpponent() {
-        uk.gov.laa.ccms.caab.model.Opponent opponentModel = buildOpponentModel(createdAt);
+        OpponentDetail opponentModel = buildOpponentModel(createdAt);
 
         Opponent opponent = mapper.toOpponent(opponentModel);
 
@@ -578,8 +588,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToOpponent_checkBooleanDefaults() {
-        uk.gov.laa.ccms.caab.model.Opponent opponentDetail =
-            new uk.gov.laa.ccms.caab.model.Opponent();
+        OpponentDetail opponentDetail =
+            new OpponentDetail();
 
         Opponent opponent = mapper.toOpponent(opponentDetail);
 
@@ -609,7 +619,7 @@ public class ApplicationMapperTest {
         opponent.setNationalInsuranceNumber("AB123456C");
         opponent.setCourtOrderedMeansAssessment(true);
 
-        uk.gov.laa.ccms.caab.model.Opponent opponentDetail = mapper.toOpponentModel(opponent);
+        OpponentDetail opponentDetail = mapper.toOpponentModel(opponent);
 
         assertEquals("Relation1", opponentDetail.getRelationshipToCase());
         assertEquals("Type1", opponentDetail.getType());
@@ -628,14 +638,14 @@ public class ApplicationMapperTest {
 
     @Test
     public void testToLinkedCase() {
-        uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = new uk.gov.laa.ccms.caab.model.LinkedCase();
+        LinkedCaseDetail linkedCaseModel = new LinkedCaseDetail();
         linkedCaseModel.setAuditTrail(buildAuditDetail());
         linkedCaseModel.setLscCaseReference("LSC123");
         linkedCaseModel.setRelationToCase("Relation1");
         linkedCaseModel.setProviderCaseReference("Provider123");
         linkedCaseModel.setFeeEarner("FeeEarner1");
         linkedCaseModel.setStatus("Active");
-        Client linkedCaseClient = new Client();
+        ClientDetail linkedCaseClient = new ClientDetail();
         linkedCaseClient.setReference("Client123");
         linkedCaseClient.setFirstName("John");
         linkedCaseClient.setSurname("Doe");
@@ -673,7 +683,7 @@ public class ApplicationMapperTest {
         linkedCase.setClientSurname("Doe");
 
         // Perform the mapping
-        uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = mapper.toLinkedCaseModel(linkedCase);
+        LinkedCaseDetail linkedCaseModel = mapper.toLinkedCaseModel(linkedCase);
 
         // Assert the values in the mapped result
         assertEquals("LSC123", linkedCaseModel.getLscCaseReference());
@@ -693,8 +703,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void testAddressMapping() {
-        uk.gov.laa.ccms.caab.model.Address detailAddress =
-            new uk.gov.laa.ccms.caab.model.Address();
+        AddressDetail detailAddress =
+            new AddressDetail();
         detailAddress.setNoFixedAbode(true);
         detailAddress.setPostcode("12345");
         detailAddress.setHouseNameOrNumber("House 123");
@@ -726,8 +736,8 @@ public class ApplicationMapperTest {
     @Test
     public void testCostStructureMapping() {
         // Construct ApplicationDetailCosts
-        uk.gov.laa.ccms.caab.model.CostStructure detailCosts =
-            new uk.gov.laa.ccms.caab.model.CostStructure();
+        CostStructureDetail detailCosts =
+            new CostStructureDetail();
         detailCosts.setDefaultCostLimitation(new BigDecimal("100.00"));
         detailCosts.setGrantedCostLimitation(new BigDecimal("200.00"));
         detailCosts.setRequestedCostLimitation(new BigDecimal("300.00"));
@@ -771,8 +781,8 @@ public class ApplicationMapperTest {
     @Test
     public void testToAddressWithNullValues() {
         // Construct ApplicationDetailCorrespondenceAddress with null values
-        uk.gov.laa.ccms.caab.model.Address detailAddress =
-            new uk.gov.laa.ccms.caab.model.Address();
+        AddressDetail detailAddress =
+            new AddressDetail();
 
         // Convert ApplicationDetailCorrespondenceAddress to Address
         Address address = mapper.toAddress(detailAddress);
@@ -785,8 +795,8 @@ public class ApplicationMapperTest {
     @Test
     public void testToCostStructureWithZeroValues() {
         // Construct ApplicationDetailCosts with zero values
-        uk.gov.laa.ccms.caab.model.CostStructure detailCosts =
-            new uk.gov.laa.ccms.caab.model.CostStructure();
+        CostStructureDetail detailCosts =
+            new CostStructureDetail();
         detailCosts.setDefaultCostLimitation(new BigDecimal("0.00"));
         detailCosts.setGrantedCostLimitation(new BigDecimal("0.00"));
         detailCosts.setRequestedCostLimitation(new BigDecimal("0.00"));
@@ -816,7 +826,7 @@ public class ApplicationMapperTest {
         address.setPreferredAddress("Preferred Address");
 
         // Convert Address to ApplicationDetailCorrespondenceAddress
-        uk.gov.laa.ccms.caab.model.Address detailAddress = mapper.toAddressModel(address);
+        AddressDetail detailAddress = mapper.toAddressModel(address);
 
         // Assertions
         assertTrue(detailAddress.getNoFixedAbode());
@@ -838,7 +848,7 @@ public class ApplicationMapperTest {
         costStructure.setGrantedCostLimitation(new BigDecimal("200.00"));
         costStructure.setRequestedCostLimitation(new BigDecimal("300.00"));
 
-        uk.gov.laa.ccms.caab.model.CostStructure detailCosts = mapper.toCostStructureModel(costStructure);
+        CostStructureDetail detailCosts = mapper.toCostStructureModel(costStructure);
 
         assertEquals(new BigDecimal("100.00"), detailCosts.getDefaultCostLimitation());
         assertEquals(new BigDecimal("200.00"), detailCosts.getGrantedCostLimitation());
@@ -930,16 +940,16 @@ public class ApplicationMapperTest {
         assertNotNull(applicationDetail);
 
         // Assuming there's a method getOpponentDetails in ApplicationDetail class that returns a List of OpponentDetail
-        List<uk.gov.laa.ccms.caab.model.Opponent> opponentDetails = applicationDetail.getOpponents();
+        List<OpponentDetail> opponentDetails = applicationDetail.getOpponents();
         assertNotNull(opponentDetails);
         assertEquals(2, opponentDetails.size());
 
-        uk.gov.laa.ccms.caab.model.Opponent opponentDetail1 = opponentDetails.get(0);
+        OpponentDetail opponentDetail1 = opponentDetails.get(0);
         assertEquals("Relative", opponentDetail1.getRelationshipToCase());
         assertEquals("Type1", opponentDetail1.getType());
         assertNotNull(opponentDetail1.getAuditTrail());  // assuming AuditTrail maps to AuditDetail with a straightforward mapping
 
-        uk.gov.laa.ccms.caab.model.Opponent opponentDetail2 = opponentDetails.get(1);
+        OpponentDetail opponentDetail2 = opponentDetails.get(1);
         assertEquals("Friend", opponentDetail2.getRelationshipToCase());
         assertEquals("Type2", opponentDetail2.getType());
         assertNotNull(opponentDetail2.getAuditTrail());  // assuming AuditTrail maps to AuditDetail with a straightforward mapping
@@ -978,15 +988,15 @@ public class ApplicationMapperTest {
         assertNotNull(applicationDetail);
 
         // Assuming there's a method getProceedingDetails in ApplicationDetail class that returns a List of ProceedingDetail
-        List<uk.gov.laa.ccms.caab.model.Proceeding> proceedingDetails = applicationDetail.getProceedings();
+        List<ProceedingDetail> proceedingDetails = applicationDetail.getProceedings();
         assertNotNull(proceedingDetails);
         assertEquals(2, proceedingDetails.size());
 
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingDetail1 = proceedingDetails.get(0);
+        ProceedingDetail proceedingDetail1 = proceedingDetails.get(0);
         assertEquals("Stage1", proceedingDetail1.getStage());
         assertNotNull(proceedingDetail1.getAuditTrail());  // assuming AuditTrail maps to AuditDetail with a straightforward mapping
 
-        uk.gov.laa.ccms.caab.model.Proceeding proceedingDetail2 = proceedingDetails.get(1);
+        ProceedingDetail proceedingDetail2 = proceedingDetails.get(1);
         assertEquals("Stage2", proceedingDetail2.getStage());
         assertNotNull(proceedingDetail2.getAuditTrail());  // assuming AuditTrail maps to AuditDetail with a straightforward mapping
     }
@@ -1010,7 +1020,7 @@ public class ApplicationMapperTest {
         ApplicationType applicationType = new ApplicationType();
         applicationType.setId("TEST");
         applicationType.setDisplayValue("TEST123");
-        DevolvedPowers devolvedPowers = new DevolvedPowers();
+        DevolvedPowersDetail devolvedPowers = new DevolvedPowersDetail();
         devolvedPowers.setContractFlag("Y");
         devolvedPowers.setUsed(false);
         applicationType.setDevolvedPowers(devolvedPowers);
@@ -1054,14 +1064,14 @@ public class ApplicationMapperTest {
         assertNotNull(applicationDetail);
 
         // Assuming there's a method getPriorAuthorityDetails in ApplicationDetail class that returns a List of PriorAuthorityDetail
-        List<uk.gov.laa.ccms.caab.model.PriorAuthority> priorAuthorityDetails = applicationDetail.getPriorAuthorities();
+        List<PriorAuthorityDetail> priorAuthorityDetails = applicationDetail.getPriorAuthorities();
         assertNotNull(priorAuthorityDetails);
         assertEquals(2, priorAuthorityDetails.size());
 
-        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityDetail1 = priorAuthorityDetails.get(0);
+        PriorAuthorityDetail priorAuthorityDetail1 = priorAuthorityDetails.get(0);
         assertNotNull(priorAuthorityDetail1.getAuditTrail());  // assuming AuditTrail maps to AuditDetail with a straightforward mapping
 
-        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityDetail2 = priorAuthorityDetails.get(1);
+        PriorAuthorityDetail priorAuthorityDetail2 = priorAuthorityDetails.get(1);
         assertNotNull(priorAuthorityDetail2.getAuditTrail());  // assuming AuditTrail maps to AuditDetail with a straightforward mapping
     }
 
@@ -1175,7 +1185,7 @@ public class ApplicationMapperTest {
     @Test
     void updateAddress_updatesFieldsWhenModelIsNotNull() {
         Address address = buildAddress();
-        uk.gov.laa.ccms.caab.model.Address addressModel = new uk.gov.laa.ccms.caab.model.Address();
+        AddressDetail addressModel = new AddressDetail();
 
         addressModel.setPostcode("TestPostcode");
         addressModel.setHouseNameOrNumber("123");
@@ -1210,7 +1220,7 @@ public class ApplicationMapperTest {
     @Test
     void updateCostStructure_updatesFieldsWhenModelIsNotNull() {
         CostStructure costStructure = new CostStructure();
-        uk.gov.laa.ccms.caab.model.CostStructure costStructureModel = new uk.gov.laa.ccms.caab.model.CostStructure()
+        CostStructureDetail costStructureModel = new CostStructureDetail()
             .defaultCostLimitation(new BigDecimal("100.00"))
             .requestedCostLimitation(new BigDecimal("200.00"))
             .grantedCostLimitation(new BigDecimal("300.00"));
@@ -1236,7 +1246,7 @@ public class ApplicationMapperTest {
     @Test
     void updateLinkedCase_updatesFieldsWhenModelIsNotNull() {
         LinkedCase linkedCase = new LinkedCase();
-        uk.gov.laa.ccms.caab.model.LinkedCase linkedCaseModel = new uk.gov.laa.ccms.caab.model.LinkedCase()
+        LinkedCaseDetail linkedCaseModel = new LinkedCaseDetail()
             .lscCaseReference("LSC123")
             .relationToCase("Relation1")
             .providerCaseReference("Provider123")
@@ -1268,7 +1278,7 @@ public class ApplicationMapperTest {
     @Test
     void updatePriorAuthority_updatesFieldsWhenModelIsNotNull() {
         PriorAuthority priorAuthority = new PriorAuthority();
-        uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthorityModel = new uk.gov.laa.ccms.caab.model.PriorAuthority()
+        PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail()
             .ebsId("EBSID")
             .status("Status")
             .summary("Summary")
@@ -1297,10 +1307,10 @@ public class ApplicationMapperTest {
     @Test
     void testUpdateOpponent() {
         Date date = new Date();
-        Opponent opponentBefore = buildOpponent(date);
-        Opponent opponent = buildOpponent(date);
+        Opponent opponentBefore = buildOpponent(1L, date);
+        Opponent opponent = buildOpponent(1L, date);
 
-        uk.gov.laa.ccms.caab.model.Opponent opponentModel = buildOpponentModel(createdAt);
+        OpponentDetail opponentModel = buildOpponentModel(createdAt);
 
         mapper.updateOpponent(opponent, opponentModel);
 
@@ -1352,7 +1362,7 @@ public class ApplicationMapperTest {
     public void testToBaseApplication() {
         Application application = getApplication();
 
-        BaseApplication result = mapper.toBaseApplication(application);
+        BaseApplicationDetail result = mapper.toBaseApplication(application);
 
         assertNotNull(result);
         assertEquals(application.getId().intValue(), result.getId());
@@ -1402,116 +1412,5 @@ public class ApplicationMapperTest {
         auditTrail.setCreatedBy("CreatedBy");
         auditTrail.setLastSavedBy("LastSavedBy");
         return auditTrail;
-    }
-
-    @NotNull
-    private static Address buildAddress() {
-        Address address = new Address();
-        address.setPostCode("InitialPostcode");
-        address.setHouseNameNumber("InitialHouseNameNumber");
-        address.setNoFixedAbode(true);
-        address.setAddressLine1("InitialAddressLine1");
-        address.setAddressLine2("InitialAddressLine2");
-        address.setCity("InitialCity");
-        address.setCounty("InitialCounty");
-        address.setCountry("InitialCountry");
-        address.setCareOf("InitialCareOf");
-        address.setPreferredAddress("InitialPreferredAddress");
-        return address;
-    }
-
-    private Opponent buildOpponent(Date date) {
-        Opponent opponent = new Opponent();
-        opponent.setId(Long.valueOf("11111"));
-        opponent.setAmendment(true);
-        opponent.setApplication(new Application());
-        opponent.setAppMode(false);
-        opponent.setAssessedAssets(BigDecimal.TEN);
-        opponent.setAssessedIncome(BigDecimal.ONE);
-        opponent.setAssessedIncomeFrequency("freq");
-        opponent.setAssessmentDate(date);
-        opponent.setAuditTrail(new AuditTrail());
-        opponent.setAward(true);
-        opponent.setCertificateNumber("certnum");
-        opponent.setConfirmed(false);
-        opponent.setContactNameRole("namerole");
-        opponent.setCourtOrderedMeansAssessment(true);
-        opponent.setCurrentlyTrading(false);
-        opponent.setDateOfBirth(date);
-        opponent.setDeleteInd(true);
-        opponent.setEbsId("ebs1");
-        opponent.setEmailAddress("emailadd");
-        opponent.setEmployerAddress("empaddr");
-        opponent.setEmployerName("name");
-        opponent.setEmploymentStatus("empStat");
-        opponent.setFaxNumber("faxnum");
-        opponent.setFirstName("first");
-        opponent.setId(Long.parseLong("1"));
-        opponent.setLegalAided(true);
-        opponent.setMiddleNames("middle");
-        opponent.setNationalInsuranceNumber("nino");
-        opponent.setOrganisationName("org");
-        opponent.setOrganisationType("orgtype");
-        opponent.setOtherInformation("otherinf");
-        opponent.setOutcome(new CaseOutcome());
-        opponent.setPublicFundingApplied(false);
-        opponent.setRelationshipToCase("rel2case");
-        opponent.setRelationshipToClient("rel2client");
-        opponent.setSharedInd(true);
-        opponent.setSurname("sur");
-        opponent.setTelephoneHome("telhome");
-        opponent.setTelephoneMobile("telmob");
-        opponent.setTelephoneWork("telwork");
-        opponent.setTitle("ttl");
-        opponent.setType("thetype");
-
-        return opponent;
-    }
-
-    public uk.gov.laa.ccms.caab.model.Opponent buildOpponentModel(java.util.Date date) {
-        return new uk.gov.laa.ccms.caab.model.Opponent()
-            .address(new uk.gov.laa.ccms.caab.model.Address().addressLine1("add1"))
-            .amendment(Boolean.TRUE)
-            .appMode(Boolean.FALSE)
-            .assessedAssets(BigDecimal.TEN)
-            .assessedIncome(BigDecimal.ONE)
-            .assessedIncomeFrequency("freq")
-            .assessmentDate(date)
-            .auditTrail(new AuditDetail())
-            .award(Boolean.TRUE)
-            .certificateNumber("cert")
-            .confirmed(Boolean.FALSE)
-            .contactNameRole("conNameRole")
-            .courtOrderedMeansAssessment(Boolean.TRUE)
-            .currentlyTrading(Boolean.TRUE)
-            .dateOfBirth(date)
-            .deleteInd(Boolean.FALSE)
-            .displayAddress("address 1")
-            .displayName("disp name")
-            .ebsId("ebsid")
-            .emailAddress("emailAdd")
-            .employerName("empName")
-            .employerAddress("empAddr")
-            .employmentStatus("empSt")
-            .faxNumber("fax")
-            .firstName("firstname")
-            .id(2222)
-            .legalAided(Boolean.TRUE)
-            .middleNames("midnames")
-            .nationalInsuranceNumber("nino")
-            .organisationName("orgName")
-            .organisationType("orgid")
-            .otherInformation("otherInf")
-            .partyId("party")
-            .publicFundingApplied(Boolean.TRUE)
-            .relationshipToCase("relToCase")
-            .relationshipToClient("relToClient")
-            .sharedInd(Boolean.TRUE)
-            .surname("surname")
-            .telephoneHome("telHome")
-            .telephoneMobile("telMob")
-            .telephoneWork("telWork")
-            .title("thetitle")
-            .type("thetype");
     }
 }

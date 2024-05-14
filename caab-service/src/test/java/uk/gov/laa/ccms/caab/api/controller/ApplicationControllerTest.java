@@ -29,18 +29,18 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.model.Address;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
-import uk.gov.laa.ccms.caab.model.Client;
-import uk.gov.laa.ccms.caab.model.CostStructure;
+import uk.gov.laa.ccms.caab.model.ClientDetail;
+import uk.gov.laa.ccms.caab.model.CostStructureDetail;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
-import uk.gov.laa.ccms.caab.model.Opponent;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
-import uk.gov.laa.ccms.caab.model.Proceeding;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 
 @ExtendWith(SpringExtension.class)
@@ -79,7 +79,7 @@ class ApplicationControllerTest {
         ApplicationProviderDetails providerDetails = new ApplicationProviderDetails()
             .provider(new IntDisplayValue().id(providerId));
 
-        Client client = new Client().reference(clientRef);
+        ClientDetail client = new ClientDetail().reference(clientRef);
 
         StringDisplayValue categoryOfLaw = new StringDisplayValue()
             .id(categoryOfLawId);
@@ -187,9 +187,9 @@ class ApplicationControllerTest {
     }
 
     @Test
-    public void getApplicationCorrespondenceAddress() throws Exception {
+    public void getApplicationCorrespondenceAddressDetail() throws Exception {
         Long id = 123L;
-        Address address = new Address();
+        AddressDetail address = new AddressDetail();
 
         when(applicationService.getApplicationCorrespondenceAddress(id)).thenReturn(address);
 
@@ -198,10 +198,10 @@ class ApplicationControllerTest {
     }
 
     @Test
-    public void putApplicationCorrespondenceAddress() throws Exception {
+    public void putApplicationCorrespondenceAddressDetail() throws Exception {
         Long id = 123L;
         String caabUserLoginId = "test";
-        Address address = new Address();
+        AddressDetail address = new AddressDetail();
 
         doNothing().when(applicationService).putCorrespondenceAddress(id, address);
 
@@ -217,7 +217,7 @@ class ApplicationControllerTest {
     @Test
     public void getApplicationLinkedCases_returnsLinkedCases() throws Exception {
         Long id = 1L;
-        List<LinkedCase> linkedCases = Arrays.asList(new LinkedCase(), new LinkedCase()); // Assuming some mock linked cases
+        List<LinkedCaseDetail> linkedCases = Arrays.asList(new LinkedCaseDetail(), new LinkedCaseDetail()); // Assuming some mock linked cases
 
         when(applicationService.getLinkedCasesForApplication(id)).thenReturn(linkedCases);
 
@@ -231,7 +231,7 @@ class ApplicationControllerTest {
     public void addApplicationLinkedCase_isCreated() throws Exception {
         Long id = 1L;
         String caabUserLoginId = "userLoginId";
-        LinkedCase linkedCase = new LinkedCase(); // Set up linked case details as required
+        LinkedCaseDetail linkedCase = new LinkedCaseDetail(); // Set up linked case details as required
 
         doNothing().when(applicationService).createLinkedCaseForApplication(id, linkedCase);
 
@@ -291,9 +291,9 @@ class ApplicationControllerTest {
     }
 
   @Test
-  public void getApplicationCostStructure_ReturnsCostStructure() throws Exception {
+  public void getApplicationCostStructureDetail_ReturnsCostStructureDetail() throws Exception {
     Long applicationId = 1L;
-    CostStructure costStructure = new CostStructure();
+    CostStructureDetail costStructure = new CostStructureDetail();
 
     when(applicationService.getApplicationCostStructure(applicationId)).thenReturn(costStructure);
 
@@ -304,9 +304,9 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void updateApplicationCostStructure_UpdatesSuccessfully() throws Exception {
+  public void updateApplicationCostStructureDetail_UpdatesSuccessfully() throws Exception {
     Long applicationId = 1L;
-    CostStructure costStructure = new CostStructure();
+    CostStructureDetail costStructure = new CostStructureDetail();
 
     doNothing().when(applicationService).putCostStructure(applicationId, costStructure);
 
@@ -322,7 +322,7 @@ class ApplicationControllerTest {
   @Test
   public void addApplicationProceeding_CreatesProceeding() throws Exception {
     Long applicationId = 1L;
-    Proceeding proceeding = new Proceeding();
+    ProceedingDetail proceeding = new ProceedingDetail();
 
     doNothing().when(applicationService).createProceedingForApplication(applicationId, proceeding);
 
@@ -338,7 +338,7 @@ class ApplicationControllerTest {
   @Test
   public void getApplicationProceedings_ReturnsProceedingsList() throws Exception {
     Long applicationId = 1L;
-    List<Proceeding> proceedings = List.of(new Proceeding());
+    List<ProceedingDetail> proceedings = List.of(new ProceedingDetail());
 
     when(applicationService.getProceedingsForApplication(applicationId)).thenReturn(proceedings);
 
@@ -351,7 +351,7 @@ class ApplicationControllerTest {
   @Test
   public void addApplicationPriorAuthority_CreatesPriorAuthority() throws Exception {
     Long id = 1L;
-    PriorAuthority priorAuthority = new PriorAuthority();
+    PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
 
     doNothing().when(applicationService).createPriorAuthorityForApplication(id, priorAuthority);
 
@@ -367,7 +367,7 @@ class ApplicationControllerTest {
   @Test
   public void getApplicationPriorAuthorities_ReturnsPriorAuthoritiesList() throws Exception {
     Long id = 1L;
-    List<PriorAuthority> priorAuthorities = List.of(new PriorAuthority());
+    List<PriorAuthorityDetail> priorAuthorities = List.of(new PriorAuthorityDetail());
 
     when(applicationService.getPriorAuthoritiesForApplication(id)).thenReturn(priorAuthorities);
 
@@ -380,7 +380,7 @@ class ApplicationControllerTest {
   @Test
   public void addApplicationOpponent_CreatesOpponent() throws Exception {
     Long applicationId = 1L;
-    Opponent opponent = new Opponent();
+    OpponentDetail opponent = new OpponentDetail();
 
     doNothing().when(applicationService).createOpponentForApplication(applicationId, opponent);
 
@@ -396,7 +396,7 @@ class ApplicationControllerTest {
   @Test
   public void getApplicationOpponents_ReturnsOpponents() throws Exception {
     Long applicationId = 1L;
-    List<Opponent> opponents = List.of(new Opponent());
+    List<OpponentDetail> opponents = List.of(new OpponentDetail());
 
     when(applicationService.getOpponentsForApplication(applicationId)).thenReturn(opponents);
 

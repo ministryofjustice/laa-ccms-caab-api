@@ -10,20 +10,26 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.entity.Application;
+import uk.gov.laa.ccms.caab.api.entity.LinkedCase;
+import uk.gov.laa.ccms.caab.api.entity.Opponent;
+import uk.gov.laa.ccms.caab.api.entity.PriorAuthority;
+import uk.gov.laa.ccms.caab.api.entity.Proceeding;
 import uk.gov.laa.ccms.caab.api.entity.ReferenceDataItem;
 import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
-import uk.gov.laa.ccms.caab.model.BaseClient;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
-import uk.gov.laa.ccms.caab.model.Opponent;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
-import uk.gov.laa.ccms.caab.model.Proceeding;
+import uk.gov.laa.ccms.caab.model.BaseClientDetail;
+import uk.gov.laa.ccms.caab.model.CostStructureDetail;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
 
 /**
  * Service responsible for handling application-related operations.
@@ -144,16 +150,16 @@ public class ApplicationService {
   /**
    * Updates a client's information in the application repository.
    *
-   * @param baseClient The client object containing updated information.
+   * @param baseClientDetail The client object containing updated information.
    * @param reference  A unique reference number for the client.
    */
   @Transactional
   public void updateClient(
-      final BaseClient baseClient,
+      final BaseClientDetail baseClientDetail,
       final String reference) {
     applicationRepository.updateClient(
-        baseClient.getFirstName(),
-        baseClient.getSurname(),
+        baseClientDetail.getFirstName(),
+        baseClientDetail.getSurname(),
         reference);
   }
 
@@ -164,7 +170,7 @@ public class ApplicationService {
    * @return the application's linked cases.
    */
   @Transactional
-  public List<LinkedCase> getLinkedCasesForApplication(final Long id) {
+  public List<LinkedCaseDetail> getLinkedCasesForApplication(final Long id) {
     return applicationRepository.findById(id)
         .map(Application::getLinkedCases)
         .map(applicationMapper::toLinkedCaseModelList)
@@ -178,34 +184,34 @@ public class ApplicationService {
    * If the application is not found, a CaabApiException is thrown.
    *
    * @param applicationId The unique identifier of the application.
-   * @param linkedCase The LinkedCase object containing the details of the case to be linked.
+   * @param linkedCaseDetail The details of the case to be linked.
    * @throws CaabApiException If the application with the specified ID is not found.
    */
   @Transactional
   public void createLinkedCaseForApplication(
       final Long applicationId,
-      final LinkedCase linkedCase) {
+      final LinkedCaseDetail linkedCaseDetail) {
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", applicationId),
             HttpStatus.NOT_FOUND));
 
-    uk.gov.laa.ccms.caab.api.entity.LinkedCase linkedCaseEntity =
-        applicationMapper.toLinkedCase(linkedCase);
-    application.getLinkedCases().add(linkedCaseEntity);
+    LinkedCase linkedCaseDetailEntity =
+        applicationMapper.toLinkedCase(linkedCaseDetail);
+    application.getLinkedCases().add(linkedCaseDetailEntity);
 
-    linkedCaseEntity.setApplication(application);
+    linkedCaseDetailEntity.setApplication(application);
     applicationRepository.save(application);
   }
 
   /**
-   * Gets an application's proceedings.
+   * Gets an application's ProceedingDetails.
    *
    * @param id the TDS id for the application.
-   * @return the application's proceedings.
+   * @return the application's ProceedingDetails.
    */
   @Transactional
-  public List<Proceeding> getProceedingsForApplication(final Long id) {
+  public List<ProceedingDetail> getProceedingsForApplication(final Long id) {
     return applicationRepository.findById(id)
         .map(Application::getProceedings)
         .orElseThrow(() -> new CaabApiException(
@@ -217,29 +223,29 @@ public class ApplicationService {
   }
 
   /**
-   * Creates and associates a new proceeding with a specified application.
+   * Creates and associates a new ProceedingDetail with a specified application.
    * If the application is not found, a CaabApiException is thrown.
    *
    * @param applicationId The unique identifier of the application.
-   * @param proceeding The Proceeding object.
+   * @param proceedingDetail The ProceedingDetail object.
    * @throws CaabApiException If the application with the specified ID is not found.
    */
   @Transactional
   public void createProceedingForApplication(
       final Long applicationId,
-      final Proceeding proceeding) {
+      final ProceedingDetail proceedingDetail) {
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", applicationId),
             HttpStatus.NOT_FOUND));
 
-    uk.gov.laa.ccms.caab.api.entity.Proceeding proceedingEntity =
-        applicationMapper.toProceeding(proceeding);
-    application.getProceedings().add(proceedingEntity);
+    Proceeding proceedingDetailEntity =
+        applicationMapper.toProceeding(proceedingDetail);
+    application.getProceedings().add(proceedingDetailEntity);
 
-    proceedingEntity.setApplication(application);
-    for (ScopeLimitation scopeLimitation : proceedingEntity.getScopeLimitations()) {
-      scopeLimitation.setProceeding(proceedingEntity);
+    proceedingDetailEntity.setApplication(application);
+    for (ScopeLimitation scopeLimitation : proceedingDetailEntity.getScopeLimitations()) {
+      scopeLimitation.setProceeding(proceedingDetailEntity);
     }
 
     applicationRepository.save(application);
@@ -252,7 +258,7 @@ public class ApplicationService {
    * @return the application's prior authorities.
    */
   @Transactional
-  public List<PriorAuthority> getPriorAuthoritiesForApplication(final Long id) {
+  public List<PriorAuthorityDetail> getPriorAuthoritiesForApplication(final Long id) {
     return applicationRepository.findById(id)
         .map(Application::getPriorAuthorities)
         .orElseThrow(() -> new CaabApiException(
@@ -268,20 +274,20 @@ public class ApplicationService {
    * If the application is not found, a CaabApiException is thrown.
    *
    * @param applicationId The unique identifier of the application.
-   * @param priorAuthority The PriorAuthority object.
+   * @param priorAuthorityDetail The PriorAuthorityDetail object.
    * @throws CaabApiException If the application with the specified ID is not found.
    */
   @Transactional
   public void createPriorAuthorityForApplication(
       final Long applicationId,
-      final PriorAuthority priorAuthority) {
+      final PriorAuthorityDetail priorAuthorityDetail) {
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", applicationId),
             HttpStatus.NOT_FOUND));
 
-    uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity =
-        applicationMapper.toPriorAuthority(priorAuthority);
+    PriorAuthority priorAuthorityEntity =
+        applicationMapper.toPriorAuthority(priorAuthorityDetail);
     application.getPriorAuthorities().add(priorAuthorityEntity);
 
     priorAuthorityEntity.setApplication(application);
@@ -300,7 +306,7 @@ public class ApplicationService {
    * @return the application's correspondence address.
    */
   @Transactional
-  public uk.gov.laa.ccms.caab.model.Address getApplicationCorrespondenceAddress(
+  public AddressDetail getApplicationCorrespondenceAddress(
       final Long applicationId) {
     return applicationRepository.findById(applicationId)
         .map(Application::getCorrespondenceAddress)
@@ -319,7 +325,7 @@ public class ApplicationService {
    * @return the application's cost structure.
    */
   @Transactional
-  public uk.gov.laa.ccms.caab.model.CostStructure getApplicationCostStructure(
+  public CostStructureDetail getApplicationCostStructure(
       final Long applicationId) {
     return applicationRepository.findById(applicationId)
         .map(Application::getCosts)
@@ -367,7 +373,7 @@ public class ApplicationService {
   @Transactional
   public void putCorrespondenceAddress(
       final Long applicationId,
-      final uk.gov.laa.ccms.caab.model.Address address) {
+      final AddressDetail address) {
 
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
@@ -387,7 +393,7 @@ public class ApplicationService {
   @Transactional
   public void putCostStructure(
       final Long applicationId,
-      final uk.gov.laa.ccms.caab.model.CostStructure costStructure) {
+      final CostStructureDetail costStructure) {
 
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
@@ -437,13 +443,13 @@ public class ApplicationService {
   }
 
   /**
-   * Gets an application's opponents.
+   * Gets an application's OpponentDetails.
    *
    * @param id the TDS id for the application.
-   * @return the application's opponents.
+   * @return the application's OpponentDetails.
    */
   @Transactional
-  public List<Opponent> getOpponentsForApplication(final Long id) {
+  public List<OpponentDetail> getOpponentsForApplication(final Long id) {
     return applicationRepository.findById(id)
         .map(Application::getOpponents)
         .orElseThrow(() -> new CaabApiException(
@@ -455,24 +461,24 @@ public class ApplicationService {
   }
 
   /**
-   * Creates and associates a new opponent with a specified application.
+   * Creates and associates a new OpponentDetail with a specified application.
    * If the application is not found, a CaabApiException is thrown.
    *
    * @param applicationId The unique identifier of the application.
-   * @param opponent The Opponent object.
+   * @param opponentDetail The OpponentDetail object.
    * @throws CaabApiException If the application with the specified ID is not found.
    */
   @Transactional
   public void createOpponentForApplication(
       final Long applicationId,
-      final Opponent opponent) {
+      final OpponentDetail opponentDetail) {
     Application application = applicationRepository.findById(applicationId)
         .orElseThrow(() -> new CaabApiException(
             String.format("Application with id %s not found", applicationId),
             HttpStatus.NOT_FOUND));
 
-    uk.gov.laa.ccms.caab.api.entity.Opponent opponentEntity =
-        applicationMapper.toOpponent(opponent);
+    Opponent opponentEntity =
+        applicationMapper.toOpponent(opponentDetail);
     application.getOpponents().add(opponentEntity);
 
     opponentEntity.setApplication(application);

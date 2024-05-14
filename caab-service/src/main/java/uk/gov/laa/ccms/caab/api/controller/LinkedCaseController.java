@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.laa.ccms.caab.api.LinkedCasesApi;
 import uk.gov.laa.ccms.caab.api.service.LinkedCaseService;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
 
 /**
  * Controller handling linked case-related requests.
@@ -33,7 +33,7 @@ public class LinkedCaseController implements LinkedCasesApi {
   public ResponseEntity<Void> updateLinkedCase(
       final Long linkedCaseId,
       final String caabUserLoginId,
-      final LinkedCase linkedCase) {
+      final LinkedCaseDetail linkedCase) {
     linkedCaseService.updateLinkedCase(linkedCaseId, linkedCase);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

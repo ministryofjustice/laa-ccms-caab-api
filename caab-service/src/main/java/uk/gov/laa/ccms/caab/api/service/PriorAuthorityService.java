@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.PriorAuthorityRepository;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
 
 /**
  * Service responsible for handling prior-authorities operations.
@@ -56,7 +56,7 @@ public class PriorAuthorityService {
   @Transactional
   public void updatePriorAuthority(
       final Long priorAuthorityId,
-      final PriorAuthority priorAuthorityModel) {
+      final PriorAuthorityDetail priorAuthorityModel) {
 
     uk.gov.laa.ccms.caab.api.entity.PriorAuthority priorAuthorityEntity =
         repository.findById(priorAuthorityId)

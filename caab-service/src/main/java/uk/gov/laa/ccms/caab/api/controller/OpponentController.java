@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.laa.ccms.caab.api.OpponentsApi;
 import uk.gov.laa.ccms.caab.api.service.OpponentService;
-import uk.gov.laa.ccms.caab.model.Opponent;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 
 /**
  * Controller handling opponent-related requests.
@@ -23,7 +23,7 @@ public class OpponentController implements OpponentsApi {
 
   @Override
   public ResponseEntity<Void> updateOpponent(
-      final Long opponentId, final String caabUserLoginId, final Opponent opponent) {
+      final Long opponentId, final String caabUserLoginId, final OpponentDetail opponent) {
     opponentService.updateOpponent(opponentId, opponent);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

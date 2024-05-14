@@ -305,7 +305,7 @@ public class Opponent implements Serializable {
    */
   @ManyToOne
   @JoinColumn(name = "FK_OUTCOME")
-  private CaseOutcome outcome;
+  private CaseOutcome caseOutcome;
 
 
 }

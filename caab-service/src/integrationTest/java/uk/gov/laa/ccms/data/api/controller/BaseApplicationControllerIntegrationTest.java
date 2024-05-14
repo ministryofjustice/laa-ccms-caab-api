@@ -23,13 +23,14 @@ import uk.gov.laa.ccms.caab.api.controller.ApplicationController;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
-import uk.gov.laa.ccms.caab.model.BaseApplication;
-import uk.gov.laa.ccms.caab.model.BaseClient;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
-import uk.gov.laa.ccms.caab.model.Opponent;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
-import uk.gov.laa.ccms.caab.model.Proceeding;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.BaseApplicationDetail;
+import uk.gov.laa.ccms.caab.model.BaseClientDetail;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ReferenceDataItemDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 public abstract class BaseApplicationControllerIntegrationTest
     extends AbstractControllerIntegrationTest {
@@ -212,17 +213,21 @@ public abstract class BaseApplicationControllerIntegrationTest
   private void nullModelIds(ApplicationDetail applicationDetail) {
     applicationDetail.setId(null);
 
+    if (applicationDetail.getCorrespondenceAddress() != null) {
+      applicationDetail.getCorrespondenceAddress().setId(null);
+    }
+
     if (applicationDetail.getLinkedCases() != null) {
-      for (LinkedCase linkedCase : applicationDetail.getLinkedCases()) {
+      for (LinkedCaseDetail linkedCase : applicationDetail.getLinkedCases()) {
         linkedCase.setId(null);
       }
     }
 
     if (applicationDetail.getProceedings() != null) {
-      for (Proceeding proceeding : applicationDetail.getProceedings()) {
+      for (ProceedingDetail proceeding : applicationDetail.getProceedings()) {
         proceeding.setId(null);
         if (proceeding.getScopeLimitations() != null) {
-          for (ScopeLimitation scopeLimitation : proceeding.getScopeLimitations()) {
+          for (ScopeLimitationDetail scopeLimitation : proceeding.getScopeLimitations()) {
             scopeLimitation.setId(null);
           }
         }
@@ -230,10 +235,10 @@ public abstract class BaseApplicationControllerIntegrationTest
     }
 
     if (applicationDetail.getPriorAuthorities() != null) {
-      for (uk.gov.laa.ccms.caab.model.PriorAuthority priorAuthority : applicationDetail.getPriorAuthorities()) {
+      for (PriorAuthorityDetail priorAuthority : applicationDetail.getPriorAuthorities()) {
         priorAuthority.setId(null);
         if (priorAuthority.getItems() != null) {
-          for (uk.gov.laa.ccms.caab.model.ReferenceDataItem referenceDataItem : priorAuthority.getItems()) {
+          for (ReferenceDataItemDetail referenceDataItem : priorAuthority.getItems()) {
             referenceDataItem.setId(null);
           }
         }
@@ -241,8 +246,12 @@ public abstract class BaseApplicationControllerIntegrationTest
     }
 
     if (applicationDetail.getOpponents() != null) {
-      for (uk.gov.laa.ccms.caab.model.Opponent opponent : applicationDetail.getOpponents()) {
+      for (OpponentDetail opponent : applicationDetail.getOpponents()) {
         opponent.setId(null);
+
+        if (opponent.getAddress() != null) {
+          opponent.getAddress().setId(null);
+        }
       }
     }
   }
@@ -280,7 +289,7 @@ public abstract class BaseApplicationControllerIntegrationTest
     assertNotNull(responseEntity.getBody());
     assertNotNull(responseEntity.getBody().getContent());
     assertEquals(1, responseEntity.getBody().getSize());
-    BaseApplication result = responseEntity.getBody().getContent().get(0);
+    BaseApplicationDetail result = responseEntity.getBody().getContent().get(0);
     assertEquals(caseRef, result.getCaseReferenceNumber());
     assertEquals(Integer.parseInt(providerId), result.getProviderDetails().getProvider().getId());
     assertEquals(provCaseRef, result.getProviderDetails().getProviderCaseReference());
@@ -324,7 +333,7 @@ public abstract class BaseApplicationControllerIntegrationTest
     assertNotNull(responseEntity.getBody());
     assertNotNull(responseEntity.getBody().getContent());
     assertEquals(1, responseEntity.getBody().getSize());
-    BaseApplication result = responseEntity.getBody().getContent().get(0);
+    BaseApplicationDetail result = responseEntity.getBody().getContent().get(0);
     assertEquals(caseRef, result.getCaseReferenceNumber());
     assertEquals(Integer.parseInt(providerId), result.getProviderDetails().getProvider().getId());
     assertEquals(provCaseRef, result.getProviderDetails().getProviderCaseReference());
@@ -375,19 +384,19 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void addApplicationProceedings() throws IOException {
     Long caseRef = 41L;
 
-    Proceeding proceeding = loadObjectFromJson("/json/proceeding_new.json", Proceeding.class);
+    ProceedingDetail proceeding = loadObjectFromJson("/json/proceeding_new.json", ProceedingDetail.class);
     ResponseEntity<Void> response = applicationController.addApplicationProceeding(
         caseRef, caabUserLoginId, proceeding);
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-    ResponseEntity<List<Proceeding>> responseEntity =
+    ResponseEntity<List<ProceedingDetail>> responseEntity =
         applicationController.getApplicationProceedings(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<Proceeding> proceedings = responseEntity.getBody();
+    List<ProceedingDetail> proceedings = responseEntity.getBody();
     assertEquals(1, proceedings.size());
   }
 
@@ -396,12 +405,12 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void getApplicationProceedings() {
     Long caseRef = 41L;
 
-    ResponseEntity<List<Proceeding>> responseEntity = applicationController.getApplicationProceedings(caseRef);
+    ResponseEntity<List<ProceedingDetail>> responseEntity = applicationController.getApplicationProceedings(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<Proceeding> proceedings = responseEntity.getBody();
+    List<ProceedingDetail> proceedings = responseEntity.getBody();
     assertEquals(1, proceedings.size());
   }
 
@@ -410,7 +419,7 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void addLinkedCase() throws IOException {
     Long caseRef = 41L; // Assuming this is the ID of an application
 
-    LinkedCase newLinkedCase = loadObjectFromJson("/json/linked_cases_new.json", LinkedCase.class);
+    LinkedCaseDetail newLinkedCase = loadObjectFromJson("/json/linked_cases_new.json", LinkedCaseDetail.class);
 
     ResponseEntity<Void> response =
         applicationController.addApplicationLinkedCase(caseRef, caabUserLoginId,
@@ -418,13 +427,13 @@ public abstract class BaseApplicationControllerIntegrationTest
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-    ResponseEntity<List<LinkedCase>> responseEntity =
+    ResponseEntity<List<LinkedCaseDetail>> responseEntity =
         applicationController.getApplicationLinkedCases(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<LinkedCase> linkedCases = responseEntity.getBody();
+    List<LinkedCaseDetail> linkedCases = responseEntity.getBody();
     assertEquals(1, linkedCases.size());
   }
 
@@ -433,12 +442,12 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void getLinkedCase() {
     Long caseRef = 41L;
 
-    ResponseEntity<List<LinkedCase>> responseEntity = applicationController.getApplicationLinkedCases(caseRef);
+    ResponseEntity<List<LinkedCaseDetail>> responseEntity = applicationController.getApplicationLinkedCases(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<LinkedCase> linkedCases = responseEntity.getBody();
+    List<LinkedCaseDetail> linkedCases = responseEntity.getBody();
     assertEquals(1, linkedCases.size());
   }
 
@@ -447,8 +456,8 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void addPriorAuthority() throws IOException {
     Long caseRef = 41L;
 
-    PriorAuthority
-        priorAuthority = loadObjectFromJson("/json/prior_authority_new.json", PriorAuthority.class);
+    PriorAuthorityDetail
+        priorAuthority = loadObjectFromJson("/json/prior_authority_new.json", PriorAuthorityDetail.class);
 
     ResponseEntity<Void> response = applicationController.addApplicationPriorAuthority(caseRef, caabUserLoginId, priorAuthority);
 
@@ -460,12 +469,12 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void getPriorAuthority() {
     Long caseRef = 41L;
 
-    ResponseEntity<List<PriorAuthority>> responseEntity = applicationController.getApplicationPriorAuthorities(caseRef);
+    ResponseEntity<List<PriorAuthorityDetail>> responseEntity = applicationController.getApplicationPriorAuthorities(caseRef);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<PriorAuthority> priorAuthorities = responseEntity.getBody();
+    List<PriorAuthorityDetail> priorAuthorities = responseEntity.getBody();
     assertEquals(1, priorAuthorities.size());
   }
 
@@ -475,7 +484,7 @@ public abstract class BaseApplicationControllerIntegrationTest
     Long caseRef = 41L;
     String clientReferenceId = "62595640";
 
-    BaseClient baseClient = loadObjectFromJson("/json/base_client_new.json", BaseClient.class);
+    BaseClientDetail baseClient = loadObjectFromJson("/json/base_client_new.json", BaseClientDetail.class);
 
     ResponseEntity<Void> response = applicationController.updateApplicationClient(clientReferenceId,caabUserLoginId, baseClient);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -499,7 +508,7 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void addOpponentToApplication() throws IOException {
     Long applicationId = 41L;
 
-    Opponent opponent = loadObjectFromJson("/json/opponent_new.json", Opponent.class);
+    OpponentDetail opponent = loadObjectFromJson("/json/opponent_new.json", OpponentDetail.class);
 
     ResponseEntity<Void> response = applicationController.addApplicationOpponent(applicationId, caabUserLoginId, opponent);
 
@@ -513,12 +522,12 @@ public abstract class BaseApplicationControllerIntegrationTest
   public void getOpponentsForApplication() {
     Long applicationId = 41L;
 
-    ResponseEntity<List<Opponent>> responseEntity = applicationController.getApplicationOpponents(applicationId);
+    ResponseEntity<List<OpponentDetail>> responseEntity = applicationController.getApplicationOpponents(applicationId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<Opponent> opponents = responseEntity.getBody();
+    List<OpponentDetail> opponents = responseEntity.getBody();
     assertFalse(opponents.isEmpty());
   }
 

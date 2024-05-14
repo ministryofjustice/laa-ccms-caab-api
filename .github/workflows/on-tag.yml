@@ -141,7 +141,7 @@ jobs:
           git config --global user.email "github@justice.gov.uk"
           git config --global user.name "GitHub Actions Bot"
           git add .
-          git commit -m "update appVersion to $${{ env.REPO_NAME }}-${{ env.APP_VERSION }}"
+          git commit -m "update appVersion to ${{ env.REPO_NAME }}-${{ env.APP_VERSION }}"
           git push origin
 
   update-laa-ccms-caab-ui:

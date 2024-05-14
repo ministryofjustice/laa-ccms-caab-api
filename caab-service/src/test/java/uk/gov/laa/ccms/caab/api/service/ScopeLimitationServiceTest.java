@@ -10,10 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import uk.gov.laa.ccms.caab.api.entity.ScopeLimitation;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.ApplicationMapper;
 import uk.gov.laa.ccms.caab.api.repository.ScopeLimitationRepository;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 @ExtendWith(MockitoExtension.class)
 class ScopeLimitationServiceTest {
@@ -54,8 +55,8 @@ class ScopeLimitationServiceTest {
   @Test
   void updateScopeLimitation_whenExists_updatesScopeLimitation() {
     Long scopeLimitationId = 1L;
-    ScopeLimitation scopeLimitationModel = new ScopeLimitation();
-    uk.gov.laa.ccms.caab.api.entity.ScopeLimitation scopeLimitationEntity = new uk.gov.laa.ccms.caab.api.entity.ScopeLimitation();
+    ScopeLimitationDetail scopeLimitationModel = new ScopeLimitationDetail();
+    ScopeLimitation scopeLimitationEntity = new ScopeLimitation();
     scopeLimitationEntity.setId(scopeLimitationId);
 
     when(scopeLimitationRepository.findById(scopeLimitationId)).thenReturn(Optional.of(scopeLimitationEntity));
@@ -71,7 +72,7 @@ class ScopeLimitationServiceTest {
   @Test
   void updateScopeLimitation_whenNotExists_throwsException() {
     Long scopeLimitationId = 1L;
-    ScopeLimitation scopeLimitationModel = new ScopeLimitation();
+    ScopeLimitationDetail scopeLimitationModel = new ScopeLimitationDetail();
 
     when(scopeLimitationRepository.findById(scopeLimitationId)).thenReturn(Optional.empty());
 

@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.service.ScopeLimitationService;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -60,7 +60,7 @@ class ScopeLimitationControllerTest {
   @Test
   public void updateScopeLimitation_UpdatesScopeLimitation() throws Exception {
     Long scopeLimitationId = 2L;
-    ScopeLimitation scopeLimitation = new ScopeLimitation();
+    ScopeLimitationDetail scopeLimitation = new ScopeLimitationDetail();
 
     doNothing().when(scopeLimitationService).updateScopeLimitation(scopeLimitationId, scopeLimitation);
 

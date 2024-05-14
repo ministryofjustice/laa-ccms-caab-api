@@ -13,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.ProceedingController;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.model.Proceeding;
-import uk.gov.laa.ccms.caab.model.ScopeLimitation;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
 public abstract class BaseProceedingControllerIntegrationTest
     extends AbstractControllerIntegrationTest {
@@ -31,7 +31,7 @@ public abstract class BaseProceedingControllerIntegrationTest
   public void updateProceeding() throws IOException {
     Long proceedingId = 2L;
 
-    Proceeding updatedProceeding = loadObjectFromJson("/json/proceeding_new.json", Proceeding.class);
+    ProceedingDetail updatedProceeding = loadObjectFromJson("/json/proceeding_new.json", ProceedingDetail.class);
 
     ResponseEntity<Void> response = proceedingController.updateProceeding(proceedingId, caabUserLoginId, updatedProceeding);
 
@@ -45,7 +45,7 @@ public abstract class BaseProceedingControllerIntegrationTest
     Long proceedingRef = 2L;
 
     proceedingController.removeProceeding(proceedingRef, caabUserLoginId);
-    List<Proceeding> proceedings = applicationService.getProceedingsForApplication(caseRef);
+    List<ProceedingDetail> proceedings = applicationService.getProceedingsForApplication(caseRef);
     assertEquals(0, proceedings.size());
   }
 
@@ -54,7 +54,7 @@ public abstract class BaseProceedingControllerIntegrationTest
   public void addScopeLimitationToProceeding() throws IOException {
     Long proceedingId = 2L;
 
-    ScopeLimitation scopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitation.class);
+    ScopeLimitationDetail scopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitationDetail.class);
 
     ResponseEntity<Void> response = proceedingController.addProceedingScopeLimitation(proceedingId, caabUserLoginId, scopeLimitation);
 
@@ -70,12 +70,12 @@ public abstract class BaseProceedingControllerIntegrationTest
   public void getScopeLimitationsForProceeding() {
     Long proceedingId = 2L;
 
-    ResponseEntity<List<ScopeLimitation>> responseEntity = proceedingController.getProceedingsScopeLimitations(proceedingId);
+    ResponseEntity<List<ScopeLimitationDetail>> responseEntity = proceedingController.getProceedingsScopeLimitations(proceedingId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
-    List<ScopeLimitation> scopeLimitations = responseEntity.getBody();
+    List<ScopeLimitationDetail> scopeLimitations = responseEntity.getBody();
     assertFalse(scopeLimitations.isEmpty());
   }
 }

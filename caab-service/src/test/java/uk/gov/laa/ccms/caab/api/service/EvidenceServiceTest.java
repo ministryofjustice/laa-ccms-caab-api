@@ -150,8 +150,5 @@ class EvidenceServiceTest {
         verify(repository).deleteAll(evidenceDocuments);
 
     }
-
-
-
 }
 

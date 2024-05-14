@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.laa.ccms.caab.api.service.PriorAuthorityService;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -60,7 +60,7 @@ class PriorAuthorityControllerTest {
   @Test
   public void updatePriorAuthority_UpdatesPriorAuthority() throws Exception {
     Long priorAuthorityId = 2L;
-    PriorAuthority priorAuthority = new PriorAuthority();
+    PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
 
     doNothing().when(priorAuthorityService).updatePriorAuthority(priorAuthorityId, priorAuthority);
 

@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.laa.ccms.caab.api.ApplicationsApi;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
-import uk.gov.laa.ccms.caab.model.Address;
+import uk.gov.laa.ccms.caab.model.AddressDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.ApplicationDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationProviderDetails;
 import uk.gov.laa.ccms.caab.model.ApplicationType;
-import uk.gov.laa.ccms.caab.model.BaseClient;
-import uk.gov.laa.ccms.caab.model.CostStructure;
-import uk.gov.laa.ccms.caab.model.LinkedCase;
-import uk.gov.laa.ccms.caab.model.Opponent;
-import uk.gov.laa.ccms.caab.model.PriorAuthority;
-import uk.gov.laa.ccms.caab.model.Proceeding;
+import uk.gov.laa.ccms.caab.model.BaseClientDetail;
+import uk.gov.laa.ccms.caab.model.CostStructureDetail;
+import uk.gov.laa.ccms.caab.model.LinkedCaseDetail;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+
 
 /**
  * Represents the main controller handling application-related requests.
@@ -127,9 +128,9 @@ public class ApplicationController implements ApplicationsApi {
    * @return a ResponseEntity containing the correspondence address of the application
    */
   @Override
-  public ResponseEntity<Address> getApplicationCorrespondenceAddress(
+  public ResponseEntity<AddressDetail> getApplicationCorrespondenceAddress(
       final Long applicationId) {
-    Address correspondenceAddress =
+    AddressDetail correspondenceAddress =
         applicationService.getApplicationCorrespondenceAddress(applicationId);
     return new ResponseEntity<>(correspondenceAddress, HttpStatus.OK);
   }
@@ -146,7 +147,7 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<Void> putApplicationCorrespondenceAddress(
       final Long applicationId,
       final String caabUserLoginId,
-      final Address address) {
+      final AddressDetail address) {
     applicationService.putCorrespondenceAddress(applicationId, address);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
@@ -219,8 +220,8 @@ public class ApplicationController implements ApplicationsApi {
   //Cost Structure
 
   @Override
-  public ResponseEntity<CostStructure> getApplicationCostStructure(final Long applicationId) {
-    CostStructure costStructure =
+  public ResponseEntity<CostStructureDetail> getApplicationCostStructure(final Long applicationId) {
+    CostStructureDetail costStructure =
         applicationService.getApplicationCostStructure(applicationId);
     return new ResponseEntity<>(costStructure, HttpStatus.OK);
   }
@@ -229,7 +230,7 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<Void> updateApplicationCostStructure(
       final Long applicationId,
       final String caabUserLoginId,
-      final CostStructure costStructure) {
+      final CostStructureDetail costStructure) {
     applicationService.putCostStructure(applicationId, costStructure);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
@@ -243,8 +244,10 @@ public class ApplicationController implements ApplicationsApi {
    * @return a ResponseEntity containing a list of linked cases
    */
   @Override
-  public ResponseEntity<List<LinkedCase>> getApplicationLinkedCases(final Long applicationId) {
-    List<LinkedCase> linkedCases = applicationService.getLinkedCasesForApplication(applicationId);
+  public ResponseEntity<List<LinkedCaseDetail>> getApplicationLinkedCases(
+      final Long applicationId) {
+    List<LinkedCaseDetail> linkedCases =
+        applicationService.getLinkedCasesForApplication(applicationId);
     return new ResponseEntity<>(linkedCases, HttpStatus.OK);
   }
 
@@ -260,7 +263,7 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<Void> addApplicationLinkedCase(
       final Long applicationId,
       final String caabUserLoginId,
-      final LinkedCase linkedCase) {
+      final LinkedCaseDetail linkedCase) {
     applicationService.createLinkedCaseForApplication(applicationId, linkedCase);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
@@ -271,15 +274,16 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<Void> addApplicationProceeding(
       final Long applicationId,
       final String caabUserLoginId,
-      final Proceeding proceeding) {
+      final ProceedingDetail proceeding) {
     applicationService.createProceedingForApplication(applicationId, proceeding);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   @Override
-  public ResponseEntity<List<Proceeding>> getApplicationProceedings(
+  public ResponseEntity<List<ProceedingDetail>> getApplicationProceedings(
       final Long applicationId) {
-    List<Proceeding> proceedings = applicationService.getProceedingsForApplication(applicationId);
+    List<ProceedingDetail> proceedings =
+        applicationService.getProceedingsForApplication(applicationId);
     return new ResponseEntity<>(proceedings, HttpStatus.OK);
   }
 
@@ -289,15 +293,15 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<Void> addApplicationPriorAuthority(
       final Long id,
       final String caabUserLoginId,
-      final PriorAuthority priorAuthority) {
+      final PriorAuthorityDetail priorAuthority) {
     applicationService.createPriorAuthorityForApplication(id, priorAuthority);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   @Override
-  public ResponseEntity<List<PriorAuthority>> getApplicationPriorAuthorities(
+  public ResponseEntity<List<PriorAuthorityDetail>> getApplicationPriorAuthorities(
       final Long id) {
-    List<PriorAuthority> priorAuthorities =
+    List<PriorAuthorityDetail> priorAuthorities =
         applicationService.getPriorAuthoritiesForApplication(id);
     return new ResponseEntity<>(priorAuthorities, HttpStatus.OK);
   }
@@ -307,21 +311,21 @@ public class ApplicationController implements ApplicationsApi {
   public ResponseEntity<Void> updateApplicationClient(
       final String clientReferenceId,
       final String caabUserLoginId,
-      final BaseClient baseClient) {
+      final BaseClientDetail baseClient) {
     applicationService.updateClient(baseClient, clientReferenceId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   // Opponents
   @Override
-  public ResponseEntity<List<Opponent>> getApplicationOpponents(final Long id) {
-    List<Opponent> opponents = applicationService.getOpponentsForApplication(id);
+  public ResponseEntity<List<OpponentDetail>> getApplicationOpponents(final Long id) {
+    List<OpponentDetail> opponents = applicationService.getOpponentsForApplication(id);
     return new ResponseEntity<>(opponents, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<Void> addApplicationOpponent(
-      final Long id, final String caabUserLoginId, final Opponent opponent) {
+      final Long id, final String caabUserLoginId, final OpponentDetail opponent) {
     applicationService.createOpponentForApplication(id, opponent);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
