@@ -3,13 +3,10 @@ package uk.gov.laa.ccms.caab.api.entity.converter;
 import jakarta.persistence.AttributeConverter;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
-import org.hibernate.dialect.Dialect;
 import org.hibernate.type.descriptor.converter.spi.BasicValueConverter;
 import org.hibernate.type.descriptor.java.BooleanJavaType;
 import org.hibernate.type.descriptor.java.JavaType;
 import org.hibernate.type.descriptor.java.StringJavaType;
-import org.hibernate.type.descriptor.jdbc.JdbcType;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -47,17 +44,6 @@ public class BooleanStringConverter implements
   protected BooleanStringConverter(final String[] trueValues, final String[] falseValues) {
     this.trueValues = trueValues;
     this.falseValues = falseValues;
-  }
-
-  /**
-   * Get all of the values supported by this converter.
-   *
-   * @return a concatenated list of true and false values.
-   */
-  protected String[] getValues() {
-    return Stream.concat(
-        Arrays.stream(trueValues),
-        Arrays.stream(falseValues)).toArray(String[]::new);
   }
 
   /**
@@ -113,13 +99,5 @@ public class BooleanStringConverter implements
 
   public JavaType<String> getRelationalJavaType() {
     return StringJavaType.INSTANCE;
-  }
-
-  public String getCheckCondition(String columnName, JdbcType jdbcType, Dialect dialect) {
-    return dialect.getCheckCondition(columnName, this.getValues());
-  }
-
-  public String getSpecializedTypeDeclaration(JdbcType jdbcType, Dialect dialect) {
-    return dialect.getEnumTypeDeclaration(this.getValues());
   }
 }
