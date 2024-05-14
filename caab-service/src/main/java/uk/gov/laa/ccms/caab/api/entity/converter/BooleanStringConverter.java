@@ -16,23 +16,15 @@ import org.springframework.beans.factory.annotation.Value;
 public class BooleanStringConverter implements
     AttributeConverter<Boolean, String>, BasicValueConverter<Boolean, String> {
 
-  public static final BooleanStringConverter INSTANCE = new BooleanStringConverter();
-
   /**
    * Array of values which should resolve to a Boolean.TRUE.
    */
-  @Value("${laa.ccms.caab.converters.boolean.true_values}")
-  protected String[] trueValues;
+  protected final String[] trueValues;
 
   /**
    * Array of values which should resolve to a Boolean.FALSE.
    */
-  @Value("${laa.ccms.caab.converters.boolean.false_values}")
-  protected String[] falseValues;
-
-  public BooleanStringConverter() {
-    super();
-  }
+  protected final String[] falseValues;
 
   /**
    * Constructor which takes an array of true and false values.
@@ -41,7 +33,9 @@ public class BooleanStringConverter implements
    * @param trueValues - the true values.
    * @param falseValues - the false values.
    */
-  protected BooleanStringConverter(final String[] trueValues, final String[] falseValues) {
+  protected BooleanStringConverter(
+      @Value("${laa.ccms.caab.converters.boolean.true_values}") final String[] trueValues,
+      @Value("${laa.ccms.caab.converters.boolean.false_values}") final String[] falseValues) {
     this.trueValues = trueValues;
     this.falseValues = falseValues;
   }
