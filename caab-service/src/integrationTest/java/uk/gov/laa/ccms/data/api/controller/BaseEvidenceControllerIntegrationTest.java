@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.data.api.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.controller.EvidenceController;
 import uk.gov.laa.ccms.caab.api.service.EvidenceService;
+import uk.gov.laa.ccms.caab.model.BaseEvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
 
@@ -81,7 +83,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
     EvidenceDocumentDetail retrievedEvidenceDocumentDetails =
         evidenceService.getEvidenceDocument(3L);
 
-    assertEquals(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().get(0));
+    compareData(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().getFirst());
   }
 
   @Test
@@ -109,7 +111,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
     EvidenceDocumentDetail retrievedEvidenceDocumentDetails =
         evidenceService.getEvidenceDocument(3L);
 
-    assertEquals(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().get(0));
+    compareData(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().getFirst());
   }
 
   @Test
@@ -137,7 +139,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
     EvidenceDocumentDetail retrievedEvidenceDocumentDetails =
         evidenceService.getEvidenceDocument(4L);
 
-    assertEquals(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().get(0));
+    compareData(retrievedEvidenceDocumentDetails, responseEntity.getBody().getContent().getFirst());
   }
 
   @Test
@@ -176,7 +178,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
             Pageable.unpaged()
         ).getBody();
 
-    assertEquals(0, queriedDocuments.getContent().size());
+    assertTrue(queriedDocuments.getContent().isEmpty());
   }
 
   @Test
@@ -243,7 +245,7 @@ public abstract class BaseEvidenceControllerIntegrationTest
             Pageable.unpaged()
         ).getBody();
 
-    assertEquals(0, queriedDocuments.getContent().size());
+    assertTrue(queriedDocuments.getContent().isEmpty());
   }
 
   @Test
@@ -277,5 +279,18 @@ public abstract class BaseEvidenceControllerIntegrationTest
         ).getBody();
 
     assertEquals(1, queriedDocuments.getContent().size());
+  }
+
+  private static void compareData(EvidenceDocumentDetail retrievedEvidenceDocumentDetails,
+      BaseEvidenceDocumentDetail baseEvidenceDocumentDetail) {
+    assertEquals(retrievedEvidenceDocumentDetails.getId(), baseEvidenceDocumentDetail.getId());
+    assertEquals(retrievedEvidenceDocumentDetails.getApplicationOrOutcomeId(), baseEvidenceDocumentDetail.getApplicationOrOutcomeId());
+    assertEquals(retrievedEvidenceDocumentDetails.getCaseReferenceNumber(), baseEvidenceDocumentDetail.getCaseReferenceNumber());
+    assertEquals(retrievedEvidenceDocumentDetails.getDescription(), baseEvidenceDocumentDetail.getDescription());
+    assertEquals(retrievedEvidenceDocumentDetails.getDocumentType(), baseEvidenceDocumentDetail.getDocumentType());
+    assertEquals(retrievedEvidenceDocumentDetails.getEvidenceDescriptions(), baseEvidenceDocumentDetail.getEvidenceDescriptions());
+    assertEquals(retrievedEvidenceDocumentDetails.getFileExtension(), baseEvidenceDocumentDetail.getFileExtension());
+    assertEquals(retrievedEvidenceDocumentDetails.getFileName(), baseEvidenceDocumentDetail.getFileName());
+    assertEquals(retrievedEvidenceDocumentDetails.getProviderId(), baseEvidenceDocumentDetail.getProviderId());
   }
 }
