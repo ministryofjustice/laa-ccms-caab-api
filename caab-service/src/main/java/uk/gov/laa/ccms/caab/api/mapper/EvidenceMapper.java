@@ -6,6 +6,7 @@ import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
+import uk.gov.laa.ccms.caab.model.BaseEvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
 
@@ -21,6 +22,11 @@ public interface EvidenceMapper {
 
   EvidenceDocumentDetails toEvidenceDocumentDetails(
       final Page<uk.gov.laa.ccms.caab.api.entity.EvidenceDocument> evidenceDocuments);
+
+  @Mapping(target = "documentType.id", source = "documentType")
+  @Mapping(target = "documentType.displayValue", source = "documentTypeDisplayValue")
+  BaseEvidenceDocumentDetail toBaseEvidenceDocumentDetail(
+      final uk.gov.laa.ccms.caab.api.entity.EvidenceDocument evidenceDocument);
 
   @Mapping(target = "documentType.id", source = "documentType")
   @Mapping(target = "documentType.displayValue", source = "documentTypeDisplayValue")

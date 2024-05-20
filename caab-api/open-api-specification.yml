@@ -2429,8 +2429,8 @@ components:
           type: 'array'
           default: []
           items:
-            $ref: '#/components/schemas/evidenceDocumentDetail'
-    evidenceDocumentDetail:
+            $ref: '#/components/schemas/baseEvidenceDocumentDetail'
+    baseEvidenceDocumentDetail:
       type: 'object'
       properties:
         id:
@@ -2445,19 +2445,26 @@ components:
           $ref: '#/components/schemas/stringDisplayValue'
         description:
           type: 'string'
-        registered_document_id:
-          type: 'string'
-        document_sender:
-          type: 'string'
-        transfer_status:
-          type: 'string'
         file_name:
           type: 'string'
         file_extension:
           type: 'string'
+        evidence_descriptions:
+          type: 'string'
+        audit_trail:
+          $ref: '#/components/schemas/auditDetail'
+    evidenceDocumentDetail:
+      type: 'object'
+      allOf:
+        - $ref: "#/components/schemas/baseEvidenceDocumentDetail"
+      properties:
+        registered_document_id:
+          type: 'string'
+        ccms_module:
+          type: 'string'
         file_data:
           type: 'string'
-        evidence_descriptions:
+        notification_reference:
           type: 'string'
         transfer_retry_count:
           type: 'integer'
@@ -2465,12 +2472,10 @@ components:
           type: 'string'
         transfer_response_description:
           type: 'string'
-        ccms_module:
+        transfer_status:
           type: 'string'
-        notification_reference:
+        document_sender:
           type: 'string'
-        audit_trail:
-          $ref: '#/components/schemas/auditDetail'
 
     auditDetail:
       type: 'object'
