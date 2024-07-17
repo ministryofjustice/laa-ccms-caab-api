@@ -206,7 +206,7 @@ public abstract class BaseApplicationServiceIntegrationTest {
     assertEquals(1, fetchedApplication.getOpponents().size());
 
     uk.gov.laa.ccms.caab.api.entity.Opponent fetchedOpponent =
-        fetchedApplication.getOpponents().get(0);
+        fetchedApplication.getOpponents().getFirst();
     
     assertNotNull(fetchedOpponent.getAddress());
     assertEquals(builtOpponent.getAmendment(), fetchedOpponent.getAmendment());
@@ -356,6 +356,46 @@ public abstract class BaseApplicationServiceIntegrationTest {
 
     assertEquals(
         String.format("Application with id %s not found", applicationId),
+        exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
+
+  @Test
+  @Sql(scripts = {
+      "/sql/application_insert.sql",
+      "/sql/linked_cases_insert.sql",
+      "/sql/opponent_insert.sql",
+      "/sql/case_outcome_insert.sql",
+      "/sql/prior_authority_insert.sql",
+      "/sql/proceeding_insert.sql",
+      "/sql/scope_limitation_insert.sql"
+  })
+  public void testRemoveApplication_applicationExists_removesSuccessfully() {
+    Long applicationId = 41L;
+
+    applicationService.removeApplication(applicationId);
+
+  }
+
+  @Test
+  @Sql(scripts = {
+      "/sql/application_insert.sql",
+      "/sql/linked_cases_insert.sql",
+      "/sql/opponent_insert.sql",
+      "/sql/case_outcome_insert.sql",
+      "/sql/prior_authority_insert.sql",
+      "/sql/proceeding_insert.sql",
+      "/sql/scope_limitation_insert.sql"
+  })
+  public void testRemoveApplication_applicationNotExists_throwsException() {
+    Long applicationId = 999L;
+
+    // Use assertThrows to check if the method throws the expected exception
+    CaabApiException exception = assertThrows(CaabApiException.class,
+        () ->applicationService.removeApplication(applicationId));
+
+    assertEquals(
+        String.format("Application with id: %s not found", applicationId),
         exception.getMessage());
     assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
   }

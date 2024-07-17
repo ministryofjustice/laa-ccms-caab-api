@@ -6,15 +6,18 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -307,5 +310,11 @@ public class Opponent implements Serializable {
   @JoinColumn(name = "FK_OUTCOME")
   private CaseOutcome caseOutcome;
 
+  /**
+   * The liable parties associated with this opponent.
+   */
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "opponent",
+      cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<LiableParty> liableParties;
 
 }

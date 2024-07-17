@@ -119,6 +119,14 @@ public class ApplicationController implements ApplicationsApi {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
+  @Override
+  public ResponseEntity<Void> removeApplication(
+      final Long id,
+      final String caabUserLoginId) {
+    applicationService.removeApplication(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
   //correspondence address
 
   /**

@@ -121,6 +121,31 @@ class ApplicationServiceTest {
     }
 
     @Test
+    void removeApplication_whenApplicationNotExists_throwsException() {
+        Long applicationId = 1L;
+
+        when(applicationRepository.existsById(applicationId)).thenReturn(Boolean.FALSE);
+
+        CaabApiException exception = assertThrows(CaabApiException.class,
+            () -> applicationService.removeApplication(applicationId));
+
+        assertEquals("Application with id: " + applicationId + " not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void removeApplication_whenApplicationExists_applicationDeleted() {
+        Long applicationId = 1L;
+
+        when(applicationRepository.existsById(applicationId)).thenReturn(Boolean.TRUE);
+
+        applicationService.removeApplication(applicationId);
+
+        verify(applicationRepository).deleteById(applicationId);
+    }
+
+
+    @Test
     void updateClient_updatesClientInformation() {
         BaseClientDetail baseClient = new BaseClientDetail();
         baseClient.setFirstName("John");
@@ -499,7 +524,7 @@ class ApplicationServiceTest {
         verify(applicationMapper, times(application.getProceedings().size())).toProceedingModel(any());
 
         assertFalse(result.isEmpty());
-        assertEquals(proceedingModel, result.get(0));
+        assertEquals(proceedingModel, result.getFirst());
     }
 
     @Test
@@ -566,7 +591,7 @@ class ApplicationServiceTest {
         verify(applicationMapper, times(application.getPriorAuthorities().size())).toPriorAuthorityModel(any());
 
         assertFalse(result.isEmpty());
-        assertEquals(priorAuthorityModel, result.get(0));
+        assertEquals(priorAuthorityModel, result.getFirst());
     }
 
     @Test
@@ -695,7 +720,7 @@ class ApplicationServiceTest {
         verify(applicationMapper, times(application.getOpponents().size())).toOpponentModel(any());
 
         assertFalse(result.isEmpty());
-        assertEquals(opponentModel, result.get(0));
+        assertEquals(opponentModel, result.getFirst());
     }
 
     @Test

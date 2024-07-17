@@ -148,6 +148,24 @@ public class ApplicationService {
   }
 
   /**
+   * Remove an application.
+   *
+   * @param applicationId the TDS id for the application.
+   * @throws uk.gov.laa.ccms.caab.api.exception.CaabApiException If the application
+   *        with the specified ID is not found.
+   */
+  @Transactional
+  public void removeApplication(final Long applicationId) {
+    if (applicationRepository.existsById(applicationId)) {
+      applicationRepository.deleteById(applicationId);
+    } else {
+      throw new CaabApiException(
+          String.format("Application with id: %s not found", applicationId),
+          HttpStatus.NOT_FOUND);
+    }
+  }
+
+  /**
    * Updates a client's information in the application repository.
    *
    * @param baseClientDetail The client object containing updated information.

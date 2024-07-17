@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -126,6 +127,20 @@ class ApplicationControllerTest {
         .andExpect(status().isNoContent());
 
     verify(applicationService).updateApplication(id, applicationDetail);
+  }
+
+  @Test
+  public void removeApplication() throws Exception {
+    Long id = 1L;
+    String caabUserLoginId = "testUserLoginId";
+
+    doNothing().when(applicationService).removeApplication(id);
+
+    this.mockMvc.perform(delete("/applications/{id}", id)
+            .header("Caab-User-Login-Id", caabUserLoginId))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).removeApplication(id);
   }
 
 
