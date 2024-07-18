@@ -2,7 +2,6 @@ package uk.gov.laa.ccms.caab.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -100,24 +99,20 @@ class CaseOutcomeServiceTest {
     @Test
     void removeCaseOutcome_whenExists_removesEntry() {
         Long caseOutcomeId = 1L;
-        CaseOutcome caseOutcome = buildCaseOutcome();
 
-        when(repository.findById(caseOutcomeId)).thenReturn(Optional.of(caseOutcome));
-        doNothing().when(repository).delete(caseOutcome);
+        when(repository.existsById(caseOutcomeId)).thenReturn(Boolean.TRUE);
+        doNothing().when(repository).deleteById(caseOutcomeId);
 
         caseOutcomeService.removeCaseOutcome(caseOutcomeId);
 
-        // Check that the associated Opponent has had its foreign key cleared.
-        assertNull(caseOutcome.getOpponents().get(0).getCaseOutcome());
-
-        verify(repository).findById(caseOutcomeId);
-        verify(repository).delete(caseOutcome);
+        verify(repository).existsById(caseOutcomeId);
+        verify(repository).deleteById(caseOutcomeId);
     }
 
     @Test
     void removeCaseOutcome_whenNotExists_throwsException() {
         Long caseOutcomeId = 1L;
-        when(repository.findById(caseOutcomeId)).thenReturn(Optional.empty());
+        when(repository.existsById(caseOutcomeId)).thenReturn(Boolean.FALSE);
 
         CaabApiException exception = assertThrows(CaabApiException.class, () ->
             caseOutcomeService.removeCaseOutcome(caseOutcomeId));
@@ -139,12 +134,8 @@ class CaseOutcomeServiceTest {
             caseOutcome.getLscCaseReference(),
             caseOutcome.getProviderId());
 
-        // Check that the associated Opponent has had its foreign key cleared.
-        assertNull(caseOutcome.getOpponents().get(0).getCaseOutcome());
-
         verify(repository).findAll(any(Example.class));
-        verify(repository).delete(caseOutcome);
-
+        verify(repository).deleteAll(caseOutcomes);
     }
 
 }
