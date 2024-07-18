@@ -13,8 +13,9 @@ import uk.gov.laa.ccms.data.api.IntegrationTestInterface;
 @SpringBootTest(classes = CaabApiApplication.class)
 @SqlMergeMode(MERGE)
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")public class CaseOutcomeControllerIntegrationTest extends BaseCaseOutcomeControllerIntegrationTest implements
-    IntegrationTestInterface {
+@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
+public class CaseOutcomeControllerIntegrationTest extends BaseCaseOutcomeControllerIntegrationTest
+    implements IntegrationTestInterface {
 
     //this runs all tests in BaseCaseOutcomeControllerIntegrationTest, do not add anything here
     //running this class takes longer than the local version, but it is used for running tests in a pipeline

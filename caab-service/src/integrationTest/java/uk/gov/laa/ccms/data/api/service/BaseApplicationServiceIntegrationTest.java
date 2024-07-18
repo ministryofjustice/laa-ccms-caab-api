@@ -373,7 +373,12 @@ public abstract class BaseApplicationServiceIntegrationTest {
   public void testRemoveApplication_applicationExists_removesSuccessfully() {
     Long applicationId = 41L;
 
+    // Fetch the saved application from the database
+    applicationRepository.findById(applicationId).orElseThrow();
+
     applicationService.removeApplication(applicationId);
+
+    assertFalse(applicationRepository.existsById(applicationId));
 
   }
 
