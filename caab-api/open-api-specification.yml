@@ -80,12 +80,7 @@ paths:
             schema:
               $ref: '#/components/schemas/applicationDetail'
       parameters:
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
@@ -106,13 +101,7 @@ paths:
       summary: 'Get Application'
       operationId: 'getApplication'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -143,22 +132,32 @@ paths:
             schema:
               $ref: '#/components/schemas/applicationDetail'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    delete:
+      tags:
+        - applications
+      summary: 'Remove an application'
+      operationId: 'removeApplication'
+      parameters:
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
+      responses:
+        '204':
+          description: 'No Content'
         '400':
           description: 'Bad request'
         '401':
@@ -188,12 +187,7 @@ paths:
           schema:
             type: 'string'
             example: '1234567890'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-              type: 'string'
-              example: ''
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -214,13 +208,7 @@ paths:
       summary: 'Get application type'
       operationId: 'getApplicationType'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -250,19 +238,8 @@ paths:
             schema:
               $ref: '#/components/schemas/applicationType'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
@@ -283,13 +260,7 @@ paths:
       summary: 'Get an application''s provider details'
       operationId: 'getApplicationProviderDetails'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -319,19 +290,8 @@ paths:
             schema:
               $ref: '#/components/schemas/applicationProviderDetails'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
@@ -352,13 +312,7 @@ paths:
       summary: 'Get an applications correspondence address'
       operationId: 'getApplicationCorrespondenceAddress'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -388,19 +342,8 @@ paths:
             schema:
               $ref: '#/components/schemas/addressDetail'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
@@ -421,13 +364,7 @@ paths:
       summary: 'Get an application''s cost structure'
       operationId: 'getApplicationCostStructure'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -451,18 +388,8 @@ paths:
       summary: 'Update an applications cost structure'
       operationId: 'updateApplicationCostStructure'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -489,13 +416,7 @@ paths:
       summary: 'Get an application''s linked cases'
       operationId: 'getApplicationLinkedCases'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -521,18 +442,8 @@ paths:
       summary: 'Add a linked case to an application'
       operationId: 'addApplicationLinkedCase'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -565,12 +476,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -596,12 +502,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -628,13 +529,7 @@ paths:
       summary: 'Get an application''s proceedings'
       operationId: 'getApplicationProceedings'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -660,18 +555,8 @@ paths:
       summary: 'Add a proceeding to an application'
       operationId: 'addApplicationProceeding'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -704,12 +589,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -735,12 +615,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -805,12 +680,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -843,12 +713,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -874,12 +739,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -906,13 +766,7 @@ paths:
       summary: 'Get an application''s prior authorities'
       operationId: 'getApplicationPriorAuthorities'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -938,18 +792,8 @@ paths:
       summary: 'Add a prior authority to an application'
       operationId: 'addApplicationPriorAuthority'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -982,12 +826,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -1013,12 +852,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -1046,13 +880,7 @@ paths:
       summary: 'Get an application''s opponents'
       operationId: 'getApplicationOpponents'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-            example: '1234567890'
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: 'Successful operation'
@@ -1078,18 +906,8 @@ paths:
       summary: 'Add an opponent to an application'
       operationId: 'addApplicationOpponent'
       parameters:
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-            format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -1122,12 +940,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -1153,12 +966,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       requestBody:
         required: true
         content:
@@ -1245,12 +1053,7 @@ paths:
             schema:
               $ref: '#/components/schemas/evidenceDocumentDetail'
       parameters:
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
@@ -1300,12 +1103,7 @@ paths:
           schema:
             type: 'boolean'
             example: 'true'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -1362,12 +1160,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -1428,12 +1221,7 @@ paths:
             schema:
               $ref: '#/components/schemas/caseOutcomeDetail'
       parameters:
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '200':
           description: 'Successful operation'
@@ -1463,12 +1251,7 @@ paths:
           schema:
             type: 'string'
             example: '1234567890'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -1526,12 +1309,7 @@ paths:
           schema:
             type: 'integer'
             format: 'int64'
-        - name: 'Caab-User-Login-Id'
-          in: header
-          required: true
-          schema:
-            type: 'string'
-          example: 'SOMEUSER@COMPANY.CO.UK'
+        - $ref: '#/components/parameters/caabUserLoginId'
       responses:
         '204':
           description: 'No Content'
@@ -1552,6 +1330,22 @@ components:
       type: apiKey
       in: header
       name: Authorization
+  parameters:
+    id:
+      in: 'path'
+      name: 'id'
+      required: true
+      schema:
+        type: 'integer'
+        format: 'int64'
+        example: '1234567890'
+    caabUserLoginId:
+      in: header
+      name: 'Caab-User-Login-Id'
+      required: true
+      schema:
+        type: 'string'
+      example: 'SOMEUSER@COMPANY.CO.UK'
   schemas:
     intDisplayValue:
       type: 'object'
