@@ -1,7 +1,6 @@
 package uk.gov.laa.ccms.caab.api.mapper;
 
 
-import java.util.Base64;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,7 +17,7 @@ import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
 
 @Mapper(componentModel = "spring",
     uses = CommonMapper.class)
-public interface EvidenceMapper {
+public interface EvidenceMapper extends FileDataMapper {
 
   EvidenceDocumentDetails toEvidenceDocumentDetails(
       final Page<uk.gov.laa.ccms.caab.api.entity.EvidenceDocument> evidenceDocuments);
@@ -38,13 +37,5 @@ public interface EvidenceMapper {
   @Mapping(target = "auditTrail", ignore = true)
   uk.gov.laa.ccms.caab.api.entity.EvidenceDocument toEvidenceDocument(
       final EvidenceDocumentDetail evidenceDocumentDetail);
-
-  default String toBase64String(byte[] bytes) {
-    return bytes != null ? Base64.getEncoder().encodeToString(bytes) : null;
-  }
-
-  default byte[] toByteArrayFromBase64EncodedString(String base64EncodedString) {
-    return Base64.getDecoder().decode(base64EncodedString);
-  }
 
 }

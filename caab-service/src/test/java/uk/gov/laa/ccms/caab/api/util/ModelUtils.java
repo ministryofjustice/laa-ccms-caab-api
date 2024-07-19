@@ -16,6 +16,7 @@ import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
 import uk.gov.laa.ccms.caab.api.entity.FinancialAward;
 import uk.gov.laa.ccms.caab.api.entity.LandAward;
 import uk.gov.laa.ccms.caab.api.entity.LiableParty;
+import uk.gov.laa.ccms.caab.api.entity.NotificationAttachment;
 import uk.gov.laa.ccms.caab.api.entity.Opponent;
 import uk.gov.laa.ccms.caab.api.entity.OtherAssetAward;
 import uk.gov.laa.ccms.caab.api.entity.ProceedingOutcome;
@@ -29,6 +30,7 @@ import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.FinancialAwardDetail;
 import uk.gov.laa.ccms.caab.model.LandAwardDetail;
 import uk.gov.laa.ccms.caab.model.LiablePartyDetail;
+import uk.gov.laa.ccms.caab.model.NotificationAttachmentDetail;
 import uk.gov.laa.ccms.caab.model.OpponentDetail;
 import uk.gov.laa.ccms.caab.model.OtherAssetAwardDetail;
 import uk.gov.laa.ccms.caab.model.ProceedingOutcomeDetail;
@@ -197,6 +199,42 @@ public class ModelUtils {
         .transferRetryCount(10)
         .transferStatus("stat");
   }
+
+  public static NotificationAttachment buildNotificationAttachment() {
+    NotificationAttachment notificationAttachment = new NotificationAttachment();
+    notificationAttachment.setAuditTrail(buildAuditTrail());
+    notificationAttachment.setDescription("descr");
+    notificationAttachment.setDocumentType("doctype");
+    notificationAttachment.setDocumentTypeDisplayValue("doc type");
+    notificationAttachment.setFileBytes("the file data".getBytes());
+    notificationAttachment.setFileName("name");
+    notificationAttachment.setId(123L);
+    notificationAttachment.setNotificationReference("notref");
+    notificationAttachment.setProviderId("provId");
+    notificationAttachment.setNumber(1L);
+    notificationAttachment.setSendBy("sendby");
+    notificationAttachment.setStatus("status");
+
+    return notificationAttachment;
+  }
+
+  public static NotificationAttachmentDetail buildNotificationAttachmentDetail() {
+    return new NotificationAttachmentDetail()
+        .auditTrail(buildAuditDetail())
+        .description("descr")
+        .documentType(new StringDisplayValue()
+            .id("doctype")
+            .displayValue("doc type"))
+        .fileData(Base64.getEncoder().encodeToString("the file data".getBytes()))
+        .fileName("name")
+        .id(123)
+        .notificationReference("notref")
+        .providerId("provId")
+        .number(1L)
+        .sendBy("sendby")
+        .status("status");
+  }
+
 
   public static CaseOutcome buildCaseOutcome() {
     CaseOutcome caseOutcome = new CaseOutcome();
