@@ -76,7 +76,7 @@ public class NotificationAttachmentService {
   public Long createNotificationAttachment(
       final NotificationAttachmentDetail notificationAttachmentDetail) {
 
-    uk.gov.laa.ccms.caab.api.entity.NotificationAttachment createdNotificationAttachment =
+    NotificationAttachment createdNotificationAttachment =
         repository.save(mapper.toNotificationAttachment(notificationAttachmentDetail));
 
     return createdNotificationAttachment.getId();
