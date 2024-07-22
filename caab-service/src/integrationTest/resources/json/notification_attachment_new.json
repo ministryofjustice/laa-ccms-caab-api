@@ -1,0 +1,14 @@
+{
+  "file_data": "YmxhIGJsYQ==",
+  "provider_id": "12345",
+  "document_type": {
+    "id": "12345",
+    "display_value": "Document Type"
+  },
+  "description": "description",
+  "file_name": "file name",
+  "send_by": "send by",
+  "status": "status",
+  "number": "1",
+  "notification_reference": "12345"
+}
