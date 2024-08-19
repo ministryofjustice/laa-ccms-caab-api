@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
+import java.util.Comparator;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +61,35 @@ public abstract class BaseNotificationAttachmentControllerIntegrationTest extend
 
   @Test
   @Sql(scripts = "/sql/notification_attachment_insert.sql")
+  public void testUpdateNotificationAttachment() {
+
+    String auditUser = "audit@user.com";
+
+    NotificationAttachmentDetail existingNotificationAttachmentDetail =
+        notificationAttachmentService.getNotificationAttachment(282L);
+
+    assertEquals("Description", existingNotificationAttachmentDetail.getDescription());
+
+    existingNotificationAttachmentDetail.setDescription("Updated Description");
+
+    // Call the updateNotificationAttachment method directly
+    ResponseEntity<Void> responseEntity =
+        notificationAttachmentController.updateNotificationAttachment(282L, auditUser, existingNotificationAttachmentDetail);
+
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    NotificationAttachmentDetail updatedNotificationAttachmentDetail =
+        notificationAttachmentService.getNotificationAttachment(282L);
+
+    assertEquals("Updated Description", updatedNotificationAttachmentDetail.getDescription());
+
+    existingNotificationAttachmentDetail.setAuditTrail(null);
+    updatedNotificationAttachmentDetail.setAuditTrail(null);
+    assertEquals(existingNotificationAttachmentDetail, updatedNotificationAttachmentDetail);
+  }
+
+  @Test
+  @Sql(scripts = "/sql/notification_attachment_insert.sql")
   public void testGetNotificationAttachments_unfilteredReturnsAll() {
 
     // Call the getNotificationAttachments method directly
@@ -84,9 +115,13 @@ public abstract class BaseNotificationAttachmentControllerIntegrationTest extend
     NotificationAttachmentDetail thirdRetrievedNotificationAttachmentDetail =
         notificationAttachmentService.getNotificationAttachment(284L);
 
-    compareData(firstRetrievedNotificationAttachmentDetail, responseEntity.getBody().getContent().get(0));
-    compareData(secondRetrievedNotificationAttachmentDetail, responseEntity.getBody().getContent().get(1));
-    compareData(thirdRetrievedNotificationAttachmentDetail, responseEntity.getBody().getContent().get(2));
+    List<BaseNotificationAttachmentDetail> orderedContentList = responseEntity.getBody().getContent()
+        .stream()
+        .sorted(Comparator.comparing(BaseNotificationAttachmentDetail::getId)).toList();
+
+    compareData(firstRetrievedNotificationAttachmentDetail, orderedContentList.get(0));
+    compareData(secondRetrievedNotificationAttachmentDetail, orderedContentList.get(1));
+    compareData(thirdRetrievedNotificationAttachmentDetail, orderedContentList.get(2));
   }
 
   @Test

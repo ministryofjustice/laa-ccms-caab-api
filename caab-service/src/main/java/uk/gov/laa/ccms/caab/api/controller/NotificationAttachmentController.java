@@ -70,6 +70,16 @@ public class NotificationAttachmentController implements NotificationAttachments
   }
 
   @Override
+  public ResponseEntity<Void> updateNotificationAttachment(
+      final Long notificationAttachmentId,
+      final String caabUserLoginId,
+      final NotificationAttachmentDetail notificationAttachmentDetail) {
+
+    notificationAttachmentService.updateNotificationAttachment(notificationAttachmentDetail);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Override
   public ResponseEntity<Void> removeNotificationAttachment(
       final Long notificationAttachmentId,
       final String caabUserLoginId) {

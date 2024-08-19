@@ -60,6 +60,20 @@ public class NotificationAttachmentServiceTest {
   }
 
   @Test
+  void updateNotificationAttachment_updatesNotificationAttachment() {
+    NotificationAttachmentDetail notificationAttachmentDetail = new NotificationAttachmentDetail();
+    NotificationAttachment notificationAttachment = buildNotificationAttachment();
+
+    when(mapper.toNotificationAttachment(notificationAttachmentDetail)).thenReturn(notificationAttachment);
+    when(repository.save(notificationAttachment)).thenReturn(notificationAttachment);
+
+    notificationAttachmentService.updateNotificationAttachment(notificationAttachmentDetail);
+
+    verify(mapper).toNotificationAttachment(notificationAttachmentDetail);
+    verify(repository).save(notificationAttachment);
+  }
+
+  @Test
   void getNotificationAttachmentDetails_queriesByExample() {
     NotificationAttachment notificationAttachment = buildNotificationAttachment();
 

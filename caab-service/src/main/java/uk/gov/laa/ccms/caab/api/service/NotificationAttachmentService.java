@@ -83,6 +83,17 @@ public class NotificationAttachmentService {
   }
 
   /**
+   * Update an existing NotificationAttachment entry.
+   *
+   * @param notificationAttachmentDetail - the notification attachment with updated details.
+   */
+  public void updateNotificationAttachment(
+      final NotificationAttachmentDetail notificationAttachmentDetail) {
+
+    repository.save(mapper.toNotificationAttachment(notificationAttachmentDetail));
+  }
+
+  /**
    * Removes a notification attachment entry. If the notification attachment is not found, a
    * CaabApiException is thrown.
    *
