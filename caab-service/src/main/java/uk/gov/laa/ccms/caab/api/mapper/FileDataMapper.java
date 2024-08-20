@@ -24,7 +24,7 @@ public interface FileDataMapper {
    * @return a byte array of the file content.
    */
   default byte[] toByteArrayFromBase64EncodedString(String base64EncodedString) {
-    return Base64.getDecoder().decode(base64EncodedString);
+    return base64EncodedString != null ? Base64.getDecoder().decode(base64EncodedString) : null;
   }
 
 }
