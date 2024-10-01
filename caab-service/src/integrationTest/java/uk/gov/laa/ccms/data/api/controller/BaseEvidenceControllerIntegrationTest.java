@@ -293,4 +293,51 @@ public abstract class BaseEvidenceControllerIntegrationTest
     assertEquals(retrievedEvidenceDocumentDetails.getFileName(), baseEvidenceDocumentDetail.getFileName());
     assertEquals(retrievedEvidenceDocumentDetails.getProviderId(), baseEvidenceDocumentDetail.getProviderId());
   }
+
+  @Test
+  @Sql(scripts = "/sql/evidence_document_insert.sql")
+  public void testUpdateEvidenceDocument() throws Exception {
+
+    // Load the updated evidence document details from a JSON file
+    EvidenceDocumentDetail updatedEvidenceDocumentDetail = loadObjectFromJson(
+        "/json/evidence_document_update.json", EvidenceDocumentDetail.class);
+
+    // The registeredDocumentId for the document to be updated
+    Long registeredDocumentId = 3L;
+
+    String auditUser = "audit@user.com";
+
+    // Retrieve the original evidence document before the update
+    EvidenceDocumentDetail originalEvidenceDocument = evidenceService.getEvidenceDocument(registeredDocumentId);
+
+    // Call the updateEvidenceDocument method directly
+    ResponseEntity<Void> responseEntity =
+        evidenceController.updateEvidenceDocument(registeredDocumentId, auditUser, updatedEvidenceDocumentDetail);
+
+    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+
+    // Retrieve the updated evidence document and assert the changes
+    EvidenceDocumentDetail updatedEvidenceDocument = evidenceService.getEvidenceDocument(registeredDocumentId);
+
+    // Assert that the registeredDocumentId has changed as expected
+    assertEquals("345", updatedEvidenceDocument.getRegisteredDocumentId());
+
+    // Check that all other fields are unchanged
+    assertEquals(originalEvidenceDocument.getApplicationOrOutcomeId(), updatedEvidenceDocument.getApplicationOrOutcomeId());
+    assertEquals(originalEvidenceDocument.getCaseReferenceNumber(), updatedEvidenceDocument.getCaseReferenceNumber());
+    assertEquals(originalEvidenceDocument.getProviderId(), updatedEvidenceDocument.getProviderId());
+    assertEquals(originalEvidenceDocument.getDocumentType(), updatedEvidenceDocument.getDocumentType());
+    assertEquals(originalEvidenceDocument.getDescription(), updatedEvidenceDocument.getDescription());
+    assertEquals(originalEvidenceDocument.getFileName(), updatedEvidenceDocument.getFileName());
+    assertEquals(originalEvidenceDocument.getFileExtension(), updatedEvidenceDocument.getFileExtension());
+    assertEquals(originalEvidenceDocument.getEvidenceDescriptions(), updatedEvidenceDocument.getEvidenceDescriptions());
+    assertEquals(originalEvidenceDocument.getNotificationReference(), updatedEvidenceDocument.getNotificationReference());
+    assertEquals(originalEvidenceDocument.getTransferRetryCount(), updatedEvidenceDocument.getTransferRetryCount());
+    assertEquals(originalEvidenceDocument.getTransferResponseCode(), updatedEvidenceDocument.getTransferResponseCode());
+    assertEquals(originalEvidenceDocument.getTransferResponseDescription(), updatedEvidenceDocument.getTransferResponseDescription());
+    assertEquals(originalEvidenceDocument.getTransferStatus(), updatedEvidenceDocument.getTransferStatus());
+    assertEquals(originalEvidenceDocument.getDocumentSender(), updatedEvidenceDocument.getDocumentSender());
+    assertEquals(originalEvidenceDocument.getCcmsModule(), updatedEvidenceDocument.getCcmsModule());
+  }
+
 }

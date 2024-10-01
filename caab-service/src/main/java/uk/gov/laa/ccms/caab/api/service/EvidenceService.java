@@ -13,10 +13,12 @@ import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.entity.EvidenceDocument;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
 import uk.gov.laa.ccms.caab.api.mapper.EvidenceMapper;
 import uk.gov.laa.ccms.caab.api.repository.EvidenceDocumentRepository;
+import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
 
@@ -64,6 +66,27 @@ public class EvidenceService {
         repository.findAll(
             buildQuerySpecification(exampleDocument, transferPending),
             pageable));
+  }
+
+  /**
+   * Updates the evidence with the provided details.
+   *
+   * @param id the ID of the evidence to update
+   * @param evidenceDocumentDetail the new details to update the evidence with
+   * @throws CaabApiException if the evidence with the given ID is not found
+   */
+  @Transactional
+  public void updateEvidence(
+      final Long id,
+      final EvidenceDocumentDetail evidenceDocumentDetail) {
+
+    EvidenceDocument evidence = repository.findById(id)
+        .orElseThrow(() -> new CaabApiException(
+            String.format("Failed to find evidence with id: %s", id),
+            HttpStatus.NOT_FOUND));
+
+    mapper.mapIntoEvidence(evidence, evidenceDocumentDetail);
+    repository.save(evidence);
   }
 
   /**

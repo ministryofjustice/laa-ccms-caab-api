@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildEvidenceDocument;
@@ -13,6 +14,7 @@ import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildEvidenceDocumentDeta
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +31,7 @@ import uk.gov.laa.ccms.caab.api.mapper.EvidenceMapper;
 import uk.gov.laa.ccms.caab.api.repository.EvidenceDocumentRepository;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
+
 
 @ExtendWith(MockitoExtension.class)
 class EvidenceServiceTest {
@@ -150,5 +153,42 @@ class EvidenceServiceTest {
         verify(repository).deleteAll(evidenceDocuments);
 
     }
+
+    @Test
+    @DisplayName("updateEvidence updates the evidence document when it exists")
+    void updateEvidence_UpdatesWhenExists() {
+        Long evidenceDocumentId = 1L;
+        EvidenceDocumentDetail evidenceDocumentDetail = buildEvidenceDocumentDetail();
+        EvidenceDocument existingEvidenceDocument = buildEvidenceDocument();
+
+        when(repository.findById(evidenceDocumentId)).thenReturn(Optional.of(existingEvidenceDocument));
+        doNothing().when(mapper).mapIntoEvidence(existingEvidenceDocument, evidenceDocumentDetail);
+        when(repository.save(existingEvidenceDocument)).thenReturn(existingEvidenceDocument);
+
+        evidenceService.updateEvidence(evidenceDocumentId, evidenceDocumentDetail);
+
+        verify(repository).findById(evidenceDocumentId);
+        verify(mapper).mapIntoEvidence(existingEvidenceDocument, evidenceDocumentDetail);
+        verify(repository).save(existingEvidenceDocument);
+    }
+
+    @Test
+    @DisplayName("updateEvidence throws exception when evidence document is not found")
+    void updateEvidence_ThrowsExceptionWhenNotFound() {
+        Long evidenceDocumentId = 1L;
+        EvidenceDocumentDetail evidenceDocumentDetail = buildEvidenceDocumentDetail();
+
+        when(repository.findById(evidenceDocumentId)).thenReturn(Optional.empty());
+
+        CaabApiException exception = assertThrows(CaabApiException.class, () ->
+            evidenceService.updateEvidence(evidenceDocumentId, evidenceDocumentDetail));
+
+        assertEquals(String.format("Failed to find evidence with id: %s", evidenceDocumentId), exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+
+        verify(repository).findById(evidenceDocumentId);
+        verify(repository, never()).save(any(EvidenceDocument.class));
+    }
+
 }
 
