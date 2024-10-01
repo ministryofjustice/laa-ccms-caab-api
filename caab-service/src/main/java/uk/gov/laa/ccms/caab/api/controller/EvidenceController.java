@@ -102,4 +102,14 @@ public class EvidenceController implements EvidenceApi {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
+  @Override
+  public ResponseEntity<Void> updateEvidenceDocument(
+      final Long evidenceDocumentId,
+      final String caabUserLoginId,
+      final EvidenceDocumentDetail evidenceDocumentDetail) {
+
+    evidenceService.updateEvidence(evidenceDocumentId, evidenceDocumentDetail);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
 }

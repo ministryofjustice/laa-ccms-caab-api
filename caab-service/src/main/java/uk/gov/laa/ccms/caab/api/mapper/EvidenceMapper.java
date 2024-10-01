@@ -1,10 +1,16 @@
 package uk.gov.laa.ccms.caab.api.mapper;
 
 
+import org.mapstruct.BeanMapping;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
+import uk.gov.laa.ccms.caab.api.entity.Application;
+import uk.gov.laa.ccms.caab.model.ApplicationDetail;
 import uk.gov.laa.ccms.caab.model.BaseEvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetail;
 import uk.gov.laa.ccms.caab.model.EvidenceDocumentDetails;
@@ -37,5 +43,11 @@ public interface EvidenceMapper extends FileDataMapper {
   @Mapping(target = "auditTrail", ignore = true)
   uk.gov.laa.ccms.caab.api.entity.EvidenceDocument toEvidenceDocument(
       final EvidenceDocumentDetail evidenceDocumentDetail);
+
+  @InheritConfiguration(name = "toEvidenceDocument")
+  @BeanMapping(nullValuePropertyMappingStrategy =  NullValuePropertyMappingStrategy.IGNORE)
+  void mapIntoEvidence(
+      @MappingTarget uk.gov.laa.ccms.caab.api.entity.EvidenceDocument evidence,
+      EvidenceDocumentDetail evidenceDocumentDetail);
 
 }

@@ -124,7 +124,6 @@ paths:
         - applications
       summary: 'Update an Application'
       operationId: 'updateApplication'
-
       requestBody:
         description: Update an application
         content:
@@ -135,8 +134,8 @@ paths:
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/caabUserLoginId'
       responses:
-        '200':
-          description: 'Successful operation'
+        '204':
+          description: 'Update successful'
         '400':
           description: 'Bad request'
         '401':
@@ -1358,6 +1357,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/evidenceDocumentDetail"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
+    patch:
+      tags:
+        - evidence
+      summary: 'Update Evidence Document'
+      operationId: 'updateEvidenceDocument'
+      requestBody:
+        description: Update Evidence Document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/evidenceDocumentDetail'
+      parameters:
+        - name: 'evidence-document-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+            example: '1234567890'
+        - $ref: '#/components/parameters/caabUserLoginId'
+      responses:
+        '200':
+          description: 'Evidence updated successfully'
         '400':
           description: 'Bad request'
         '401':

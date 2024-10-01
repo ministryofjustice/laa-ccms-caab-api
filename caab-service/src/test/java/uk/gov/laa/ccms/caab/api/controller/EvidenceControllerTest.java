@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -16,6 +17,7 @@ import static uk.gov.laa.ccms.caab.api.util.ModelUtils.buildEvidenceDocumentDeta
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -151,4 +153,23 @@ class EvidenceControllerTest {
         evidenceDocumentDetail.getCcmsModule(),
         Boolean.TRUE);
   }
+
+  @Test
+  @DisplayName("updateEvidenceDocument updates the evidence document and returns no content")
+  public void updateEvidenceDocument_UpdatesAndReturnsNoContent() throws Exception {
+    Long evidenceDocumentId = 2L;
+    EvidenceDocumentDetail evidenceDocumentDetail = buildEvidenceDocumentDetail();
+
+    doNothing().when(evidenceService).updateEvidence(evidenceDocumentId, evidenceDocumentDetail);
+
+    this.mockMvc.perform(
+            patch("/evidence/{evidenceDocumentId}", evidenceDocumentId)
+                .header("Caab-User-Login-Id", caabUserLoginId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(evidenceDocumentDetail)))
+        .andExpect(status().isNoContent());
+
+    verify(evidenceService).updateEvidence(evidenceDocumentId, evidenceDocumentDetail);
+  }
+
 }
