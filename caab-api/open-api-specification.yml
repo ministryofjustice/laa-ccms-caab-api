@@ -2597,18 +2597,7 @@ components:
           type: 'string'
         evidence_descriptions:
           type: 'string'
-        audit_trail:
-          $ref: '#/components/schemas/auditDetail'
-    evidenceDocumentDetail:
-      type: 'object'
-      allOf:
-        - $ref: "#/components/schemas/baseEvidenceDocumentDetail"
-      properties:
         registered_document_id:
-          type: 'string'
-        ccms_module:
-          type: 'string'
-        file_data:
           type: 'string'
         notification_reference:
           type: 'string'
@@ -2622,7 +2611,17 @@ components:
           type: 'string'
         document_sender:
           type: 'string'
-
+        ccms_module:
+          type: 'string'
+        audit_trail:
+          $ref: '#/components/schemas/auditDetail'
+    evidenceDocumentDetail:
+      type: 'object'
+      allOf:
+        - $ref: "#/components/schemas/baseEvidenceDocumentDetail"
+      properties:
+        file_data:
+          type: 'string'
     auditDetail:
       type: 'object'
       properties:
