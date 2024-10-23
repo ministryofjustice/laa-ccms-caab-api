@@ -73,7 +73,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: upload jarfile
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: caab-api-jar
           path: caab-service/build/libs/caab-service-${{ steps.capture_version.outputs.app_version }}.jar
