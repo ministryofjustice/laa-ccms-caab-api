@@ -25,13 +25,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_ADDRESS")
+@Table(name = "XXCCMS_ADDRESS", schema = "XXCCMS_PUI")
 @Setter
 @Getter
 @SequenceGenerator(
         allocationSize = 1,
         sequenceName = "XXCCMS_GENERATED_ID_S",
-        name = "XXCCMS_ADDRESS_S")
+        name = "XXCCMS_ADDRESS_S",
+        schema = "XXCCMS_PUI")
 @RequiredArgsConstructor
 public class Address implements Serializable {
 

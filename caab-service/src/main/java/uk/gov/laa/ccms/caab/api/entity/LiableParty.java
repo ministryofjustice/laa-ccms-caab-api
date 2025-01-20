@@ -19,12 +19,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * Entity to represent a liable party entry in the XXCCMS_LIABLE_PARTY TDS table.
  */
 @Entity
-@Table(name = "XXCCMS_LIABLE_PARTY")
+@Table(name = "XXCCMS_LIABLE_PARTY", schema = "XXCCMS_PUI")
 @EntityListeners(AuditingEntityListener.class)
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_LIABLE_PARTY_S")
+    name = "XXCCMS_LIABLE_PARTY_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

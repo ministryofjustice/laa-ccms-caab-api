@@ -27,11 +27,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_SCOPE_LIMITATION")
+@Table(name = "XXCCMS_SCOPE_LIMITATION", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_SCOPE_LIMITATION_S")
+    name = "XXCCMS_SCOPE_LIMITATION_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

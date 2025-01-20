@@ -20,11 +20,12 @@ import lombok.Setter;
  * Entity to represent a financial award entry in the XXCCMS_FINANCIAL_AWARD TDS table.
  */
 @Entity
-@Table(name = "XXCCMS_FINANCIAL_AWARD")
+@Table(name = "XXCCMS_FINANCIAL_AWARD", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_FINANCIAL_AWARD_S")
+    name = "XXCCMS_FINANCIAL_AWARD_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

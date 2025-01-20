@@ -23,11 +23,12 @@ import uk.gov.laa.ccms.caab.api.entity.converter.BooleanStringConverter;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_RECOVERY")
+@Table(name = "XXCCMS_RECOVERY", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_RECOVERY_S")
+    name = "XXCCMS_RECOVERY_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

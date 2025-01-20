@@ -23,11 +23,12 @@ import uk.gov.laa.ccms.caab.api.entity.converter.BooleanStringConverter;
  * Entity to represent an other asset award entry in the XXCCMS_OTHER_ASSET_AWARD TDS table.
  */
 @Entity
-@Table(name = "XXCCMS_OTHER_ASSET_AWARD")
+@Table(name = "XXCCMS_OTHER_ASSET_AWARD", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_OTHER_ASSET_AWARD_S")
+    name = "XXCCMS_OTHER_ASSET_AWARD_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

@@ -25,11 +25,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_NOTIFICATION_ATTACHMENT")
+@Table(name = "XXCCMS_NOTIFICATION_ATTACHMENT", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_NOTIFICATION_ATTACHMENT_S")
+    name = "XXCCMS_NOTIFICATION_ATTACHMENT_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor
