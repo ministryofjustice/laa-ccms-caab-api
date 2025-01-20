@@ -23,11 +23,12 @@ import uk.gov.laa.ccms.caab.api.entity.converter.BooleanStringConverter;
  * Entity to represent a land award entry in the XXCCMS_LAND_AWARD TDS table.
  */
 @Entity
-@Table(name = "XXCCMS_LAND_AWARD")
+@Table(name = "XXCCMS_LAND_AWARD", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_LAND_AWARD_S")
+    name = "XXCCMS_LAND_AWARD_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

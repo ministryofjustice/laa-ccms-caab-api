@@ -28,11 +28,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_COST_ENTRY")
+@Table(name = "XXCCMS_COST_ENTRY", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_COST_ENTRY_S")
+    name = "XXCCMS_COST_ENTRY_S",
+    schema = "XXCCMS_PUI")
 @Setter
 @Getter
 @RequiredArgsConstructor

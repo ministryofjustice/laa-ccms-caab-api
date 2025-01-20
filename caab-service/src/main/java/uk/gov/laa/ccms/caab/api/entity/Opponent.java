@@ -35,11 +35,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_OPPONENT")
+@Table(name = "XXCCMS_OPPONENT", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_OPPONENT_S")
+    name = "XXCCMS_OPPONENT_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

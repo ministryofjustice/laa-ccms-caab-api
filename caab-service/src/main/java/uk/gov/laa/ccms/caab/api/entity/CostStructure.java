@@ -28,13 +28,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "XXCCMS_COST_STRUCTURE")
+@Table(name = "XXCCMS_COST_STRUCTURE", schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @SequenceGenerator(
         allocationSize = 1,
         sequenceName = "XXCCMS_GENERATED_ID_S",
-        name = "XXCCMS_COST_STRUCTURE_S")
+        name = "XXCCMS_COST_STRUCTURE_S",
+        schema = "XXCCMS_PUI")
 @RequiredArgsConstructor
 public class CostStructure implements Serializable {
 
