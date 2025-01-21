@@ -21,11 +21,12 @@ import lombok.Setter;
  * Entity to represent a cost award entry in the XXCCMS_COST_AWARD TDS table.
  */
 @Entity
-@Table(name = "XXCCMS_COST_AWARD")
+@Table(name = "XXCCMS_COST_AWARD", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_COST_AWARD_S")
+    name = "XXCCMS_COST_AWARD_S",
+    schema = "XXCCMS_PUI")
 @Getter
 @Setter
 @RequiredArgsConstructor

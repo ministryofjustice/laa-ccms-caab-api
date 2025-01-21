@@ -21,11 +21,12 @@ import org.hibernate.type.YesNoConverter;
  * both the NotificationRequest and the PriorAuthority.
  */
 @Entity
-@Table(name = "XXCCMS_REFERENCE_DATA_ITEM")
+@Table(name = "XXCCMS_REFERENCE_DATA_ITEM", schema = "XXCCMS_PUI")
 @SequenceGenerator(
     allocationSize = 1,
     sequenceName = "XXCCMS_GENERATED_ID_S",
-    name = "XXCCMS_REFERENCE_DATA_ITEM_S")
+    name = "XXCCMS_REFERENCE_DATA_ITEM_S",
+    schema = "XXCCMS_PUI")
 @Setter
 @Getter
 @RequiredArgsConstructor

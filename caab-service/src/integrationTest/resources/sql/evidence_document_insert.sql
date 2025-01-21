@@ -1,4 +1,4 @@
-insert into XXCCMS_EVIDENCE_DOCUMENTS (
+insert into XXCCMS_PUI.XXCCMS_EVIDENCE_DOCUMENTS (
     ID,
     CASE_ID,
     CCMS_MODULE,
@@ -46,7 +46,7 @@ insert into XXCCMS_EVIDENCE_DOCUMENTS (
           'code',
           'the code');
 
-insert into XXCCMS_EVIDENCE_DOCUMENTS (
+insert into XXCCMS_PUI.XXCCMS_EVIDENCE_DOCUMENTS (
     ID,
     CASE_ID,
     CCMS_MODULE,

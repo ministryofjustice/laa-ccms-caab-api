@@ -1,4 +1,4 @@
-create table XXCCMS_ADDRESS (
+CREATE table XXCCMS_PUI.XXCCMS_ADDRESS (
                                 ID number(19,0) not null,
                                 NO_FIXED_ABODE number(1,0),
                                 POSTCODE varchar2(15 char),
@@ -17,7 +17,7 @@ create table XXCCMS_ADDRESS (
                                 primary key (ID)
 );
 
-create table XXCCMS_APPLICATION (
+CREATE table XXCCMS_PUI.XXCCMS_APPLICATION (
                                     ID number(19,0) not null,
                                     LSC_CASE_REFERENCE varchar2(35 char) not null,
                                     PROVIDER_ID varchar2(19 char) not null,
@@ -65,7 +65,7 @@ create table XXCCMS_APPLICATION (
                                     unique (LSC_CASE_REFERENCE, PROVIDER_ID)
 );
 
-create table XXCCMS_BILL (
+CREATE table XXCCMS_PUI.XXCCMS_BILL (
                              ID number(19,0) not null,
                              CASE_REFERENCE_NUMBER varchar2(50 char) not null,
                              PROVIDER_ID varchar2(19 char) not null,
@@ -88,7 +88,7 @@ create table XXCCMS_BILL (
                              unique (CASE_REFERENCE_NUMBER, PROVIDER_ID)
 );
 
-create table XXCCMS_CASE_OUTCOME (
+CREATE table XXCCMS_PUI.XXCCMS_CASE_OUTCOME (
                                      ID number(19,0) not null,
                                      LSC_CASE_REFERENCE varchar2(50 char) not null,
                                      PROVIDER_ID varchar2(19 char) not null,
@@ -110,7 +110,7 @@ create table XXCCMS_CASE_OUTCOME (
                                      unique (LSC_CASE_REFERENCE, PROVIDER_ID)
 );
 
-create table XXCCMS_COST_AWARD (
+CREATE table XXCCMS_PUI.XXCCMS_COST_AWARD (
                                    ID number(19,0) not null,
                                    AWARD_TYPE varchar2(50 char),
                                    DESCRIPTION varchar2(50 char),
@@ -142,7 +142,7 @@ create table XXCCMS_COST_AWARD (
                                    primary key (ID)
 );
 
-create table XXCCMS_COST_ENTRY (
+CREATE table XXCCMS_PUI.XXCCMS_COST_ENTRY (
                                    ID number(19,0) not null,
                                    EBS_ID varchar2(15 char),
                                    RESOURCE_NAME varchar2(300 char),
@@ -158,7 +158,7 @@ create table XXCCMS_COST_ENTRY (
                                    primary key (ID)
 );
 
-create table XXCCMS_COST_STRUCTURE (
+CREATE table XXCCMS_PUI.XXCCMS_COST_STRUCTURE (
                                        ID number(19,0) not null,
                                        DEFAULT_COST_LIMITATION number(10,2),
                                        GRANTED_COST_LIMITATION number(10,2),
@@ -170,7 +170,7 @@ create table XXCCMS_COST_STRUCTURE (
                                        primary key (ID)
 );
 
-create table XXCCMS_FINANCIAL_AWARD (
+CREATE table XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD (
                                         ID number(19,0) not null,
                                         AWARD_TYPE varchar2(50 char),
                                         DESCRIPTION varchar2(50 char),
@@ -198,7 +198,7 @@ create table XXCCMS_FINANCIAL_AWARD (
                                         primary key (ID)
 );
 
-create table XXCCMS_LAND_AWARD (
+CREATE table XXCCMS_PUI.XXCCMS_LAND_AWARD (
                                    ID number(19,0) not null,
                                    AWARD_TYPE varchar2(50 char),
                                    DESCRIPTION varchar2(50 char),
@@ -235,7 +235,7 @@ create table XXCCMS_LAND_AWARD (
                                    primary key (ID)
 );
 
-create table XXCCMS_LIABLE_PARTY (
+CREATE table XXCCMS_PUI.XXCCMS_LIABLE_PARTY (
                                      ID number(19,0) not null,
                                      AWARD_TYPE varchar2(50 char),
                                      FK_OPPONENT number(19,0) not null,
@@ -250,7 +250,7 @@ create table XXCCMS_LIABLE_PARTY (
                                      primary key (ID)
 );
 
-create table XXCCMS_LINKED_CASE (
+CREATE table XXCCMS_PUI.XXCCMS_LINKED_CASE (
                                     ID number(19,0) not null,
                                     LSC_CASE_REFERENCE varchar2(35 char),
                                     PROVIDER_CASE_REFERENCE varchar2(35 char),
@@ -269,7 +269,7 @@ create table XXCCMS_LINKED_CASE (
                                     primary key (ID)
 );
 
-create table XXCCMS_NOTIFICATION_ATTACHMENT (
+CREATE table XXCCMS_PUI.XXCCMS_NOTIFICATION_ATTACHMENT (
                                                 ID number(19,0) not null,
                                                 NOTIFICATION_REFERENCE varchar2(50 char) not null,
                                                 PROVIDER_ID varchar2(19 char) not null,
@@ -288,7 +288,7 @@ create table XXCCMS_NOTIFICATION_ATTACHMENT (
                                                 primary key (ID)
 );
 
-create table XXCCMS_OPPONENT (
+CREATE table XXCCMS_PUI.XXCCMS_OPPONENT (
                                  ID number(19,0) not null,
                                  EBS_ID varchar2(50 char),
                                  TYPE varchar2(50 char),
@@ -337,7 +337,7 @@ create table XXCCMS_OPPONENT (
                                  primary key (ID)
 );
 
-create table XXCCMS_OTHER_ASSET_AWARD (
+CREATE table XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD (
                                           ID number(19,0) not null,
                                           AWARD_TYPE varchar2(50 char),
                                           DESCRIPTION varchar2(50 char),
@@ -370,7 +370,7 @@ create table XXCCMS_OTHER_ASSET_AWARD (
                                           primary key (ID)
 );
 
-create table XXCCMS_PAYMENT_ON_ACCOUNT (
+CREATE table XXCCMS_PUI.XXCCMS_PAYMENT_ON_ACCOUNT (
                                            ID number(19,0) not null,
                                            LSC_CASE_REFERENCE varchar2(50 char) not null,
                                            PROVIDER_ID varchar2(19 char) not null,
@@ -391,7 +391,7 @@ create table XXCCMS_PAYMENT_ON_ACCOUNT (
                                            unique (LSC_CASE_REFERENCE, PROVIDER_ID)
 );
 
-create table XXCCMS_PRIOR_AUTHORITY (
+CREATE table XXCCMS_PUI.XXCCMS_PRIOR_AUTHORITY (
                                         ID number(19,0) not null,
                                         EBS_ID varchar2(50 char),
                                         TYPE varchar2(50 char),
@@ -409,7 +409,7 @@ create table XXCCMS_PRIOR_AUTHORITY (
                                         primary key (ID)
 );
 
-create table XXCCMS_PROCEEDING (
+CREATE table XXCCMS_PUI.XXCCMS_PROCEEDING (
                                    ID number(19,0) not null,
                                    EBS_ID varchar2(50 char),
                                    MATTER_TYPE varchar2(50 char),
@@ -440,7 +440,7 @@ create table XXCCMS_PROCEEDING (
                                    primary key (ID)
 );
 
-create table XXCCMS_PROCEEDING_OUTCOME (
+CREATE table XXCCMS_PUI.XXCCMS_PROCEEDING_OUTCOME (
                                            ID number(19,0) not null,
                                            DATE_OF_ISSUE date,
                                            DESCRIPTION varchar2(542 char),
@@ -466,7 +466,7 @@ create table XXCCMS_PROCEEDING_OUTCOME (
                                            primary key (ID)
 );
 
-create table XXCCMS_RECOVERY (
+CREATE table XXCCMS_PUI.XXCCMS_RECOVERY (
                                  ID number(19,0) not null,
                                  AWARD_TYPE varchar2(50 char),
                                  DESCRIPTION varchar2(50 char),
@@ -492,7 +492,7 @@ create table XXCCMS_RECOVERY (
                                  primary key (ID)
 );
 
-create table XXCCMS_REFERENCE_DATA_ITEM (
+CREATE table XXCCMS_PUI.XXCCMS_REFERENCE_DATA_ITEM (
                                             ID number(19,0) not null,
                                             CODE varchar2(50 char),
                                             LABEL varchar2(150 char),
@@ -505,7 +505,7 @@ create table XXCCMS_REFERENCE_DATA_ITEM (
                                             primary key (ID)
 );
 
-create table XXCCMS_SCOPE_LIMITATION (
+CREATE table XXCCMS_PUI.XXCCMS_SCOPE_LIMITATION (
                                          ID number(19,0) not null,
                                          EBS_ID varchar2(50 char),
                                          SCOPE_LIMITATION varchar2(50 char),
@@ -521,7 +521,7 @@ create table XXCCMS_SCOPE_LIMITATION (
                                          primary key (ID)
 );
 
-create table XXCCMS_TIME_RECOVERY (
+CREATE table XXCCMS_PUI.XXCCMS_TIME_RECOVERY (
                                       ID number(19,0) not null,
                                       AWARD_TYPE varchar2(50 char),
                                       DESCRIPTION varchar2(50 char),
@@ -536,7 +536,7 @@ create table XXCCMS_TIME_RECOVERY (
                                       primary key (ID)
 );
 
-create table XXCCMS_UNDERTAKING (
+CREATE table XXCCMS_PUI.XXCCMS_UNDERTAKING (
                                     ID number(19,0) not null,
                                     LSC_CASE_REFERENCE varchar2(50 char) not null,
                                     PROVIDER_ID varchar2(19 char) not null,
@@ -552,184 +552,184 @@ create table XXCCMS_UNDERTAKING (
                                     unique (LSC_CASE_REFERENCE, PROVIDER_ID)
 );
 
-create index XXCCMS_APPLICATION_I3 on XXCCMS_APPLICATION (FK_CORRESPONDENCE_ADDRESS);
+CREATE index XXCCMS_PUI.XXCCMS_APPLICATION_I3 on XXCCMS_PUI.XXCCMS_APPLICATION (FK_CORRESPONDENCE_ADDRESS);
 
-create index XXCCMS_APPLICATION_I2 on XXCCMS_APPLICATION (FK_COST_STRUCTURE);
+CREATE index XXCCMS_PUI.XXCCMS_APPLICATION_I2 on XXCCMS_PUI.XXCCMS_APPLICATION (FK_COST_STRUCTURE);
 
-alter table XXCCMS_APPLICATION
+alter table XXCCMS_PUI.XXCCMS_APPLICATION
     add constraint XXCCMS_APPLICATION_F1
         foreign key (FK_COST_STRUCTURE)
-            references XXCCMS_COST_STRUCTURE;
+            references XXCCMS_PUI.XXCCMS_COST_STRUCTURE;
 
-alter table XXCCMS_APPLICATION
+alter table XXCCMS_PUI.XXCCMS_APPLICATION
     add constraint XXCCMS_APPLICATION_F2
         foreign key (FK_CORRESPONDENCE_ADDRESS)
-            references XXCCMS_ADDRESS;
+            references XXCCMS_PUI.XXCCMS_ADDRESS;
 
-create index XXCCMS_COST_AWARD_I2 on XXCCMS_COST_AWARD (FK_COST_RECOVERY);
+CREATE index XXCCMS_PUI.XXCCMS_COST_AWARD_I2 on XXCCMS_PUI.XXCCMS_COST_AWARD (FK_COST_RECOVERY);
 
-create index XXCCMS_COST_AWARD_I1 on XXCCMS_COST_AWARD (FK_COST_CASE_OUTCOME);
+CREATE index XXCCMS_PUI.XXCCMS_COST_AWARD_I1 on XXCCMS_PUI.XXCCMS_COST_AWARD (FK_COST_CASE_OUTCOME);
 
-alter table XXCCMS_COST_AWARD
+alter table XXCCMS_PUI.XXCCMS_COST_AWARD
     add constraint FKC29DD024FD68D189
         foreign key (FK_COST_CASE_OUTCOME)
-            references XXCCMS_CASE_OUTCOME;
+            references XXCCMS_PUI.XXCCMS_CASE_OUTCOME;
 
-alter table XXCCMS_COST_AWARD
+alter table XXCCMS_PUI.XXCCMS_COST_AWARD
     add constraint FKC29DD0241FC208D6
         foreign key (FK_COST_RECOVERY)
-            references XXCCMS_RECOVERY;
+            references XXCCMS_PUI.XXCCMS_RECOVERY;
 
-create index XXCCMS_COST_ENTRY_I1 on XXCCMS_COST_ENTRY (FK_COST_STRUCTURE);
+CREATE index XXCCMS_PUI.XXCCMS_COST_ENTRY_I1 on XXCCMS_PUI.XXCCMS_COST_ENTRY (FK_COST_STRUCTURE);
 
-alter table XXCCMS_COST_ENTRY
+alter table XXCCMS_PUI.XXCCMS_COST_ENTRY
     add constraint XXCCMS_COST_ENTRY_F1
         foreign key (FK_COST_STRUCTURE)
-            references XXCCMS_COST_STRUCTURE;
+            references XXCCMS_PUI.XXCCMS_COST_STRUCTURE;
 
-create index XXCCMS_FINANCIAL_AWARD_I2 on XXCCMS_FINANCIAL_AWARD (FK_COST_RECOVERY);
+CREATE index XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD_I2 on XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD (FK_COST_RECOVERY);
 
-create index XXCCMS_FINANCIAL_AWARD_I1 on XXCCMS_FINANCIAL_AWARD (FK_FINANCIAL_CASE_OUTCOME);
+CREATE index XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD_I1 on XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD (FK_FINANCIAL_CASE_OUTCOME);
 
-alter table XXCCMS_FINANCIAL_AWARD
+alter table XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD
     add constraint FKEAA2ADAE58E74C01
         foreign key (FK_FINANCIAL_CASE_OUTCOME)
-            references XXCCMS_CASE_OUTCOME;
+            references XXCCMS_PUI.XXCCMS_CASE_OUTCOME;
 
-alter table XXCCMS_FINANCIAL_AWARD
+alter table XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD
     add constraint FKEAA2ADAE1FC208D6
         foreign key (FK_COST_RECOVERY)
-            references XXCCMS_RECOVERY;
+            references XXCCMS_PUI.XXCCMS_RECOVERY;
 
-create index XXCCMS_LAND_AWARD_I1 on XXCCMS_LAND_AWARD (FK_LAND_CASE_OUTCOME);
+CREATE index XXCCMS_PUI.XXCCMS_LAND_AWARD_I1 on XXCCMS_PUI.XXCCMS_LAND_AWARD (FK_LAND_CASE_OUTCOME);
 
-create index XXCCMS_LAND_AWARD_I2 on XXCCMS_LAND_AWARD (FK_LAND_RECOVERY);
+CREATE index XXCCMS_PUI.XXCCMS_LAND_AWARD_I2 on XXCCMS_PUI.XXCCMS_LAND_AWARD (FK_LAND_RECOVERY);
 
-alter table XXCCMS_LAND_AWARD
+alter table XXCCMS_PUI.XXCCMS_LAND_AWARD
     add constraint FKE7AB23C27C966865
         foreign key (FK_LAND_RECOVERY)
-            references XXCCMS_TIME_RECOVERY;
+            references XXCCMS_PUI.XXCCMS_TIME_RECOVERY;
 
-alter table XXCCMS_LAND_AWARD
+alter table XXCCMS_PUI.XXCCMS_LAND_AWARD
     add constraint FKE7AB23C29E41D02B
         foreign key (FK_LAND_CASE_OUTCOME)
-            references XXCCMS_CASE_OUTCOME;
+            references XXCCMS_PUI.XXCCMS_CASE_OUTCOME;
 
-create index XXCCMS_LIABLE_PARTY_I5 on XXCCMS_LIABLE_PARTY (FK_OTHER_ASSET_AWARD);
+CREATE index XXCCMS_PUI.XXCCMS_LIABLE_PARTY_I5 on XXCCMS_PUI.XXCCMS_LIABLE_PARTY (FK_OTHER_ASSET_AWARD);
 
-create index XXCCMS_LIABLE_PARTY_I3 on XXCCMS_LIABLE_PARTY (FK_FINANCIAL_AWARD);
+CREATE index XXCCMS_PUI.XXCCMS_LIABLE_PARTY_I3 on XXCCMS_PUI.XXCCMS_LIABLE_PARTY (FK_FINANCIAL_AWARD);
 
-create index XXCCMS_LIABLE_PARTY_I4 on XXCCMS_LIABLE_PARTY (FK_LAND_AWARD);
+CREATE index XXCCMS_PUI.XXCCMS_LIABLE_PARTY_I4 on XXCCMS_PUI.XXCCMS_LIABLE_PARTY (FK_LAND_AWARD);
 
-create index XXCCMS_LIABLE_PARTY_I1 on XXCCMS_LIABLE_PARTY (FK_OPPONENT);
+CREATE index XXCCMS_PUI.XXCCMS_LIABLE_PARTY_I1 on XXCCMS_PUI.XXCCMS_LIABLE_PARTY (FK_OPPONENT);
 
-create index XXCCMS_LIABLE_PARTY_I2 on XXCCMS_LIABLE_PARTY (FK_COST_AWARD);
+CREATE index XXCCMS_PUI.XXCCMS_LIABLE_PARTY_I2 on XXCCMS_PUI.XXCCMS_LIABLE_PARTY (FK_COST_AWARD);
 
-alter table XXCCMS_LIABLE_PARTY
+alter table XXCCMS_PUI.XXCCMS_LIABLE_PARTY
     add constraint FKECA8777712B5CB75
         foreign key (FK_FINANCIAL_AWARD)
-            references XXCCMS_FINANCIAL_AWARD;
+            references XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD;
 
-alter table XXCCMS_LIABLE_PARTY
+alter table XXCCMS_PUI.XXCCMS_LIABLE_PARTY
     add constraint FKECA877774A6C1101
         foreign key (FK_LAND_AWARD)
-            references XXCCMS_LAND_AWARD;
+            references XXCCMS_PUI.XXCCMS_LAND_AWARD;
 
-alter table XXCCMS_LIABLE_PARTY
+alter table XXCCMS_PUI.XXCCMS_LIABLE_PARTY
     add constraint FKECA87777C113FCC1
         foreign key (FK_COST_AWARD)
-            references XXCCMS_COST_AWARD;
+            references XXCCMS_PUI.XXCCMS_COST_AWARD;
 
-alter table XXCCMS_LIABLE_PARTY
+alter table XXCCMS_PUI.XXCCMS_LIABLE_PARTY
     add constraint FKECA877776F94E468
         foreign key (FK_OPPONENT)
-            references XXCCMS_OPPONENT;
+            references XXCCMS_PUI.XXCCMS_OPPONENT;
 
-alter table XXCCMS_LIABLE_PARTY
+alter table XXCCMS_PUI.XXCCMS_LIABLE_PARTY
     add constraint FKECA877775F538B2E
         foreign key (FK_OTHER_ASSET_AWARD)
-            references XXCCMS_OTHER_ASSET_AWARD;
+            references XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD;
 
-create index XXCCMS_LINKED_CASE_I1 on XXCCMS_LINKED_CASE (FK_APPLICATION);
+CREATE index XXCCMS_PUI.XXCCMS_LINKED_CASE_I1 on XXCCMS_PUI.XXCCMS_LINKED_CASE (FK_APPLICATION);
 
-alter table XXCCMS_LINKED_CASE
+alter table XXCCMS_PUI.XXCCMS_LINKED_CASE
     add constraint XXCCMS_LINKED_CASE_F1
         foreign key (FK_APPLICATION)
-            references XXCCMS_APPLICATION;
+            references XXCCMS_PUI.XXCCMS_APPLICATION;
 
-create index XXCCMS_OPPONENT_I4 on XXCCMS_OPPONENT (FK_ADDRESS);
+CREATE index XXCCMS_PUI.XXCCMS_OPPONENT_I4 on XXCCMS_PUI.XXCCMS_OPPONENT (FK_ADDRESS);
 
-create index XXCCMS_OPPONENT_I3 on XXCCMS_OPPONENT (FK_OUTCOME);
+CREATE index XXCCMS_PUI.XXCCMS_OPPONENT_I3 on XXCCMS_PUI.XXCCMS_OPPONENT (FK_OUTCOME);
 
-create index XXCCMS_OPPONENT_I1 on XXCCMS_OPPONENT (FK_APPLICATION);
+CREATE index XXCCMS_PUI.XXCCMS_OPPONENT_I1 on XXCCMS_PUI.XXCCMS_OPPONENT (FK_APPLICATION);
 
-alter table XXCCMS_OPPONENT
+alter table XXCCMS_PUI.XXCCMS_OPPONENT
     add constraint FK1CE244763F793FE6
         foreign key (FK_OUTCOME)
-            references XXCCMS_CASE_OUTCOME;
+            references XXCCMS_PUI.XXCCMS_CASE_OUTCOME;
 
-alter table XXCCMS_OPPONENT
+alter table XXCCMS_PUI.XXCCMS_OPPONENT
     add constraint XXCCMS_OPPONENT_F1
         foreign key (FK_APPLICATION)
-            references XXCCMS_APPLICATION;
+            references XXCCMS_PUI.XXCCMS_APPLICATION;
 
-alter table XXCCMS_OPPONENT
+alter table XXCCMS_PUI.XXCCMS_OPPONENT
     add constraint XXCCMS_OPPONENT_F2
         foreign key (FK_ADDRESS)
-            references XXCCMS_ADDRESS;
+            references XXCCMS_PUI.XXCCMS_ADDRESS;
 
-create index XXCCMS_OTHER_ASSET_AWARD_I2 on XXCCMS_OTHER_ASSET_AWARD (FK_OTHER_ASSET_RECOVERY);
+CREATE index XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD_I2 on XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD (FK_OTHER_ASSET_RECOVERY);
 
-create index XXCCMS_OTHER_ASSET_AWARD_I1 on XXCCMS_OTHER_ASSET_AWARD (FK_OTHER_ASSET_CASE_OUTCOME);
+CREATE index XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD_I1 on XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD (FK_OTHER_ASSET_CASE_OUTCOME);
 
-alter table XXCCMS_OTHER_ASSET_AWARD
+alter table XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD
     add constraint FK537C72467A92DB43
         foreign key (FK_OTHER_ASSET_RECOVERY)
-            references XXCCMS_TIME_RECOVERY;
+            references XXCCMS_PUI.XXCCMS_TIME_RECOVERY;
 
-alter table XXCCMS_OTHER_ASSET_AWARD
+alter table XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD
     add constraint FK537C724690EDA409
         foreign key (FK_OTHER_ASSET_CASE_OUTCOME)
-            references XXCCMS_CASE_OUTCOME;
+            references XXCCMS_PUI.XXCCMS_CASE_OUTCOME;
 
-create index XXCCMS_PRIOR_AUTHORITY_I1 on XXCCMS_PRIOR_AUTHORITY (FK_APPLICATION);
+CREATE index XXCCMS_PUI.XXCCMS_PRIOR_AUTHORITY_I1 on XXCCMS_PUI.XXCCMS_PRIOR_AUTHORITY (FK_APPLICATION);
 
-alter table XXCCMS_PRIOR_AUTHORITY
+alter table XXCCMS_PUI.XXCCMS_PRIOR_AUTHORITY
     add constraint XXCCMS_PRIOR_AUTHORITY_F1
         foreign key (FK_APPLICATION)
-            references XXCCMS_APPLICATION;
+            references XXCCMS_PUI.XXCCMS_APPLICATION;
 
-create index XXCCMS_PROCEEDING_I1 on XXCCMS_PROCEEDING (FK_APPLICATION);
+CREATE index XXCCMS_PUI.XXCCMS_PROCEEDING_I1 on XXCCMS_PUI.XXCCMS_PROCEEDING (FK_APPLICATION);
 
-alter table XXCCMS_PROCEEDING
+alter table XXCCMS_PUI.XXCCMS_PROCEEDING
     add constraint XXCCMS_PROCEEDING_F1
         foreign key (FK_APPLICATION)
-            references XXCCMS_APPLICATION;
+            references XXCCMS_PUI.XXCCMS_APPLICATION;
 
-create index XXCCMS_PROCEEDING_OUTCOME_I1 on XXCCMS_PROCEEDING_OUTCOME (FK_PROCEEDING_CASE_OUTCOME);
+CREATE index XXCCMS_PUI.XXCCMS_PROCEEDING_OUTCOME_I1 on XXCCMS_PUI.XXCCMS_PROCEEDING_OUTCOME (FK_PROCEEDING_CASE_OUTCOME);
 
-alter table XXCCMS_PROCEEDING_OUTCOME
+alter table XXCCMS_PUI.XXCCMS_PROCEEDING_OUTCOME
     add constraint FKF884AE40329097C2
         foreign key (FK_PROCEEDING_CASE_OUTCOME)
-            references XXCCMS_CASE_OUTCOME;
+            references XXCCMS_PUI.XXCCMS_CASE_OUTCOME;
 
-create index XXCCMS_DATA_ITEM_I1 on XXCCMS_REFERENCE_DATA_ITEM (FK_PRIOR_AUTHORITY);
+CREATE index XXCCMS_PUI.XXCCMS_DATA_ITEM_I1 on XXCCMS_PUI.XXCCMS_REFERENCE_DATA_ITEM (FK_PRIOR_AUTHORITY);
 
-alter table XXCCMS_REFERENCE_DATA_ITEM
+alter table XXCCMS_PUI.XXCCMS_REFERENCE_DATA_ITEM
     add constraint XXCCMS_DATA_ITEM_F1
         foreign key (FK_PRIOR_AUTHORITY)
-            references XXCCMS_PRIOR_AUTHORITY;
+            references XXCCMS_PUI.XXCCMS_PRIOR_AUTHORITY;
 
-create index XXCCMS_SCOPE_LIMITATION_I1 on XXCCMS_SCOPE_LIMITATION (FK_PROCEEDING);
+CREATE index XXCCMS_PUI.XXCCMS_SCOPE_LIMITATION_I1 on XXCCMS_PUI.XXCCMS_SCOPE_LIMITATION (FK_PROCEEDING);
 
-alter table XXCCMS_SCOPE_LIMITATION
+alter table XXCCMS_PUI.XXCCMS_SCOPE_LIMITATION
     add constraint XXCCMS_SCOPE_LIMITATION_F1
         foreign key (FK_PROCEEDING)
-            references XXCCMS_PROCEEDING;
+            references XXCCMS_PUI.XXCCMS_PROCEEDING;
 
-create sequence XXCCMS_GENERATED_ID_S;
+CREATE sequence XXCCMS_PUI.XXCCMS_GENERATED_ID_S;
 
-CREATE TABLE XXCCMS_EVIDENCE_DOCUMENTS
+CREATE TABLE XXCCMS_PUI.XXCCMS_EVIDENCE_DOCUMENTS
 (
     ID                        NUMBER(19)          NOT NULL,
     NOTIFICATION_REFERENCE    VARCHAR2(50),
@@ -764,5 +764,5 @@ CREATE TABLE FND_LOOKUP_VALUES
     DESCRIPTION          VARCHAR2(240)
 );
 
-ALTER TABLE xxccms_notification_attachment modify  file_bytes blob;
+ALTER TABLE XXCCMS_PUI.XXCCMS_notification_attachment modify  file_bytes blob;
 

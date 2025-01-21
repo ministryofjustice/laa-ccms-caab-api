@@ -1,4 +1,4 @@
-insert into XXCCMS_CASE_OUTCOME (ID,
+insert into XXCCMS_PUI.XXCCMS_CASE_OUTCOME (ID,
                                  LSC_CASE_REFERENCE,
                                  PROVIDER_ID,
                                  PRE_CERTIFICATE_COSTS,
@@ -33,7 +33,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_CASE_OUTCOME (ID,
+insert into XXCCMS_PUI.XXCCMS_CASE_OUTCOME (ID,
                                  LSC_CASE_REFERENCE,
                                  PROVIDER_ID,
                                  PRE_CERTIFICATE_COSTS,
@@ -69,7 +69,7 @@ values (2,
         'testUser');
 
 
-insert into XXCCMS_PROCEEDING_OUTCOME (ID,
+insert into XXCCMS_PUI.XXCCMS_PROCEEDING_OUTCOME (ID,
                                        DATE_OF_ISSUE,
                                        DESCRIPTION,
                                        STAGE_END,
@@ -114,7 +114,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_RECOVERY (ID,
+insert into XXCCMS_PUI.XXCCMS_RECOVERY (ID,
                              AWARD_TYPE,
                              DESCRIPTION,
                              AWARD_AMT,
@@ -159,7 +159,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_TIME_RECOVERY (ID,
+insert into XXCCMS_PUI.XXCCMS_TIME_RECOVERY (ID,
                                   AWARD_TYPE,
                                   DESCRIPTION,
                                   TRIGGERING_EVENT,
@@ -182,7 +182,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_COST_AWARD (ID,
+insert into XXCCMS_PUI.XXCCMS_COST_AWARD (ID,
                                AWARD_TYPE,
                                DESCRIPTION,
                                AWARDED_BY,
@@ -239,7 +239,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_FINANCIAL_AWARD (ID,
+insert into XXCCMS_PUI.XXCCMS_FINANCIAL_AWARD (ID,
                                     AWARD_TYPE,
                                     DESCRIPTION,
                                     AWARDED_BY,
@@ -288,7 +288,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_LAND_AWARD (ID,
+insert into XXCCMS_PUI.XXCCMS_LAND_AWARD (ID,
                                AWARD_TYPE,
                                DESCRIPTION,
                                AWARDED_BY,
@@ -355,7 +355,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_OTHER_ASSET_AWARD (ID,
+insert into XXCCMS_PUI.XXCCMS_OTHER_ASSET_AWARD (ID,
                                       AWARD_TYPE,
                                       DESCRIPTION,
                                       AWARDED_BY,
@@ -414,7 +414,7 @@ values (1,
         SYSDATE,
         'testUser');
 
-insert into XXCCMS_LIABLE_PARTY (ID,
+insert into XXCCMS_PUI.XXCCMS_LIABLE_PARTY (ID,
                                  AWARD_TYPE,
                                  FK_COST_AWARD,
                                  FK_FINANCIAL_AWARD,
