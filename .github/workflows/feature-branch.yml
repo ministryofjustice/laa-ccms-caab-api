@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Extract short repo name
         shell: bash
-        run: echo "repo_name=caab-ebs${GITHUB_REPOSITORY#*\/laa-ccms-data}" >> $GITHUB_OUTPUT
+        run: echo "repo_name=${GITHUB_REPOSITORY#*\/laa-ccms-}" >> $GITHUB_OUTPUT
         id: extract_repo_name
 
   build-test-publish:
@@ -142,7 +142,7 @@ jobs:
             git checkout -b $FEATURE_BRANCH
           fi
 
-          cd laa-ccms-caab-service/charts/caab-ebs-api/
+          cd laa-ccms-caab-service/charts/caab-api/
           yq eval "( .appVersion = \"${REPO_NAME}-${APP_VERSION}\" )" -i Chart.yaml
 
           git add .
