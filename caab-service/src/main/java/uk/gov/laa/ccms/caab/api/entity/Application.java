@@ -94,8 +94,8 @@ public class Application implements Serializable {
   @Column(name = "RELATION_TO_LINKED_CASE", length = 50)
   private String relationToLinkedCase;
 
-  @Column(name = "OPPONENT_APPLIED_FOR_FUNDING")
   @Convert(converter = NumericBooleanConverter.class)
+  @Column(name = "OPPONENT_APPLIED_FOR_FUNDING")
   private Boolean opponentAppliedForFunding;
 
   //status
