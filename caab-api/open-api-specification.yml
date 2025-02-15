@@ -2441,6 +2441,8 @@ components:
           type: 'integer'
         case_reference_number:
           type: 'string'
+        amendment:
+          type: 'boolean'
         category_of_law:
           $ref: "#/components/schemas/stringDisplayValue"
         status:
