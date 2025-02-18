@@ -301,6 +301,7 @@ public class Opponent implements Serializable {
   /**
    * Indicates if the Opponent is marked for deletion.
    */
+  @Convert(converter = NumericBooleanConverter.class)
   @Column(name = "DELETE_IND")
   private Boolean deleteInd;
 
