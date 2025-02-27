@@ -140,6 +140,8 @@ public interface ApplicationMapper {
   }
 
   @InheritInverseConfiguration(name = "toApplication")
+  @Mapping(target = "id")
+  @Mapping(target = "auditTrail")
   @Mapping(target = "costs", source = "costs", qualifiedByName = "toCostStructureModel")
   @Mapping(target = "correspondenceAddress", source = "correspondenceAddress",
       qualifiedByName = "toAddressModel")
@@ -161,6 +163,7 @@ public interface ApplicationMapper {
   Proceeding toProceeding(ProceedingDetail proceeding);
 
   @InheritInverseConfiguration(name = "toProceeding")
+  @Mapping(target = "auditTrail")
   ProceedingDetail toProceedingModel(Proceeding proceeding);
 
   @Mapping(target = "auditTrail", ignore = true)
@@ -169,6 +172,7 @@ public interface ApplicationMapper {
   PriorAuthority toPriorAuthority(PriorAuthorityDetail priorAuthority);
 
   @InheritInverseConfiguration(name = "toPriorAuthority")
+  @Mapping(target = "auditTrail")
   PriorAuthorityDetail toPriorAuthorityModel(PriorAuthority priorAuthority);
 
   @Mapping(target = "code", source = "code.id")
@@ -188,6 +192,7 @@ public interface ApplicationMapper {
   ScopeLimitation toScopeLimitation(ScopeLimitationDetail scopeLimitation);
 
   @InheritInverseConfiguration(name = "toScopeLimitation")
+  @Mapping(target = "auditTrail")
   ScopeLimitationDetail toScopeLimitationModel(
       ScopeLimitation scopeLimitation);
 
@@ -201,6 +206,7 @@ public interface ApplicationMapper {
   Opponent toOpponent(OpponentDetail opponent);
 
   @InheritInverseConfiguration(name = "toOpponent")
+  @Mapping(target = "auditTrail")
   @Mapping(target = "address", source = "address", qualifiedByName = "toAddressModel")
   OpponentDetail toOpponentModel(Opponent opponent);
 
@@ -220,6 +226,7 @@ public interface ApplicationMapper {
   LinkedCase toLinkedCase(LinkedCaseDetail linkedCase);
 
   @InheritInverseConfiguration(name = "toLinkedCase")
+  @Mapping(target = "auditTrail")
   LinkedCaseDetail toLinkedCaseModel(LinkedCase linkedCase);
 
   @Named("toAddress")
@@ -231,6 +238,8 @@ public interface ApplicationMapper {
 
   @Named("toAddressModel")
   @InheritInverseConfiguration(name = "toAddress")
+  @Mapping(target = "id")
+  @Mapping(target = "auditTrail")
   AddressDetail toAddressModel(Address address);
 
   @Named("toCostStructure")
@@ -239,6 +248,7 @@ public interface ApplicationMapper {
 
   @Named("toCostStructureModel")
   @InheritInverseConfiguration(name = "toCostStructure")
+  @Mapping(target = "auditTrail")
   CostStructureDetail toCostStructureModel(CostStructure costs);
 
   @Mapping(target = "newEntry", source = "newEntry", defaultValue = "true")
@@ -246,6 +256,7 @@ public interface ApplicationMapper {
   CostEntry toCostEntry(CostEntryDetail costEntry);
 
   @InheritInverseConfiguration
+  @Mapping(target = "auditTrail")
   CostEntryDetail toCostEntryModel(CostEntry costEntry);
 
   @Mapping(target = "id", ignore = true)
