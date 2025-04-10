@@ -36,15 +36,3 @@ laa.ccms.springboot.starter:
     unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
                         "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/open-api-specification.yml"]
 
-management:
-  endpoint:
-    health:
-      show-details: always
-  endpoints:
-    web:
-      exposure:
-        include:
-          - health
-          - info
-          - metrics
-          - prometheus
