@@ -13,23 +13,26 @@ spring:
 server:
   port: 8005
 
-laa.ccms.springboot.starter.auth:
-  authentication-header: "Authorization"
-  authorized-clients: '[
-      {
-          "name": "caab-ui",
-          "roles": [
-              "ALL"
-          ],
-          "token": "c196393a-f279-45ba-b5d5-f93e6d30465a"
-      }
-  ]'
-  authorized-roles: '[
-      {
-          "name": "ALL",
-          "URIs": [
-              "/**"
-          ]
-      }
-  ]'
-  unprotected-uris: [ "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/open-api-specification.yml"]
+laa.ccms.springboot.starter:
+  auth:
+    authentication-header: "Authorization"
+    authorized-clients: '[
+        {
+            "name": "caab-ui",
+            "roles": [
+                "ALL"
+            ],
+            "token": "c196393a-f279-45ba-b5d5-f93e6d30465a"
+        }
+    ]'
+    authorized-roles: '[
+        {
+            "name": "ALL",
+            "URIs": [
+                "/**"
+            ]
+        }
+    ]'
+    unprotected-uris: [ "/actuator/**", "/swagger-ui.html",
+                        "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/open-api-specification.yml"]
+
