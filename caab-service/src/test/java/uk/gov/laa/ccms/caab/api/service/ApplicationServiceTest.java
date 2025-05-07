@@ -49,756 +49,781 @@ import uk.gov.laa.ccms.caab.model.ProceedingDetail;
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
-    @Mock
-    private ApplicationRepository applicationRepository;
 
-    @Mock
-    private ApplicationMapper applicationMapper;
+  @Mock
+  private ApplicationRepository applicationRepository;
 
-    @InjectMocks
-    private ApplicationService applicationService;
+  @Mock
+  private ApplicationMapper applicationMapper;
 
-    /**
-     * Test case to verify that an application is created with correspondence address and costs.
-     */
-    @Test
-    void createApplication_createsApplicationWithCorrespondenceAddressAndCosts() {
-        ApplicationDetail applicationDetail = new ApplicationDetail();
-        Application application = new Application();
+  @InjectMocks
+  private ApplicationService applicationService;
 
-        mockMapperAndRepository(applicationDetail, application);
+  /**
+   * Test case to verify that an application is created with correspondence address and costs.
+   */
+  @Test
+  void createApplication_createsApplicationWithCorrespondenceAddressAndCosts() {
+    ApplicationDetail applicationDetail = new ApplicationDetail();
+    Application application = new Application();
 
-        applicationService.createApplication(applicationDetail);
+    mockMapperAndRepository(applicationDetail, application);
 
-        verifyInteractionsWithMocks(applicationDetail, application);
-    }
+    applicationService.createApplication(applicationDetail);
 
-    /**
-     * Test case to verify that an application is updated with existing address and costs.
-     */
-    @Test
-    void createApplication_updatesExistingAddressAndCosts() {
-        ApplicationDetail applicationDetail = new ApplicationDetail();
-        Application application = createApplicationWithExistingAddressAndCosts();
+    verifyInteractionsWithMocks(applicationDetail, application);
+  }
 
-        mockMapperAndRepository(applicationDetail, application);
+  /**
+   * Test case to verify that an application is updated with existing address and costs.
+   */
+  @Test
+  void createApplication_updatesExistingAddressAndCosts() {
+    ApplicationDetail applicationDetail = new ApplicationDetail();
+    Application application = createApplicationWithExistingAddressAndCosts();
 
-        applicationService.createApplication(applicationDetail);
+    mockMapperAndRepository(applicationDetail, application);
 
-        verifyInteractionsWithMocks(applicationDetail, application);
-    }
+    applicationService.createApplication(applicationDetail);
 
-    @Test
-    void updateApplication_whenApplicationExists_updatesApplication() {
-        Long applicationId = 1L;
-        ApplicationDetail applicationDetail = new ApplicationDetail();
-        Application application = new Application();
+    verifyInteractionsWithMocks(applicationDetail, application);
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        doNothing().when(applicationMapper).mapIntoApplication(
-            any(Application.class),
-            any(ApplicationDetail.class));
+  @Test
+  void updateApplication_whenApplicationExists_updatesApplication() {
+    Long applicationId = 1L;
+    ApplicationDetail applicationDetail = new ApplicationDetail();
+    Application application = new Application();
 
-        applicationService.updateApplication(applicationId, applicationDetail);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    doNothing().when(applicationMapper).mapIntoApplication(
+        any(Application.class),
+        any(ApplicationDetail.class));
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).mapIntoApplication(application, applicationDetail);
-        verify(applicationRepository).save(application);
-    }
+    applicationService.updateApplication(applicationId, applicationDetail);
 
-    @Test
-    void updateApplication_whenApplicationNotExists_throwsException() {
-        Long applicationId = 1L;
-        ApplicationDetail applicationDetail = new ApplicationDetail();
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).mapIntoApplication(application, applicationDetail);
+    verify(applicationRepository).save(application);
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+  @Test
+  void updateApplication_whenApplicationNotExists_throwsException() {
+    Long applicationId = 1L;
+    ApplicationDetail applicationDetail = new ApplicationDetail();
 
-        CaabApiException exception = assertThrows(CaabApiException.class,
-            () -> applicationService.updateApplication(applicationId, applicationDetail));
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        assertEquals("Application with id " + applicationId + " not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    CaabApiException exception = assertThrows(CaabApiException.class,
+        () -> applicationService.updateApplication(applicationId, applicationDetail));
 
-    @Test
-    void removeApplication_whenApplicationNotExists_throwsException() {
-        Long applicationId = 1L;
+    assertEquals("Application with id " + applicationId + " not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.existsById(applicationId)).thenReturn(Boolean.FALSE);
+  @Test
+  void removeApplication_whenApplicationNotExists_throwsException() {
+    Long applicationId = 1L;
 
-        CaabApiException exception = assertThrows(CaabApiException.class,
-            () -> applicationService.removeApplication(applicationId));
+    when(applicationRepository.existsById(applicationId)).thenReturn(Boolean.FALSE);
 
-        assertEquals("Application with id: " + applicationId + " not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    CaabApiException exception = assertThrows(CaabApiException.class,
+        () -> applicationService.removeApplication(applicationId));
 
-    @Test
-    void removeApplication_whenApplicationExists_applicationDeleted() {
-        Long applicationId = 1L;
+    assertEquals("Application with id: " + applicationId + " not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.existsById(applicationId)).thenReturn(Boolean.TRUE);
+  @Test
+  void removeApplication_whenApplicationExists_applicationDeleted() {
+    Long applicationId = 1L;
 
-        applicationService.removeApplication(applicationId);
+    when(applicationRepository.existsById(applicationId)).thenReturn(Boolean.TRUE);
 
-        verify(applicationRepository).deleteById(applicationId);
-    }
+    applicationService.removeApplication(applicationId);
 
+    verify(applicationRepository).deleteById(applicationId);
+  }
 
-    @Test
-    void updateClient_updatesClientInformation() {
-        BaseClientDetail baseClient = new BaseClientDetail();
-        baseClient.setFirstName("John");
-        baseClient.setSurname("Doe");
-        String reference = "clientRef";
 
-        applicationService.updateClient(baseClient, reference);
+  @Test
+  void updateClient_updatesClientInformation() {
+    BaseClientDetail baseClient = new BaseClientDetail();
+    baseClient.setFirstName("John");
+    baseClient.setSurname("Doe");
+    String reference = "clientRef";
 
-        verify(applicationRepository).updateClient("John", "Doe", reference);
-    }
+    applicationService.updateClient(baseClient, reference);
+
+    verify(applicationRepository).updateClient("John", "Doe", reference);
+  }
+
+  /**
+   * Test case get an application returns data.
+   */
+  @Test
+  void getApplication_returnsData() {
+    Application application = new Application();
+    ApplicationDetail expectedResponse = new ApplicationDetail();
 
-    /**
-     * Test case get an application returns data.
-     */
-    @Test
-    void getApplication_returnsData() {
-        Application application = new Application();
-        ApplicationDetail expectedResponse = new ApplicationDetail();
+    when(applicationMapper.toApplicationDetail(application)).thenReturn(expectedResponse);
+    when(applicationRepository.findById(any())).thenReturn(Optional.of(application));
 
-        when(applicationMapper.toApplicationDetail(application)).thenReturn(expectedResponse);
-        when(applicationRepository.findById(any())).thenReturn(Optional.of(application));
+    ApplicationDetail response = applicationService.getApplication(1L);
+
+    verify(applicationMapper).toApplicationDetail(application);
+    verify(applicationRepository).findById(1L);
 
-        ApplicationDetail response = applicationService.getApplication(1L);
+    assertEquals(response, expectedResponse);
+  }
+
+  /**
+   * Test case get an application returns null.
+   */
+  @Test
+  void getApplication_returnsNull() {
+    when(applicationRepository.findById(any())).thenReturn(Optional.empty());
+
+    // Use assertThrows to check if the method throws the expected exception
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getApplication(1L));
 
-        verify(applicationMapper).toApplicationDetail(application);
-        verify(applicationRepository).findById(1L);
+    verify(applicationRepository).findById(1L);
 
-        assertEquals(response, expectedResponse);
-    }
+    // Optionally, you can check the exception message and HTTP status code
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    /**
-     * Test case get an application returns null.
-     */
-    @Test
-    void getApplication_returnsNull() {
-        when(applicationRepository.findById(any())).thenReturn(Optional.empty());
+  @Test
+  void getApplicationType_whenExists_returnsApplicationType() {
+    Long id = 1L;
+    ApplicationType expectedApplicationType = new ApplicationType();
 
-        // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getApplication(1L));
+    when(applicationRepository.findById(id)).thenReturn(
+        Optional.of(new Application())); // Assuming Application exists
+    when(applicationMapper.toApplicationType(any())).thenReturn(expectedApplicationType);
 
-        verify(applicationRepository).findById(1L);
+    ApplicationType result = applicationService.getApplicationType(id);
 
-        // Optionally, you can check the exception message and HTTP status code
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).toApplicationType(any());
 
-    @Test
-    void getApplicationType_whenExists_returnsApplicationType() {
-        Long id = 1L;
-        ApplicationType expectedApplicationType = new ApplicationType();
+    assertEquals(expectedApplicationType, result);
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(new Application())); // Assuming Application exists
-        when(applicationMapper.toApplicationType(any())).thenReturn(expectedApplicationType);
+  /**
+   * Test case to get an application type when it does not exist.
+   */
+  @Test
+  void getApplicationType_whenNotExists_throwsException() {
+    Long id = 1L;
 
-        ApplicationType result = applicationService.getApplicationType(id);
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).toApplicationType(any());
+    // Use assertThrows to check if the method throws the expected exception
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getApplicationType(id));
 
-        assertEquals(expectedApplicationType, result);
-    }
+    verify(applicationRepository).findById(id);
 
-    /**
-     * Test case to get an application type when it does not exist.
-     */
-    @Test
-    void getApplicationType_whenNotExists_throwsException() {
-        Long id = 1L;
+    // Optionally, you can check the exception message and HTTP status code
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+  /**
+   * Test case to patch an application type when the application exists.
+   */
+  @Test
+  void patchApplicationType_whenExists_updatesApplicationType() {
+    Long id = 1L;
+    ApplicationType applicationType = new ApplicationType();
+    Application application = new Application();
 
-        // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getApplicationType(id));
+    when(applicationRepository.findById(id)).thenReturn(
+        Optional.of(application)); // Assuming Application exists
 
-        verify(applicationRepository).findById(id);
+    applicationService.putApplicationType(id, applicationType);
 
-        // Optionally, you can check the exception message and HTTP status code
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).addApplicationType(application, applicationType);
+    verify(applicationRepository).save(application);
+  }
 
-    /**
-     * Test case to patch an application type when the application exists.
-     */
-    @Test
-    void patchApplicationType_whenExists_updatesApplicationType() {
-        Long id = 1L;
-        ApplicationType applicationType = new ApplicationType();
-        Application application = new Application();
+  /**
+   * Test case to patch an application type when the application does not exist.
+   */
+  @Test
+  void patchApplicationType_whenNotExists_throwsException() {
+    Long id = 1L;
+    ApplicationType applicationType = new ApplicationType();
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        applicationService.putApplicationType(id, applicationType);
+    // Use assertThrows to check if the method throws the expected exception
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.putApplicationType(id, applicationType));
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).addApplicationType(application, applicationType);
-        verify(applicationRepository).save(application);
-    }
+    verify(applicationRepository).findById(id);
 
-    /**
-     * Test case to patch an application type when the application does not exist.
-     */
-    @Test
-    void patchApplicationType_whenNotExists_throwsException() {
-        Long id = 1L;
-        ApplicationType applicationType = new ApplicationType();
+    // Optionally, you can check the exception message and HTTP status code
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void getApplicationProviderDetails_whenExists_returnsProviderDetails() {
+    Long id = 1L;
+    ApplicationProviderDetails expectedProviderDetails = new ApplicationProviderDetails();
+    Application application = new Application();
 
-        // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.putApplicationType(id, applicationType));
+    when(applicationRepository.findById(id)).thenReturn(
+        Optional.of(application)); // Assuming Application exists
+    when(applicationMapper.toProviderDetails(application)).thenReturn(expectedProviderDetails);
 
-        verify(applicationRepository).findById(id);
+    ApplicationProviderDetails result = applicationService.getApplicationProviderDetails(id);
 
-        // Optionally, you can check the exception message and HTTP status code
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).toProviderDetails(application);
 
-    @Test
-    void getApplicationProviderDetails_whenExists_returnsProviderDetails() {
-        Long id = 1L;
-        ApplicationProviderDetails expectedProviderDetails = new ApplicationProviderDetails();
-        Application application = new Application();
+    assertEquals(expectedProviderDetails, result);
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
-        when(applicationMapper.toProviderDetails(application)).thenReturn(expectedProviderDetails);
+  @Test
+  void getApplicationProviderDetails_whenNotExists_throwsException() {
+    Long id = 1L;
 
-        ApplicationProviderDetails result = applicationService.getApplicationProviderDetails(id);
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).toProviderDetails(application);
+    // Use assertThrows to check if the method throws the expected exception
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getApplicationProviderDetails(id));
 
-        assertEquals(expectedProviderDetails, result);
-    }
+    verify(applicationRepository).findById(id);
 
-    @Test
-    void getApplicationProviderDetails_whenNotExists_throwsException() {
-        Long id = 1L;
+    // Optionally, you can check the exception message and HTTP status code
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void patchProviderDetails_whenExists_updatesProviderDetails() {
+    Long id = 1L;
+    ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+    Application application = new Application();
 
-        // Use assertThrows to check if the method throws the expected exception
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getApplicationProviderDetails(id));
+    when(applicationRepository.findById(id)).thenReturn(
+        Optional.of(application)); // Assuming Application exists
 
-        verify(applicationRepository).findById(id);
+    applicationService.putProviderDetails(id, providerDetails);
 
-        // Optionally, you can check the exception message and HTTP status code
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).addProviderDetails(application, providerDetails);
+    verify(applicationRepository).save(application);
+  }
 
-    @Test
-    void patchProviderDetails_whenExists_updatesProviderDetails() {
-        Long id = 1L;
-        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
-        Application application = new Application();
+  @Test
+  void patchProviderDetails_whenNotExists_throwsException() {
+    Long id = 1L;
+    ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(application)); // Assuming Application exists
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        applicationService.putProviderDetails(id, providerDetails);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.putProviderDetails(id, providerDetails));
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).addProviderDetails(application, providerDetails);
-        verify(applicationRepository).save(application);
-    }
+    verify(applicationRepository).findById(id);
 
-    @Test
-    void patchProviderDetails_whenNotExists_throwsException() {
-        Long id = 1L;
-        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void getLinkedCasesForApplication_whenExists_returnsLinkedCases() {
+    Long id = 1L;
+    List<LinkedCaseDetail> expectedLinkedCases = Arrays.asList(new LinkedCaseDetail(),
+        new LinkedCaseDetail()); // Assuming some mock linked cases
+    Application application = new Application();
+    application.setLinkedCases(new ArrayList<>()); // Set linked cases in the application
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.putProviderDetails(id, providerDetails));
+    when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
+    when(applicationMapper.toLinkedCaseModelList(any())).thenReturn(expectedLinkedCases);
 
-        verify(applicationRepository).findById(id);
+    List<LinkedCaseDetail> result = applicationService.getLinkedCasesForApplication(id);
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).toLinkedCaseModelList(application.getLinkedCases());
 
-    @Test
-    void getLinkedCasesForApplication_whenExists_returnsLinkedCases() {
-        Long id = 1L;
-        List<LinkedCaseDetail> expectedLinkedCases = Arrays.asList(new LinkedCaseDetail(), new LinkedCaseDetail()); // Assuming some mock linked cases
-        Application application = new Application();
-        application.setLinkedCases(new ArrayList<>()); // Set linked cases in the application
+    assertEquals(expectedLinkedCases, result);
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
-        when(applicationMapper.toLinkedCaseModelList(any())).thenReturn(expectedLinkedCases);
+  @Test
+  void getLinkedCasesForApplication_whenNotExists_throwsException() {
+    Long id = 1L;
 
-        List<LinkedCaseDetail> result = applicationService.getLinkedCasesForApplication(id);
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).toLinkedCaseModelList(application.getLinkedCases());
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getLinkedCasesForApplication(id));
 
-        assertEquals(expectedLinkedCases, result);
-    }
+    verify(applicationRepository).findById(id);
 
-    @Test
-    void getLinkedCasesForApplication_whenNotExists_throwsException() {
-        Long id = 1L;
+    assertEquals("Linked cases for application with id " + id + " not found",
+        exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void getApplicationCorrespondenceAddress_whenExists_returnsAddress() {
+    Long id = 1L;
+    AddressDetail expectedAddress = new AddressDetail(); // Mock address
+    Application application = new Application();
+    application.setCorrespondenceAddress(new Address()); // Set a mock address in the application
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getLinkedCasesForApplication(id));
+    when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
+    when(applicationMapper.toAddressModel(any())).thenReturn(expectedAddress);
 
-        verify(applicationRepository).findById(id);
+    AddressDetail result = applicationService.getApplicationCorrespondenceAddress(id);
 
-        assertEquals("Linked cases for application with id " + id + " not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).toAddressModel(application.getCorrespondenceAddress());
 
-    @Test
-    void getApplicationCorrespondenceAddress_whenExists_returnsAddress() {
-        Long id = 1L;
-        AddressDetail expectedAddress = new AddressDetail(); // Mock address
-        Application application = new Application();
-        application.setCorrespondenceAddress(new Address()); // Set a mock address in the application
+    assertEquals(expectedAddress, result);
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
-        when(applicationMapper.toAddressModel(any())).thenReturn(expectedAddress);
+  @Test
+  void getApplicationCorrespondenceAddress_whenNotExists_throwsException() {
+    Long id = 1L;
 
-        AddressDetail result = applicationService.getApplicationCorrespondenceAddress(id);
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).toAddressModel(application.getCorrespondenceAddress());
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getApplicationCorrespondenceAddress(id));
 
-        assertEquals(expectedAddress, result);
-    }
+    verify(applicationRepository).findById(id);
 
-    @Test
-    void getApplicationCorrespondenceAddress_whenNotExists_throwsException() {
-        Long id = 1L;
+    assertEquals("Correspondence address for application with id " + id + " not found",
+        exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void putCorrespondenceAddress_whenExists_updatesAddress() {
+    Long id = 1L;
+    AddressDetail newAddress = new AddressDetail(); // Mock new address
+    Application application = new Application();
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getApplicationCorrespondenceAddress(id));
+    when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
 
-        verify(applicationRepository).findById(id);
+    applicationService.putCorrespondenceAddress(id, newAddress);
 
-        assertEquals("Correspondence address for application with id " + id + " not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(id);
+    verify(applicationMapper).addCorrespondenceAddressToApplication(application, newAddress);
+    verify(applicationRepository).save(application);
+  }
 
-    @Test
-    void putCorrespondenceAddress_whenExists_updatesAddress() {
-        Long id = 1L;
-        AddressDetail newAddress = new AddressDetail(); // Mock new address
-        Application application = new Application();
+  @Test
+  void putCorrespondenceAddress_whenNotExists_throwsException() {
+    Long id = 1L;
+    AddressDetail newAddress = new AddressDetail();
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.of(application));
+    when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        applicationService.putCorrespondenceAddress(id, newAddress);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.putCorrespondenceAddress(id, newAddress));
 
-        verify(applicationRepository).findById(id);
-        verify(applicationMapper).addCorrespondenceAddressToApplication(application, newAddress);
-        verify(applicationRepository).save(application);
-    }
+    verify(applicationRepository).findById(id);
 
-    @Test
-    void putCorrespondenceAddress_whenNotExists_throwsException() {
-        Long id = 1L;
-        AddressDetail newAddress = new AddressDetail();
+    assertEquals("Application with id " + id + " not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.putCorrespondenceAddress(id, newAddress));
+  @Test
+  void createLinkedCaseForApplication_whenApplicationExists_createsLinkedCase() {
+    Long applicationId = 1L;
+    LinkedCaseDetail linkedCase = new LinkedCaseDetail();
+    Application application = new Application();
+    application.setLinkedCases(new ArrayList<>());
 
-        verify(applicationRepository).findById(id);
+    LinkedCase linkedCaseEntity = new LinkedCase();
 
-        assertEquals("Application with id " + id + " not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toLinkedCase(linkedCase)).thenReturn(linkedCaseEntity);
 
+    applicationService.createLinkedCaseForApplication(applicationId, linkedCase);
 
-    @Test
-    void createLinkedCaseForApplication_whenApplicationExists_createsLinkedCase() {
-        Long applicationId = 1L;
-        LinkedCaseDetail linkedCase = new LinkedCaseDetail();
-        Application application = new Application();
-        application.setLinkedCases(new ArrayList<>());
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).toLinkedCase(linkedCase);
+    verify(applicationRepository).save(application);
+    assertTrue(application.getLinkedCases().contains(linkedCaseEntity));
+  }
 
-        LinkedCase linkedCaseEntity = new LinkedCase();
+  @Test
+  void createLinkedCaseForApplication_whenApplicationNotExists_throwsException() {
+    Long applicationId = 1L;
+    LinkedCaseDetail linkedCase = new LinkedCaseDetail();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toLinkedCase(linkedCase)).thenReturn(linkedCaseEntity);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        applicationService.createLinkedCaseForApplication(applicationId, linkedCase);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.createLinkedCaseForApplication(applicationId, linkedCase));
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).toLinkedCase(linkedCase);
-        verify(applicationRepository).save(application);
-        assertTrue(application.getLinkedCases().contains(linkedCaseEntity));
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void createLinkedCaseForApplication_whenApplicationNotExists_throwsException() {
-        Long applicationId = 1L;
-        LinkedCaseDetail linkedCase = new LinkedCaseDetail();
+  /**
+   * Test case get applications returns data.
+   */
+  @Test
+  void getApplications_returnsData() {
+    Application application = new Application();
+    application.setLscCaseReference("caseref");
+    application.setProviderId("provid");
+    application.setProviderCaseReference("provref");
+    application.setClientSurname("surname");
+    application.setClientReference("clientref");
+    application.setFeeEarner("feeearner");
+    application.setOfficeId(100);
+    application.setActualStatus("stat");
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    Pageable pageable = Pageable.unpaged();
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.createLinkedCaseForApplication(applicationId, linkedCase));
+    Page<Application> applicationPage = new PageImpl<>(List.of(application));
+    ApplicationDetails expectedResponse = new ApplicationDetails();
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    when(applicationMapper.toApplicationDetails(applicationPage)).thenReturn(expectedResponse);
+    when(applicationRepository.findAll(any(Example.class), eq(pageable))).thenReturn(
+        applicationPage);
 
-    /**
-     * Test case get applications returns data.
-     */
-    @Test
-    void getApplications_returnsData() {
-        Application application = new Application();
-        application.setLscCaseReference("caseref");
-        application.setProviderId("provid");
-        application.setProviderCaseReference("provref");
-        application.setClientSurname("surname");
-        application.setClientReference("clientref");
-        application.setFeeEarner("feeearner");
-        application.setOfficeId(100);
-        application.setActualStatus("stat");
+    ApplicationDetails response = applicationService.getApplications(
+        application.getLscCaseReference(),
+        application.getProviderId(),
+        application.getProviderCaseReference(),
+        application.getClientSurname(),
+        application.getClientReference(),
+        application.getFeeEarner(),
+        application.getOfficeId(),
+        application.getActualStatus(),
+        pageable
+    );
 
-        Pageable pageable = Pageable.unpaged();
+    verify(applicationMapper).toApplicationDetails(applicationPage);
+    verify(applicationRepository).findAll(any(Example.class), eq(pageable));
 
-        Page<Application> applicationPage = new PageImpl<>(List.of(application));
-        ApplicationDetails expectedResponse = new ApplicationDetails();
+    assertEquals(response, expectedResponse);
+  }
 
-        when(applicationMapper.toApplicationDetails(applicationPage)).thenReturn(expectedResponse);
-        when(applicationRepository.findAll(any(Example.class), eq(pageable))).thenReturn(applicationPage);
+  @Test
+  void getProceedingsForApplication_WhenExists_ReturnsProceedings() {
+    Long applicationId = 1L;
+    Application application = new Application();
+    application.setProceedings(new ArrayList<>());
+    ProceedingDetail proceedingModel = new ProceedingDetail();
+    application.getProceedings().add(new Proceeding());
 
-        ApplicationDetails response = applicationService.getApplications(
-            application.getLscCaseReference(),
-            application.getProviderId(),
-            application.getProviderCaseReference(),
-            application.getClientSurname(),
-            application.getClientReference(),
-            application.getFeeEarner(),
-            application.getOfficeId(),
-            application.getActualStatus(),
-            pageable
-        );
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toProceedingModel(any())).thenReturn(proceedingModel);
 
-        verify(applicationMapper).toApplicationDetails(applicationPage);
-        verify(applicationRepository).findAll(any(Example.class), eq(pageable));
+    List<ProceedingDetail> result = applicationService.getProceedingsForApplication(applicationId);
 
-        assertEquals(response, expectedResponse);
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper, times(application.getProceedings().size())).toProceedingModel(any());
 
-    @Test
-    void getProceedingsForApplication_WhenExists_ReturnsProceedings() {
-        Long applicationId = 1L;
-        Application application = new Application();
-        application.setProceedings(new ArrayList<>());
-        ProceedingDetail proceedingModel = new ProceedingDetail();
-        application.getProceedings().add(new Proceeding());
+    assertFalse(result.isEmpty());
+    assertEquals(proceedingModel, result.getFirst());
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toProceedingModel(any())).thenReturn(proceedingModel);
+  @Test
+  void getProceedingsForApplication_WhenNotExists_ThrowsException() {
+    Long applicationId = 1L;
 
-        List<ProceedingDetail> result = applicationService.getProceedingsForApplication(applicationId);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper, times(application.getProceedings().size())).toProceedingModel(any());
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getProceedingsForApplication(applicationId));
 
-        assertFalse(result.isEmpty());
-        assertEquals(proceedingModel, result.getFirst());
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void getProceedingsForApplication_WhenNotExists_ThrowsException() {
-        Long applicationId = 1L;
+  @Test
+  void createProceedingForApplication_WhenApplicationExists_CreatesProceeding() {
+    Long applicationId = 1L;
+    ProceedingDetail proceeding = new ProceedingDetail();
+    Application application = new Application();
+    Proceeding proceedingEntity = new Proceeding();
+    application.setProceedings(new ArrayList<>());
+    proceedingEntity.setScopeLimitations(new ArrayList<>());
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toProceeding(proceeding)).thenReturn(proceedingEntity);
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getProceedingsForApplication(applicationId));
+    applicationService.createProceedingForApplication(applicationId, proceeding);
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).toProceeding(proceeding);
+    verify(applicationRepository).save(application);
+    assertTrue(application.getProceedings().contains(proceedingEntity));
+  }
 
-    @Test
-    void createProceedingForApplication_WhenApplicationExists_CreatesProceeding() {
-        Long applicationId = 1L;
-        ProceedingDetail proceeding = new ProceedingDetail();
-        Application application = new Application();
-        Proceeding proceedingEntity = new Proceeding();
-        application.setProceedings(new ArrayList<>());
-        proceedingEntity.setScopeLimitations(new ArrayList<>());
+  @Test
+  void createProceedingForApplication_WhenApplicationNotExists_ThrowsException() {
+    Long applicationId = 1L;
+    ProceedingDetail proceeding = new ProceedingDetail();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toProceeding(proceeding)).thenReturn(proceedingEntity);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        applicationService.createProceedingForApplication(applicationId, proceeding);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.createProceedingForApplication(applicationId, proceeding));
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).toProceeding(proceeding);
-        verify(applicationRepository).save(application);
-        assertTrue(application.getProceedings().contains(proceedingEntity));
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void createProceedingForApplication_WhenApplicationNotExists_ThrowsException() {
-        Long applicationId = 1L;
-        ProceedingDetail proceeding = new ProceedingDetail();
+  @Test
+  void getPriorAuthoritiesForApplication_WhenExists_ReturnsPriorAuthorities() {
+    Long applicationId = 1L;
+    Application application = new Application();
+    application.setPriorAuthorities(new ArrayList<>());
+    PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail();
+    application.getPriorAuthorities().add(new PriorAuthority());
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toPriorAuthorityModel(any())).thenReturn(priorAuthorityModel);
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.createProceedingForApplication(applicationId, proceeding));
+    List<PriorAuthorityDetail> result = applicationService.getPriorAuthoritiesForApplication(
+        applicationId);
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper,
+        times(application.getPriorAuthorities().size())).toPriorAuthorityModel(any());
 
-    @Test
-    void getPriorAuthoritiesForApplication_WhenExists_ReturnsPriorAuthorities() {
-        Long applicationId = 1L;
-        Application application = new Application();
-        application.setPriorAuthorities(new ArrayList<>());
-        PriorAuthorityDetail priorAuthorityModel = new PriorAuthorityDetail();
-        application.getPriorAuthorities().add(new PriorAuthority());
+    assertFalse(result.isEmpty());
+    assertEquals(priorAuthorityModel, result.getFirst());
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toPriorAuthorityModel(any())).thenReturn(priorAuthorityModel);
+  @Test
+  void getPriorAuthoritiesForApplication_WhenNotExists_ThrowsException() {
+    Long applicationId = 1L;
 
-        List<PriorAuthorityDetail> result = applicationService.getPriorAuthoritiesForApplication(applicationId);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper, times(application.getPriorAuthorities().size())).toPriorAuthorityModel(any());
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getPriorAuthoritiesForApplication(applicationId));
 
-        assertFalse(result.isEmpty());
-        assertEquals(priorAuthorityModel, result.getFirst());
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void getPriorAuthoritiesForApplication_WhenNotExists_ThrowsException() {
-        Long applicationId = 1L;
+  @Test
+  void createPriorAuthorityForApplication_WhenApplicationExists_CreatesPriorAuthority() {
+    Long applicationId = 1L;
+    PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
+    Application application = new Application();
+    PriorAuthority priorAuthorityEntity = new PriorAuthority();
+    application.setPriorAuthorities(new ArrayList<>());
+    priorAuthorityEntity.setItems(new ArrayList<>());
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toPriorAuthority(priorAuthority)).thenReturn(priorAuthorityEntity);
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getPriorAuthoritiesForApplication(applicationId));
+    applicationService.createPriorAuthorityForApplication(applicationId, priorAuthority);
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).toPriorAuthority(priorAuthority);
+    verify(applicationRepository).save(application);
+    assertTrue(application.getPriorAuthorities().contains(priorAuthorityEntity));
+  }
 
-    @Test
-    void createPriorAuthorityForApplication_WhenApplicationExists_CreatesPriorAuthority() {
-        Long applicationId = 1L;
-        PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
-        Application application = new Application();
-        PriorAuthority priorAuthorityEntity = new PriorAuthority();
-        application.setPriorAuthorities(new ArrayList<>());
-        priorAuthorityEntity.setItems(new ArrayList<>());
+  @Test
+  void createPriorAuthorityForApplication_WhenApplicationNotExists_ThrowsException() {
+    Long applicationId = 1L;
+    PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toPriorAuthority(priorAuthority)).thenReturn(priorAuthorityEntity);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        applicationService.createPriorAuthorityForApplication(applicationId, priorAuthority);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.createPriorAuthorityForApplication(applicationId, priorAuthority));
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).toPriorAuthority(priorAuthority);
-        verify(applicationRepository).save(application);
-        assertTrue(application.getPriorAuthorities().contains(priorAuthorityEntity));
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void createPriorAuthorityForApplication_WhenApplicationNotExists_ThrowsException() {
-        Long applicationId = 1L;
-        PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
+  @Test
+  void getApplicationCostStructure_WhenExists_ReturnsCostStructure() {
+    Long applicationId = 1L;
+    Application application = new Application();
+    application.setCosts(new CostStructure());
+    CostStructureDetail expectedCostStructure = new CostStructureDetail();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toCostStructureModel(application.getCosts())).thenReturn(
+        expectedCostStructure);
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.createPriorAuthorityForApplication(applicationId, priorAuthority));
+    CostStructureDetail result = applicationService.getApplicationCostStructure(applicationId);
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).toCostStructureModel(application.getCosts());
 
-    @Test
-    void getApplicationCostStructure_WhenExists_ReturnsCostStructure() {
-        Long applicationId = 1L;
-        Application application = new Application();
-        application.setCosts(new CostStructure());
-        CostStructureDetail expectedCostStructure = new CostStructureDetail();
+    assertEquals(expectedCostStructure, result);
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toCostStructureModel(application.getCosts())).thenReturn(expectedCostStructure);
+  @Test
+  void getApplicationCostStructure_WhenNotExists_ThrowsException() {
+    Long applicationId = 1L;
 
-        CostStructureDetail result = applicationService.getApplicationCostStructure(applicationId);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).toCostStructureModel(application.getCosts());
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getApplicationCostStructure(applicationId));
 
-        assertEquals(expectedCostStructure, result);
-    }
+    assertEquals("Cost structure for application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void getApplicationCostStructure_WhenNotExists_ThrowsException() {
-        Long applicationId = 1L;
+  @Test
+  void putCostStructure_WhenExists_UpdatesCostStructure() {
+    Long applicationId = 1L;
+    CostStructureDetail costStructure = new CostStructureDetail();
+    Application application = new Application();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getApplicationCostStructure(applicationId));
+    applicationService.putCostStructure(applicationId, costStructure);
 
-        assertEquals("Cost structure for application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).addCostStructureToApplication(application, costStructure);
+    verify(applicationRepository).save(application);
+  }
 
-    @Test
-    void putCostStructure_WhenExists_UpdatesCostStructure() {
-        Long applicationId = 1L;
-        CostStructureDetail costStructure = new CostStructureDetail();
-        Application application = new Application();
+  @Test
+  void putCostStructure_WhenNotExists_ThrowsException() {
+    Long applicationId = 1L;
+    CostStructureDetail costStructure = new CostStructureDetail();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        applicationService.putCostStructure(applicationId, costStructure);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.putCostStructure(applicationId, costStructure));
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).addCostStructureToApplication(application, costStructure);
-        verify(applicationRepository).save(application);
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void putCostStructure_WhenNotExists_ThrowsException() {
-        Long applicationId = 1L;
-        CostStructureDetail costStructure = new CostStructureDetail();
+  @Test
+  void getOpponentsForApplication_WhenExists_ReturnsOpponents() {
+    Long applicationId = 1L;
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    Application application = new Application();
+    application.setOpponents(new ArrayList<>());
+    application.getOpponents().add(new Opponent());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.putCostStructure(applicationId, costStructure));
+    OpponentDetail opponentModel = new OpponentDetail();
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toOpponentModel(any())).thenReturn(opponentModel);
 
-    @Test
-    void getOpponentsForApplication_WhenExists_ReturnsOpponents() {
-        Long applicationId = 1L;
+    List<OpponentDetail> result = applicationService.getOpponentsForApplication(applicationId);
 
-        Application application = new Application();
-        application.setOpponents(new ArrayList<>());
-        application.getOpponents().add(new Opponent());
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper, times(application.getOpponents().size())).toOpponentModel(any());
 
-        OpponentDetail opponentModel = new OpponentDetail();
+    assertFalse(result.isEmpty());
+    assertEquals(opponentModel, result.getFirst());
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toOpponentModel(any())).thenReturn(opponentModel);
+  @Test
+  void getOpponentsForApplication_WhenNotExists_ThrowsException() {
+    Long applicationId = 1L;
 
-        List<OpponentDetail> result = applicationService.getOpponentsForApplication(applicationId);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper, times(application.getOpponents().size())).toOpponentModel(any());
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.getOpponentsForApplication(applicationId));
 
-        assertFalse(result.isEmpty());
-        assertEquals(opponentModel, result.getFirst());
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void getOpponentsForApplication_WhenNotExists_ThrowsException() {
-        Long applicationId = 1L;
+  @Test
+  void createOpponentForApplication_WhenApplicationExists_CreatesOpponent() {
+    Long applicationId = 1L;
+    OpponentDetail opponent = new OpponentDetail();
+    Application application = new Application();
+    Opponent opponentEntity = new Opponent();
+    application.setOpponents(new ArrayList<>());
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
+    when(applicationMapper.toOpponent(opponent)).thenReturn(opponentEntity);
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.getOpponentsForApplication(applicationId));
+    applicationService.createOpponentForApplication(applicationId, opponent);
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+    verify(applicationRepository).findById(applicationId);
+    verify(applicationMapper).toOpponent(opponent);
+    verify(applicationRepository).save(application);
+    assertTrue(application.getOpponents().contains(opponentEntity));
+  }
 
-    @Test
-    void createOpponentForApplication_WhenApplicationExists_CreatesOpponent() {
-        Long applicationId = 1L;
-        OpponentDetail opponent = new OpponentDetail();
-        Application application = new Application();
-        Opponent opponentEntity = new Opponent();
-        application.setOpponents(new ArrayList<>());
+  @Test
+  void createOpponentForApplication_WhenApplicationNotExists_ThrowsException() {
+    Long applicationId = 1L;
+    OpponentDetail opponent = new OpponentDetail();
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(application));
-        when(applicationMapper.toOpponent(opponent)).thenReturn(opponentEntity);
+    when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        applicationService.createOpponentForApplication(applicationId, opponent);
+    CaabApiException exception = assertThrows(CaabApiException.class, () ->
+        applicationService.createOpponentForApplication(applicationId, opponent));
 
-        verify(applicationRepository).findById(applicationId);
-        verify(applicationMapper).toOpponent(opponent);
-        verify(applicationRepository).save(application);
-        assertTrue(application.getOpponents().contains(opponentEntity));
-    }
+    assertEquals("Application with id 1 not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+  }
 
-    @Test
-    void createOpponentForApplication_WhenApplicationNotExists_ThrowsException() {
-        Long applicationId = 1L;
-        OpponentDetail opponent = new OpponentDetail();
+  @Test
+  void getTotalApplications_ReturnsResult() {
+    // Given
+    Long totalApplications = 10L;
+    when(applicationRepository.count()).thenReturn(totalApplications);
+    // When
+    Long result = applicationService.getTotalApplications();
+    // Then
+    assertEquals(totalApplications, result);
+  }
 
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.empty());
 
-        CaabApiException exception = assertThrows(CaabApiException.class, () ->
-            applicationService.createOpponentForApplication(applicationId, opponent));
+  /**
+   * Helper method to setup the mocking behaviour of applicationMapper and applicationRepository.
+   */
+  private void mockMapperAndRepository(ApplicationDetail applicationDetail,
+      Application application) {
+    when(applicationMapper.toApplication(applicationDetail)).thenReturn(application);
+    when(applicationRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+  }
 
-        assertEquals("Application with id 1 not found", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
-    }
+  /**
+   * Helper method to verify the interactions with applicationMapper and applicationRepository.
+   */
+  private void verifyInteractionsWithMocks(ApplicationDetail applicationDetail,
+      Application application) {
+    verify(applicationMapper).toApplication(applicationDetail);
+    verify(applicationRepository).save(application);
+  }
 
+  /**
+   * Helper method to create an Application with existing Address and CostStructure.
+   */
+  private Application createApplicationWithExistingAddressAndCosts() {
+    Address existingAddress = new Address();
+    CostStructure existingCosts = new CostStructure();
 
-    /**
-     * Helper method to setup the mocking behaviour of applicationMapper and applicationRepository.
-     */
-    private void mockMapperAndRepository(ApplicationDetail applicationDetail, Application application) {
-        when(applicationMapper.toApplication(applicationDetail)).thenReturn(application);
-        when(applicationRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-    }
+    Application application = new Application();
+    application.setCorrespondenceAddress(existingAddress);
+    application.setCosts(existingCosts);
 
-    /**
-     * Helper method to verify the interactions with applicationMapper and applicationRepository.
-     */
-    private void verifyInteractionsWithMocks(ApplicationDetail applicationDetail, Application application) {
-        verify(applicationMapper).toApplication(applicationDetail);
-        verify(applicationRepository).save(application);
-    }
-
-    /**
-     * Helper method to create an Application with existing Address and CostStructure.
-     */
-    private Application createApplicationWithExistingAddressAndCosts() {
-        Address existingAddress = new Address();
-        CostStructure existingCosts = new CostStructure();
-
-        Application application = new Application();
-        application.setCorrespondenceAddress(existingAddress);
-        application.setCosts(existingCosts);
-
-        return application;
-    }
+    return application;
+  }
 
 
 }

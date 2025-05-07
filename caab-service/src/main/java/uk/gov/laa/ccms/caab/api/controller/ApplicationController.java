@@ -234,6 +234,16 @@ public class ApplicationController implements ApplicationsApi {
     return new ResponseEntity<>(costStructure, HttpStatus.OK);
   }
 
+  /**
+   * Returns the total number of applications
+   *
+   * @return a ResponseEntity with the total number of applications
+   */
+  @Override
+  public ResponseEntity<Long> getApplicationCount() {
+    return new ResponseEntity<>(applicationService.getTotalApplications(), HttpStatus.OK);
+  }
+
   @Override
   public ResponseEntity<Void> updateApplicationCostStructure(
       final Long applicationId,
