@@ -6,7 +6,6 @@ import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
+import uk.gov.laa.ccms.caab.api.metric.ApplicationsMetricScheduler;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
 
 public class AbstractControllerIntegrationTest {
@@ -25,7 +25,7 @@ public class AbstractControllerIntegrationTest {
   protected final String caabUserLoginId = "audit@user.com";
 
   @MockitoBean
-  private PrometheusRegistry prometheusRegistry;
+  private ApplicationsMetricScheduler applicationsMetricScheduler;
   /**
    * Recursively navigate the object using the fields array and set the field to null.
    */
