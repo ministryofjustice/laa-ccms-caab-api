@@ -235,7 +235,7 @@ public class ApplicationController implements ApplicationsApi {
   }
 
   /**
-   * Returns the total number of applications
+   * Returns the total number of applications.
    *
    * @return a ResponseEntity with the total number of applications
    */
