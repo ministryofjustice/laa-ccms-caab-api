@@ -48,72 +48,81 @@ import uk.gov.laa.ccms.caab.model.StringDisplayValue;
 @WebAppConfiguration
 class ApplicationControllerTest {
 
-    @Mock
-    private ApplicationService applicationService;
+  @Mock
+  private ApplicationService applicationService;
 
-    @InjectMocks
-    private ApplicationController applicationController;
+  @InjectMocks
+  private ApplicationController applicationController;
 
-    private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper;
+  private ObjectMapper objectMapper;
 
-    private final String caabUserLoginId = "userLoginId";
+  private final String caabUserLoginId = "userLoginId";
 
-    @BeforeEach
-    public void setup() {
-        mockMvc = standaloneSetup(applicationController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .build();
-        objectMapper = new ObjectMapper();
-    }
-
-    @Test
-    public void createApplication_isCreated() throws Exception {
-        String loginId = "test";
-        String caseReferenceNumber = "30001234";
-        String categoryOfLawId = "TEST";
-        int providerId = 12345;
-        String clientRef = "clientRef";
-        Long id = 1L;
-
-        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails()
-            .provider(new IntDisplayValue().id(providerId));
-
-        ClientDetail client = new ClientDetail().reference(clientRef);
-
-        StringDisplayValue categoryOfLaw = new StringDisplayValue()
-            .id(categoryOfLawId);
-
-        ApplicationDetail applicationDetail = new ApplicationDetail()
-            .caseReferenceNumber(caseReferenceNumber)
-            .categoryOfLaw(categoryOfLaw)
-            .client(client)
-            .providerDetails(providerDetails);
-
-        when(applicationService.createApplication(applicationDetail)).thenReturn(id);
-
-        this.mockMvc.perform(post("/applications")
-                .header("Caab-User-Login-Id", loginId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(applicationDetail)))
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", "http://localhost/applications/" + id));
-    }
-
-    @Test
-    public void getApplication() throws Exception {
-        Long id = 123456L;
-
-        when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
-
-        this.mockMvc.perform(get("/applications/{id}", id))
-            .andDo(print())
-            .andExpect(status().isOk());
-    }
+  @BeforeEach
+  void setup() {
+    mockMvc = standaloneSetup(applicationController)
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        .build();
+    objectMapper = new ObjectMapper();
+  }
 
   @Test
-  public void updateApplication() throws Exception {
+  void createApplication_isCreated() throws Exception {
+    String loginId = "test";
+    String caseReferenceNumber = "30001234";
+    String categoryOfLawId = "TEST";
+    int providerId = 12345;
+    String clientRef = "clientRef";
+    Long id = 1L;
+
+    ApplicationProviderDetails providerDetails = new ApplicationProviderDetails()
+        .provider(new IntDisplayValue().id(providerId));
+
+    ClientDetail client = new ClientDetail().reference(clientRef);
+
+    StringDisplayValue categoryOfLaw = new StringDisplayValue()
+        .id(categoryOfLawId);
+
+    ApplicationDetail applicationDetail = new ApplicationDetail()
+        .caseReferenceNumber(caseReferenceNumber)
+        .categoryOfLaw(categoryOfLaw)
+        .client(client)
+        .providerDetails(providerDetails);
+
+    when(applicationService.createApplication(applicationDetail)).thenReturn(id);
+
+    this.mockMvc.perform(post("/applications")
+            .header("Caab-User-Login-Id", loginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(applicationDetail)))
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location", "http://localhost/applications/" + id));
+  }
+
+  @Test
+  void getApplication() throws Exception {
+    Long id = 123456L;
+
+    when(applicationService.getApplication(id)).thenReturn(new ApplicationDetail());
+
+    this.mockMvc.perform(get("/applications/{id}", id))
+        .andDo(print())
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void getApplicationCount() throws Exception {
+    when(applicationService.getTotalApplications()).thenReturn(123L);
+
+    this.mockMvc.perform(get("/applications/_count"))
+        .andDo(print())
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void updateApplication() throws Exception {
     Long id = 1L;
     String caabUserLoginId = "testUserLoginId";
     ApplicationDetail applicationDetail = new ApplicationDetail();
@@ -130,7 +139,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void removeApplication() throws Exception {
+  void removeApplication() throws Exception {
     Long id = 1L;
     String caabUserLoginId = "testUserLoginId";
 
@@ -145,168 +154,169 @@ class ApplicationControllerTest {
 
 
   @Test
-    public void getApplicationType() throws Exception {
-        Long id = 123L;
-        ApplicationType applicationType = new ApplicationType();
+  void getApplicationType() throws Exception {
+    Long id = 123L;
+    ApplicationType applicationType = new ApplicationType();
 
-        when(applicationService.getApplicationType(id)).thenReturn(applicationType);
+    when(applicationService.getApplicationType(id)).thenReturn(applicationType);
 
-        this.mockMvc.perform(get("/applications/{id}/application-type", id))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void putApplicationType() throws Exception {
-        Long id = 123L;
-        String caabUserLoginId = "test";
-        ApplicationType applicationType = new ApplicationType();
-
-        // Assuming that your service method returns void (no return value)
-        doNothing().when(applicationService).putApplicationType(id, applicationType);
-
-        this.mockMvc.perform(put("/applications/{id}/application-type", id)
-                .header("Caab-User-Login-Id", caabUserLoginId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(applicationType)))
-            .andExpect(status().isNoContent());
-
-        verify(applicationService).putApplicationType(id, applicationType);
-    }
-
-    @Test
-    public void getApplicationProviderDetails() throws Exception {
-        Long id = 123L;
-        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
-
-        when(applicationService.getApplicationProviderDetails(id)).thenReturn(providerDetails);
-
-        this.mockMvc.perform(get("/applications/{id}/provider-details", id))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void putApplicationProviderDetails() throws Exception {
-        Long id = 123L;
-        String caabUserLoginId = "test";
-        ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
-
-        doNothing().when(applicationService).putProviderDetails(id, providerDetails);
-
-        this.mockMvc.perform(put("/applications/{id}/provider-details", id)
-                .header("Caab-User-Login-Id", caabUserLoginId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(providerDetails)))
-            .andExpect(status().isNoContent());
-
-        verify(applicationService).putProviderDetails(id, providerDetails);
-    }
-
-    @Test
-    public void getApplicationCorrespondenceAddressDetail() throws Exception {
-        Long id = 123L;
-        AddressDetail address = new AddressDetail();
-
-        when(applicationService.getApplicationCorrespondenceAddress(id)).thenReturn(address);
-
-        this.mockMvc.perform(get("/applications/{id}/correspondence-address", id))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void putApplicationCorrespondenceAddressDetail() throws Exception {
-        Long id = 123L;
-        String caabUserLoginId = "test";
-        AddressDetail address = new AddressDetail();
-
-        doNothing().when(applicationService).putCorrespondenceAddress(id, address);
-
-        this.mockMvc.perform(put("/applications/{id}/correspondence-address", id)
-                .header("Caab-User-Login-Id", caabUserLoginId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(address)))
-            .andExpect(status().isNoContent());
-
-        verify(applicationService).putCorrespondenceAddress(id, address);
-    }
-
-    @Test
-    public void getApplicationLinkedCases_returnsLinkedCases() throws Exception {
-        Long id = 1L;
-        List<LinkedCaseDetail> linkedCases = Arrays.asList(new LinkedCaseDetail(), new LinkedCaseDetail()); // Assuming some mock linked cases
-
-        when(applicationService.getLinkedCasesForApplication(id)).thenReturn(linkedCases);
-
-        this.mockMvc.perform(get("/applications/{id}/linked-cases", id))
-            .andExpect(status().isOk());
-
-        verify(applicationService).getLinkedCasesForApplication(id);
-    }
-
-    @Test
-    public void addApplicationLinkedCase_isCreated() throws Exception {
-        Long id = 1L;
-        String caabUserLoginId = "userLoginId";
-        LinkedCaseDetail linkedCase = new LinkedCaseDetail(); // Set up linked case details as required
-
-        doNothing().when(applicationService).createLinkedCaseForApplication(id, linkedCase);
-
-        this.mockMvc.perform(post("/applications/{id}/linked-cases", id)
-                .header("Caab-User-Login-Id", caabUserLoginId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(linkedCase)))
-            .andExpect(status().isCreated());
-
-        verify(applicationService).createLinkedCaseForApplication(id, linkedCase);
-    }
-
-    @Test
-    public void getApplications() throws Exception {
-        String caseRef = "caseref";
-        String providerId = "provid";
-        String providerRef = "provref";
-        String clientSurname = "surname";
-        String clientRef = "ref";
-        String feeEarner = "fee";
-        String officeId = "123";
-        String status = "stat";
-
-        when(applicationService.getApplications(
-            eq(caseRef),
-            eq(providerId),
-            eq(providerRef),
-            eq(clientSurname),
-            eq(clientRef),
-            eq(feeEarner),
-            eq(Integer.parseInt(officeId)),
-            eq(status),
-            any(Pageable.class))).thenReturn(new ApplicationDetails());
-
-        this.mockMvc.perform(get("/applications")
-                .param("case-reference-number", caseRef)
-                .param("provider-id", providerId)
-                .param("provider-case-ref", providerRef)
-                .param("client-surname", clientSurname)
-                .param("client-reference", clientRef)
-                .param("fee-earner", feeEarner)
-                .param("office-id", officeId)
-                .param("status", status))
-            .andDo(print())
-            .andExpect(status().isOk());
-
-        verify(applicationService).getApplications(
-            eq(caseRef),
-            eq(providerId),
-            eq(providerRef),
-            eq(clientSurname),
-            eq(clientRef),
-            eq(feeEarner),
-            eq(Integer.parseInt(officeId)),
-            eq(status),
-            any(Pageable.class));
-    }
+    this.mockMvc.perform(get("/applications/{id}/application-type", id))
+        .andExpect(status().isOk());
+  }
 
   @Test
-  public void getApplicationCostStructureDetail_ReturnsCostStructureDetail() throws Exception {
+  void putApplicationType() throws Exception {
+    Long id = 123L;
+    String caabUserLoginId = "test";
+    ApplicationType applicationType = new ApplicationType();
+
+    // Assuming that your service method returns void (no return value)
+    doNothing().when(applicationService).putApplicationType(id, applicationType);
+
+    this.mockMvc.perform(put("/applications/{id}/application-type", id)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(applicationType)))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).putApplicationType(id, applicationType);
+  }
+
+  @Test
+  void getApplicationProviderDetails() throws Exception {
+    Long id = 123L;
+    ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+
+    when(applicationService.getApplicationProviderDetails(id)).thenReturn(providerDetails);
+
+    this.mockMvc.perform(get("/applications/{id}/provider-details", id))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void putApplicationProviderDetails() throws Exception {
+    Long id = 123L;
+    String caabUserLoginId = "test";
+    ApplicationProviderDetails providerDetails = new ApplicationProviderDetails();
+
+    doNothing().when(applicationService).putProviderDetails(id, providerDetails);
+
+    this.mockMvc.perform(put("/applications/{id}/provider-details", id)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(providerDetails)))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).putProviderDetails(id, providerDetails);
+  }
+
+  @Test
+  void getApplicationCorrespondenceAddressDetail() throws Exception {
+    Long id = 123L;
+    AddressDetail address = new AddressDetail();
+
+    when(applicationService.getApplicationCorrespondenceAddress(id)).thenReturn(address);
+
+    this.mockMvc.perform(get("/applications/{id}/correspondence-address", id))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void putApplicationCorrespondenceAddressDetail() throws Exception {
+    Long id = 123L;
+    String caabUserLoginId = "test";
+    AddressDetail address = new AddressDetail();
+
+    doNothing().when(applicationService).putCorrespondenceAddress(id, address);
+
+    this.mockMvc.perform(put("/applications/{id}/correspondence-address", id)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(address)))
+        .andExpect(status().isNoContent());
+
+    verify(applicationService).putCorrespondenceAddress(id, address);
+  }
+
+  @Test
+  void getApplicationLinkedCases_returnsLinkedCases() throws Exception {
+    Long id = 1L;
+    List<LinkedCaseDetail> linkedCases = Arrays.asList(new LinkedCaseDetail(),
+        new LinkedCaseDetail()); // Assuming some mock linked cases
+
+    when(applicationService.getLinkedCasesForApplication(id)).thenReturn(linkedCases);
+
+    this.mockMvc.perform(get("/applications/{id}/linked-cases", id))
+        .andExpect(status().isOk());
+
+    verify(applicationService).getLinkedCasesForApplication(id);
+  }
+
+  @Test
+  void addApplicationLinkedCase_isCreated() throws Exception {
+    Long id = 1L;
+    String caabUserLoginId = "userLoginId";
+    LinkedCaseDetail linkedCase = new LinkedCaseDetail(); // Set up linked case details as required
+
+    doNothing().when(applicationService).createLinkedCaseForApplication(id, linkedCase);
+
+    this.mockMvc.perform(post("/applications/{id}/linked-cases", id)
+            .header("Caab-User-Login-Id", caabUserLoginId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(linkedCase)))
+        .andExpect(status().isCreated());
+
+    verify(applicationService).createLinkedCaseForApplication(id, linkedCase);
+  }
+
+  @Test
+  void getApplications() throws Exception {
+    String caseRef = "caseref";
+    String providerId = "provid";
+    String providerRef = "provref";
+    String clientSurname = "surname";
+    String clientRef = "ref";
+    String feeEarner = "fee";
+    String officeId = "123";
+    String status = "stat";
+
+    when(applicationService.getApplications(
+        eq(caseRef),
+        eq(providerId),
+        eq(providerRef),
+        eq(clientSurname),
+        eq(clientRef),
+        eq(feeEarner),
+        eq(Integer.parseInt(officeId)),
+        eq(status),
+        any(Pageable.class))).thenReturn(new ApplicationDetails());
+
+    this.mockMvc.perform(get("/applications")
+            .param("case-reference-number", caseRef)
+            .param("provider-id", providerId)
+            .param("provider-case-ref", providerRef)
+            .param("client-surname", clientSurname)
+            .param("client-reference", clientRef)
+            .param("fee-earner", feeEarner)
+            .param("office-id", officeId)
+            .param("status", status))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(applicationService).getApplications(
+        eq(caseRef),
+        eq(providerId),
+        eq(providerRef),
+        eq(clientSurname),
+        eq(clientRef),
+        eq(feeEarner),
+        eq(Integer.parseInt(officeId)),
+        eq(status),
+        any(Pageable.class));
+  }
+
+  @Test
+  void getApplicationCostStructureDetail_ReturnsCostStructureDetail() throws Exception {
     Long applicationId = 1L;
     CostStructureDetail costStructure = new CostStructureDetail();
 
@@ -319,7 +329,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void updateApplicationCostStructureDetail_UpdatesSuccessfully() throws Exception {
+  void updateApplicationCostStructureDetail_UpdatesSuccessfully() throws Exception {
     Long applicationId = 1L;
     CostStructureDetail costStructure = new CostStructureDetail();
 
@@ -335,7 +345,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void addApplicationProceeding_CreatesProceeding() throws Exception {
+  void addApplicationProceeding_CreatesProceeding() throws Exception {
     Long applicationId = 1L;
     ProceedingDetail proceeding = new ProceedingDetail();
 
@@ -351,7 +361,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void getApplicationProceedings_ReturnsProceedingsList() throws Exception {
+  void getApplicationProceedings_ReturnsProceedingsList() throws Exception {
     Long applicationId = 1L;
     List<ProceedingDetail> proceedings = List.of(new ProceedingDetail());
 
@@ -364,7 +374,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void addApplicationPriorAuthority_CreatesPriorAuthority() throws Exception {
+  void addApplicationPriorAuthority_CreatesPriorAuthority() throws Exception {
     Long id = 1L;
     PriorAuthorityDetail priorAuthority = new PriorAuthorityDetail();
 
@@ -380,7 +390,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void getApplicationPriorAuthorities_ReturnsPriorAuthoritiesList() throws Exception {
+  void getApplicationPriorAuthorities_ReturnsPriorAuthoritiesList() throws Exception {
     Long id = 1L;
     List<PriorAuthorityDetail> priorAuthorities = List.of(new PriorAuthorityDetail());
 
@@ -393,7 +403,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void addApplicationOpponent_CreatesOpponent() throws Exception {
+  void addApplicationOpponent_CreatesOpponent() throws Exception {
     Long applicationId = 1L;
     OpponentDetail opponent = new OpponentDetail();
 
@@ -409,7 +419,7 @@ class ApplicationControllerTest {
   }
 
   @Test
-  public void getApplicationOpponents_ReturnsOpponents() throws Exception {
+  void getApplicationOpponents_ReturnsOpponents() throws Exception {
     Long applicationId = 1L;
     List<OpponentDetail> opponents = List.of(new OpponentDetail());
 

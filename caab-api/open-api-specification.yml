@@ -94,6 +94,30 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /applications/_count:
+    get:
+      tags:
+        - applications
+      summary: 'Get Total Applications'
+      operationId: 'getApplicationCount'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                type: 'integer'
+                format: 'int64'
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
   /applications/{id}:
     get:
       tags:
