@@ -2,6 +2,7 @@ package uk.gov.laa.ccms.caab.api.metric;
 
 import io.prometheus.metrics.core.metrics.Gauge;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
+import lombok.Getter;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
@@ -15,6 +16,7 @@ import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 @Component
 public class ApplicationsMetricScheduler {
 
+  @Getter
   private final Gauge totalApplicationsInFlightGauge;
   private final ApplicationService applicationService;
 
