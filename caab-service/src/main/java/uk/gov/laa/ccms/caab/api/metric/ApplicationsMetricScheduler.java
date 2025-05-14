@@ -3,6 +3,7 @@ package uk.gov.laa.ccms.caab.api.metric;
 import io.prometheus.metrics.core.metrics.Gauge;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
@@ -13,6 +14,7 @@ import uk.gov.laa.ccms.caab.api.service.ApplicationService;
  *
  * @author Jamie Briggs
  */
+@Slf4j
 @Component
 public class ApplicationsMetricScheduler {
 
@@ -40,9 +42,11 @@ public class ApplicationsMetricScheduler {
   /**
    * Updates the applications in flight gauge with the total number of applications in TDS.
    */
-  @Scheduled(fixedRate = 10000)
+  @Scheduled(cron = "${laa.ccms.caab.scheduled.update-total-applications-metric-cron}")
   public void updateTotalApplicationsGauge() {
-    totalApplicationsInFlightGauge.set(applicationService
-        .getTotalApplications());
+    Long totalApplications = applicationService
+        .getTotalApplications();
+    log.info("Updating total applications in TDS gauge to {}", totalApplications);
+    totalApplicationsInFlightGauge.set(totalApplications);
   }
 }
