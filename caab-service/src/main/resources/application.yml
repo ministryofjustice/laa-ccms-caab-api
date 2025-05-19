@@ -25,7 +25,7 @@ laa:
   ccms:
     caab:
       scheduled:
-        update-total-applications-metric-cron: '0 */10 * * * *'
+        update-total-applications-metric-cron: ${CAAB_TOTAL_APPLICATIONS_METRIC_CRON}
       converters:
         boolean:
           true_values:
