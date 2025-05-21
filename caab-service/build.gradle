@@ -3,8 +3,9 @@ apply plugin: 'uk.gov.laa.ccms.springboot.laa-ccms-spring-boot-gradle-plugin'
 dependencies {
 
     constraints {
-        testImplementation('org.apache.commons:commons-compress:1.26.0') {
-            because '1.24.0 has a known security vulnerability (CVE-2024-25710)'
+        testImplementation('org.apache.commons:commons-compress:1.27.1') {
+            because '1.24.0 has a known security vulnerability (CVE-2024-25710)' +
+                    "Parent: org.testcontainers:testcontainers"
         }
     }
 
