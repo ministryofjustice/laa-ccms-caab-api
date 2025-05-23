@@ -21,9 +21,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.laa.ccms.caab.api.entity.Application;
 import uk.gov.laa.ccms.caab.api.exception.CaabApiException;
+import uk.gov.laa.ccms.caab.api.metric.ApplicationsMetricScheduler;
 import uk.gov.laa.ccms.caab.api.repository.ApplicationRepository;
 import uk.gov.laa.ccms.caab.api.service.ApplicationService;
 import uk.gov.laa.ccms.caab.model.AddressDetail;
@@ -45,6 +47,9 @@ public abstract class BaseApplicationServiceIntegrationTest {
   private ApplicationService applicationService;
   @Autowired
   private ApplicationRepository applicationRepository;
+
+  @MockitoBean
+  private ApplicationsMetricScheduler applicationsMetricScheduler;
 
   private final Long applicationId = 9876L;
   private final String lscCaseReference = "LSC001";

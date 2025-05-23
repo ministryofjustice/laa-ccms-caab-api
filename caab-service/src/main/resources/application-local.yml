@@ -13,6 +13,13 @@ spring:
 server:
   port: 8005
 
+laa:
+  ccms:
+    caab:
+      scheduled:
+        update-total-applications-metric-cron: '0 */1 * * * *'
+
+
 laa.ccms.springboot.starter:
   auth:
     authentication-header: "Authorization"
