@@ -15,13 +15,17 @@ import java.util.Objects;
 import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
+import uk.gov.laa.ccms.caab.api.metric.ApplicationsMetricScheduler;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
 
 public class AbstractControllerIntegrationTest {
 
   protected final String caabUserLoginId = "audit@user.com";
 
+  @MockitoBean
+  private ApplicationsMetricScheduler applicationsMetricScheduler;
   /**
    * Recursively navigate the object using the fields array and set the field to null.
    */

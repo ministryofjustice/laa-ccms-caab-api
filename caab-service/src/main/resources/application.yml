@@ -24,6 +24,8 @@ spring:
 laa:
   ccms:
     caab:
+      scheduled:
+        update-total-applications-metric-cron: ${CAAB_TOTAL_APPLICATIONS_METRIC_CRON}
       converters:
         boolean:
           true_values:

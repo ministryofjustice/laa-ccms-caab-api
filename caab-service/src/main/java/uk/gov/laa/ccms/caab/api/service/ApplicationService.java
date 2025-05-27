@@ -355,6 +355,16 @@ public class ApplicationService {
   }
 
   /**
+   * Gets the total amount of applications.
+   *
+   * @return the total amount of applications.
+   */
+  @Transactional
+  public Long getTotalApplications() {
+    return applicationRepository.count();
+  }
+
+  /**
    * Gets an applications provider details.
    *
    * @param applicationId the TDS id for the application.
