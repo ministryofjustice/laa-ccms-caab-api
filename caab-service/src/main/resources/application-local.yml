@@ -10,6 +10,14 @@ spring:
     hibernate:
       ddl-auto: none
 
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: TRACE
 server:
   port: 8005
 
