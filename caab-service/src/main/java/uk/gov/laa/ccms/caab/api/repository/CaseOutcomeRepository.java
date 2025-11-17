@@ -19,6 +19,7 @@ public interface CaseOutcomeRepository extends JpaRepository<CaseOutcome, Long> 
 
   @Query("select po from ProceedingOutcome po where po.caseOutcome.lscCaseReference = ?1 "
       + "and po.caseOutcome.providerId = ?2 and po.proceedingCaseId = ?3")
-  Optional<ProceedingOutcome> findProceedingOutcome(String caseReferenceNumber, String providerId, Long proceedingId);
+  Optional<ProceedingOutcome> findProceedingOutcome(
+      String caseReferenceNumber, String providerId, Long proceedingId);
 
 }

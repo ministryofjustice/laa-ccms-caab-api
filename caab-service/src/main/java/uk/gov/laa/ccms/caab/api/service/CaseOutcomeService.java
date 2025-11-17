@@ -64,6 +64,14 @@ public class CaseOutcomeService {
         caseOutcomeRepository.findAll(Example.of(caseOutcome)));
   }
 
+  /**
+   * Get the outcome of a proceeding.
+   *
+   * @param proceedingId - the id of the proceeding
+   * @param caseReferenceNumber - the case reference number
+   * @param providerId - the id of the provider
+   * @return the {@link ProceedingOutcomeDetail}
+   */
   @Transactional
   public ProceedingOutcomeDetail getProceedingOutcome(
       final Long proceedingId,
