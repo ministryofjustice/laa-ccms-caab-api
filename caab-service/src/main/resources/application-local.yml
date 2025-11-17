@@ -28,7 +28,7 @@ laa:
         update-total-applications-metric-cron: '0 */1 * * * *'
 
 
-laa.ccms.springboot.starter:
+laa.springboot.starter:
   auth:
     authentication-header: "Authorization"
     authorized-clients: '[

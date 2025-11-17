@@ -33,7 +33,7 @@ laa:
           false_values:
             N,No
 
-laa.ccms.springboot.starter.auth:
+laa.springboot.starter.auth:
   authentication-header: "Authorization"
   authorized-clients: ${AUTHORIZED_CLIENTS}
   authorized-roles: ${AUTHORIZED_ROLES}
