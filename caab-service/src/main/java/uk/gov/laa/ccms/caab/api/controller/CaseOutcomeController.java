@@ -12,6 +12,7 @@ import uk.gov.laa.ccms.caab.api.CaseoutcomeApi;
 import uk.gov.laa.ccms.caab.api.service.CaseOutcomeService;
 import uk.gov.laa.ccms.caab.model.CaseOutcomeDetail;
 import uk.gov.laa.ccms.caab.model.CaseOutcomeDetails;
+import uk.gov.laa.ccms.caab.model.ProceedingOutcomeDetail;
 
 /**
  * Controller handling case outcome-related requests.
@@ -43,6 +44,18 @@ public class CaseOutcomeController implements CaseoutcomeApi {
     CaseOutcomeDetail caseOutcomeDetail = caseOutcomeService.getCaseOutcome(caseOutcomeId);
 
     return new ResponseEntity<>(caseOutcomeDetail, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<ProceedingOutcomeDetail> getProceedingOutcome(
+      final String caseReferenceNumber,
+      final String providerId,
+      final Long proceedingId) {
+
+    ProceedingOutcomeDetail proceedingOutcomeDetail = caseOutcomeService.getProceedingOutcome(
+        proceedingId, caseReferenceNumber, providerId);
+
+    return new ResponseEntity<>(proceedingOutcomeDetail, HttpStatus.OK);
   }
 
   @Override

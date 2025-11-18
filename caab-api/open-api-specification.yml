@@ -1450,6 +1450,49 @@ paths:
           description: 'Not found'
         '500':
           description: 'Internal server error'
+  /proceeding-outcomes/{proceeding-id}:
+    get:
+      tags:
+        - caseoutcome
+      summary: 'Get Proceeding Outcome'
+      operationId: 'getProceedingOutcome'
+      x-spring-paginated: false
+      parameters:
+        - name: 'case-reference-number'
+          in: 'query'
+          required: true
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'provider-id'
+          in: 'query'
+          required: true
+          schema:
+            type: 'string'
+            example: '1234567890'
+        - name: 'proceeding-id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+            format: 'int64'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/proceedingOutcomeDetail"
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '404':
+          description: 'Not found'
+        '500':
+          description: 'Internal server error'
   /case-outcomes:
     get:
       tags:

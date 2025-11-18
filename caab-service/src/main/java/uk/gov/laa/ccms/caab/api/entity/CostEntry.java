@@ -62,7 +62,7 @@ public class CostEntry implements Serializable {
   private String ebsId;
 
   /**
-   * Has this Cost Entry been seen in EBS. This is to prevent more that one 'Counsel' (CostEntry)
+   * Has this Cost Entry been seen in EBS. This is to prevent more than one 'Counsel' (CostEntry)
    * being added to the case whilst in the PUI editor. To limit only one new 'Counsel' per PUI
    * amendment. true (default)= its a new Entry - added during a PUI  amendment false         = its
    * been created from an existing EBS case.

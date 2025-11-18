@@ -56,6 +56,11 @@ public class CostStructure implements Serializable {
   @OrderBy("id ASC ")
   private List<CostEntry> costEntries;
 
+  public void addCostEntry(CostEntry costEntry) {
+    costEntries.add(costEntry);
+    costEntry.setCostStructure(this);
+  }
+
   @Embedded
   private AuditTrail auditTrail = new AuditTrail();
 

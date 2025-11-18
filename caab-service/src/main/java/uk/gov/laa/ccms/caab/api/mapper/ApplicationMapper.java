@@ -104,12 +104,7 @@ public interface ApplicationMapper {
    * @param application the application entity containing parent and child entities.
    */
   default void setParentInChildEntities(@MappingTarget Application application) {
-    if (application.getCosts() != null) {
-      if (application.getCosts().getCostEntries() != null) {
-        application.getCosts().getCostEntries().forEach(
-            costEntry -> costEntry.setCostStructure(application.getCosts()));
-      }
-    }
+    updateCostEntryIds(application.getCosts());
 
     if (application.getProceedings() != null) {
       application.getProceedings().forEach(proceeding -> {
@@ -136,6 +131,15 @@ public interface ApplicationMapper {
 
     if (application.getLinkedCases() != null) {
       application.getLinkedCases().forEach(linkedCase -> linkedCase.setApplication(application));
+    }
+  }
+
+  private void updateCostEntryIds(CostStructure costs) {
+    if (costs != null) {
+      if (costs.getCostEntries() != null) {
+        costs.getCostEntries().forEach(
+            costEntry -> costEntry.setCostStructure(costs));
+      }
     }
   }
 
@@ -335,6 +339,7 @@ public interface ApplicationMapper {
       application.setCosts(new CostStructure());
     }
     updateCostStructure(application.getCosts(), costStructureModel);
+    updateCostEntryIds(application.getCosts());
   }
 
   @Mapping(target = "id", ignore = true)
