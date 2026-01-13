@@ -16,7 +16,7 @@ public class CostEntryDetailCopyable extends CostEntryDetail {
    * itself when it wants to make a copy of itself.
    *
    */
-  private CostEntryDetailCopyable(final CostEntryDetail costEntryDetailToCopy) {
+  public CostEntryDetailCopyable(final CostEntryDetail costEntryDetailToCopy) {
     super();
     this.setAmountBilled(costEntryDetailToCopy.getAmountBilled());
     this.setRequestedCosts(costEntryDetailToCopy.getRequestedCosts());

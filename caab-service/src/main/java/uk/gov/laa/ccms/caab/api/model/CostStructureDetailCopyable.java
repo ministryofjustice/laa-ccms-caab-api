@@ -17,7 +17,7 @@ public class CostStructureDetailCopyable extends CostStructureDetail {
    *
    */
 
-  private CostStructureDetailCopyable(final CostStructureDetail costStructureDetailToCopy) {
+  public CostStructureDetailCopyable(final CostStructureDetail costStructureDetailToCopy) {
     super();
     this.setDefaultCostLimitation(costStructureDetailToCopy.getDefaultCostLimitation());
     this.setGrantedCostLimitation(costStructureDetailToCopy.getGrantedCostLimitation());
