@@ -2,10 +2,20 @@ package uk.gov.laa.ccms.caab.api.model;
 
 import uk.gov.laa.ccms.caab.model.CostStructureDetail;
 
+/**
+ * CostStructureDetail.
+ */
 public class CostStructureDetailCopyable extends CostStructureDetail {
 
+  public CostStructureDetailCopyable() {
+    super();
+  }
 
-  public CostStructureDetailCopyable() { super(); }
+  /**
+   * Constructor to be used by the CostStructureDetail
+   * itself when it wants to make a copy of itself.
+   *
+   */
 
   private CostStructureDetailCopyable(final CostStructureDetail costEntryDetailToCopy) {
     super();
