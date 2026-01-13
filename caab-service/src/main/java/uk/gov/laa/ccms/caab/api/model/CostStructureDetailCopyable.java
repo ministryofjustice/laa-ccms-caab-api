@@ -17,13 +17,13 @@ public class CostStructureDetailCopyable extends CostStructureDetail {
    *
    */
 
-  private CostStructureDetailCopyable(final CostStructureDetail costEntryDetailToCopy) {
+  private CostStructureDetailCopyable(final CostStructureDetail costStructureDetailToCopy) {
     super();
-    this.setDefaultCostLimitation(costEntryDetailToCopy.getDefaultCostLimitation());
-    this.setGrantedCostLimitation(costEntryDetailToCopy.getGrantedCostLimitation());
-    this.setRequestedCostLimitation(costEntryDetailToCopy.getRequestedCostLimitation());
-    this.setCostEntries(costEntryDetailToCopy.getCostEntries());
-    this.setCurrentProviderBilledAmount(costEntryDetailToCopy.getCurrentProviderBilledAmount());
-    this.setAuditTrail(costEntryDetailToCopy.getAuditTrail());
+    this.setDefaultCostLimitation(costStructureDetailToCopy.getDefaultCostLimitation());
+    this.setGrantedCostLimitation(costStructureDetailToCopy.getGrantedCostLimitation());
+    this.setRequestedCostLimitation(costStructureDetailToCopy.getRequestedCostLimitation());
+    this.setCostEntries(costStructureDetailToCopy.getCostEntries());
+    this.setCurrentProviderBilledAmount(costStructureDetailToCopy.getCurrentProviderBilledAmount());
+    this.setAuditTrail(costStructureDetailToCopy.getAuditTrail());
   }
 }
