@@ -1,3 +1,5 @@
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-ccms-caab-api/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-ccms-caab-api)
+
 # laa-ccms-caab-api
 
 This API is made up of multiple projects:
@@ -80,3 +82,6 @@ snyk monitor --org=legal-aid-agency --all-projects --exclude=build,generated --t
 
 You should then see the new vulnerability in the LAA Dashboard, otherwise it is a new
 vulnerability introduced on the feature branch that needs to be resolved.
+
+## Contributing
+Follow the [contribution guide](./CONTRIBUTING.md) to make code changes.
