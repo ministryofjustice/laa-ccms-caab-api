@@ -2,17 +2,17 @@ apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
 dependencies {
 
-    constraints {
-        testImplementation('org.apache.commons:commons-compress:1.28.0') {
-            because '1.24.0 has a known security vulnerability (CVE-2024-25710)' +
-                    "Parent: org.testcontainers:testcontainers"
-        }
-    }
+//    constraints {
+//        testImplementation('org.apache.commons:commons-compress:1.28.0') {
+//            because '1.24.0 has a known security vulnerability (CVE-2024-25710)' +
+//                    "Parent: org.testcontainers:testcontainers"
+//        }
+//    }
 
     implementation project(':caab-api')
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 
     runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
@@ -37,6 +37,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     //Used for integration tests
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.21.4')
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:oracle-free'

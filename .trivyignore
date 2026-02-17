@@ -1,13 +1,5 @@
-# org.apache.commons:commons-lang3 (commons-lang3-3.17.0.jar)
-CVE-2025-48924
-
-# golang.org/x/crypto
-CVE-2025-47914
-CVE-2025-58181
+# commons-io:commons-io (velocity-engine-core-2.3.jar)
+CVE-2024-47554 exp:2026-04-1
 
 # stdlib
-CVE-2025-61729
-CVE-2025-61727
-
-# ch.qos.logback:logback-core:1.5.20 (ch.qos.logback:logback-core@1.5.20)
-CVE-2026-1225
+CVE-2025-68121 exp:2026-04-1
