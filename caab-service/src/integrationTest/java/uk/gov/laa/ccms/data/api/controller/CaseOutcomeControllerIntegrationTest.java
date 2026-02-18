@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
 import uk.gov.laa.ccms.caab.api.controller.CaseOutcomeController;
 import uk.gov.laa.ccms.caab.api.service.CaseOutcomeService;
 import uk.gov.laa.ccms.caab.model.BaseAwardDetail;
@@ -94,13 +95,14 @@ public class CaseOutcomeControllerIntegrationTest
     CaseOutcomeDetail caseOutcomeDetail = loadObjectFromJson(
         "/json/case_outcome_new.json", CaseOutcomeDetail.class);
 
-    String auditUser = "audit@user.com";
+    EntityExchangeResult<Void> responseEntity = restClient.post()
+        .uri("/case-outcomes").body(caseOutcomeDetail)
+        .exchange()
+        .expectStatus()
+        .isCreated()
+        .returnResult(Void.class);
 
-    ResponseEntity<Void> responseEntity =
-        caseOutcomeController.createCaseOutcome(auditUser, caseOutcomeDetail);
-
-    assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-    URI locationUri = responseEntity.getHeaders().getLocation();
+    URI locationUri = responseEntity.getResponseHeaders().getLocation();
 
     String path = locationUri.getPath();
     String id = path.substring(path.lastIndexOf('/') + 1);
@@ -108,7 +110,7 @@ public class CaseOutcomeControllerIntegrationTest
     CaseOutcomeDetail savedCaseOutcomeDetail =
         caseOutcomeService.getCaseOutcome(Long.valueOf(id));
 
-    assertAuditTrail(savedCaseOutcomeDetail.getAuditTrail(), auditUser);
+    assertAuditTrail(savedCaseOutcomeDetail.getAuditTrail(), caabUserLoginId);
 
     // Clear the generated id and audit trail for comparison purposes.
     savedCaseOutcomeDetail.setId(null);

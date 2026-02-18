@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
@@ -50,7 +49,6 @@ public class AbstractControllerIntegrationTest extends OracleContainerIntegratio
   private WebApplicationContext webApplicationContext;
 
   protected RestTestClient restClient;
-  protected HttpHeaders standardHeaders;
 
   protected final String caabUserLoginId = "audit@user.com";
 
