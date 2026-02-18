@@ -41,6 +41,8 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-restclient'
+    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 
     //Used for integration tests
@@ -52,12 +54,14 @@ dependencies {
 }
 
 tasks.withType(Test).configureEach {
-    useJUnitPlatform()
-
     jvmArgs(
             "-javaagent:${configurations.mockitoAgent.asPath}",
             "-Xshare:off"
     )
+}
+
+test {
+    useJUnitPlatform()
 
     finalizedBy jacocoTestReport
 }
