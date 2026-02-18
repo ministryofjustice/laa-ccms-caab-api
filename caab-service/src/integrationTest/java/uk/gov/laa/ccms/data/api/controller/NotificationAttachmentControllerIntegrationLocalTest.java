@@ -1,6 +1,8 @@
 package uk.gov.laa.ccms.data.api.controller;
 
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_CLASS;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_CLASS;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
@@ -13,6 +15,8 @@ import uk.gov.laa.ccms.caab.api.CaabApiApplication;
 @SpringBootTest(classes = CaabApiApplication.class)
 @SqlMergeMode(MERGE)
 @ActiveProfiles("local")
+@Sql(executionPhase = BEFORE_TEST_CLASS, scripts = "/sql/application_tables_create_schema.sql")
+@Sql(executionPhase = AFTER_TEST_CLASS, scripts = "/sql/application_tables_drop_schema.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/delete_data.sql")
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/delete_data.sql")
 public class NotificationAttachmentControllerIntegrationLocalTest extends BaseNotificationAttachmentControllerIntegrationTest {

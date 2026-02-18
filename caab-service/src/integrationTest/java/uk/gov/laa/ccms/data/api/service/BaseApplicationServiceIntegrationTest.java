@@ -40,8 +40,9 @@ import uk.gov.laa.ccms.caab.model.DevolvedPowersDetail;
 import uk.gov.laa.ccms.caab.model.IntDisplayValue;
 import uk.gov.laa.ccms.caab.model.OpponentDetail;
 import uk.gov.laa.ccms.caab.model.StringDisplayValue;
+import uk.gov.laa.ccms.data.api.OracleContainerIntegrationTest;
 
-public abstract class BaseApplicationServiceIntegrationTest {
+public abstract class BaseApplicationServiceIntegrationTest extends OracleContainerIntegrationTest {
 
   @Autowired
   private ApplicationService applicationService;

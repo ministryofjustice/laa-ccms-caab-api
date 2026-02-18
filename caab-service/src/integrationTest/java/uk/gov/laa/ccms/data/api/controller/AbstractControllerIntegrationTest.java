@@ -19,8 +19,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.metric.ApplicationsMetricScheduler;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
+import uk.gov.laa.ccms.data.api.OracleContainerIntegrationTest;
 
-public class AbstractControllerIntegrationTest {
+public class AbstractControllerIntegrationTest extends OracleContainerIntegrationTest {
 
   protected final String caabUserLoginId = "audit@user.com";
 
