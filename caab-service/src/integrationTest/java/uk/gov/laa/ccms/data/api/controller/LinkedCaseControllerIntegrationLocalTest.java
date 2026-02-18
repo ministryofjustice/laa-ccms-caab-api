@@ -15,9 +15,9 @@ import uk.gov.laa.ccms.caab.api.CaabApiApplication;
 @SpringBootTest(classes = CaabApiApplication.class)
 @SqlMergeMode(MERGE)
 @ActiveProfiles("local")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
+@Sql(executionPhase = BEFORE_TEST_CLASS, scripts = "/sql/application_tables_create_schema.sql")
 @Sql(executionPhase = AFTER_TEST_CLASS, scripts = "/sql/application_tables_drop_schema.sql")
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/delete_data.sql")
+@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/delete_data.sql")
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/delete_data.sql")
 public class LinkedCaseControllerIntegrationLocalTest
     extends BaseLinkedCaseControllerIntegrationTest {

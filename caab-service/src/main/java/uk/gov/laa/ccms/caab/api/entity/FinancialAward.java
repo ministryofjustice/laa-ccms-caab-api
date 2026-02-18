@@ -32,7 +32,7 @@ import lombok.Setter;
 public class FinancialAward extends BaseAward {
 
   @Id
-  @GeneratedValue(generator = "XXCCMS_COST_AWARD_S")
+  @GeneratedValue(generator = "XXCCMS_FINANCIAL_AWARD_S")
   private Long id;
 
   /**
