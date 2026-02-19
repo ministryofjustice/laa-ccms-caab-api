@@ -1,22 +1,81 @@
 package uk.gov.laa.ccms.data.api.controller;
 
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import java.io.IOException;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
-import uk.gov.laa.ccms.caab.api.CaabApiApplication;
+import uk.gov.laa.ccms.caab.api.controller.ProceedingController;
+import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.model.ProceedingDetail;
+import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
-@SpringBootTest(classes = CaabApiApplication.class)
-@SqlMergeMode(MERGE)
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
 public class ProceedingControllerIntegrationTest
-    extends BaseProceedingControllerIntegrationTest {
+    extends AbstractControllerIntegrationTest {
 
-    //this runs all tests in BaseProceedingControllerIntegrationTest, do not add anything here
-    //running this class takes longer than the local version, but it is used for running tests in a pipeline
+  @Autowired
+  private ProceedingController proceedingController;
 
+  @Autowired
+  private ApplicationService applicationService;
+
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/proceeding_insert.sql"})
+  public void updateProceeding() throws IOException {
+    Long proceedingId = 2L;
+
+    ProceedingDetail updatedProceeding = loadObjectFromJson("/json/proceeding_new.json", ProceedingDetail.class);
+
+    ResponseEntity<Void> response = proceedingController.updateProceeding(proceedingId, caabUserLoginId, updatedProceeding);
+
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/proceeding_insert.sql"})
+  public void deleteProceedings() {
+    Long caseRef = 41L;
+    Long proceedingRef = 2L;
+
+    proceedingController.removeProceeding(proceedingRef, caabUserLoginId);
+    List<ProceedingDetail> proceedings = applicationService.getProceedingsForApplication(caseRef);
+    assertEquals(0, proceedings.size());
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/proceeding_insert.sql"})
+  public void addScopeLimitationToProceeding() throws IOException {
+    Long proceedingId = 2L;
+
+    ScopeLimitationDetail scopeLimitation = loadObjectFromJson("/json/scope_limitation_new.json", ScopeLimitationDetail.class);
+
+    ResponseEntity<Void> response = proceedingController.addProceedingScopeLimitation(proceedingId, caabUserLoginId, scopeLimitation);
+
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+  }
+
+
+  @Test
+  @Sql(scripts = {
+      "/sql/application_insert.sql",
+      "/sql/proceeding_insert.sql",
+      "/sql/scope_limitation_insert.sql"})
+  public void getScopeLimitationsForProceeding() {
+    Long proceedingId = 2L;
+
+    ResponseEntity<List<ScopeLimitationDetail>> responseEntity = proceedingController.getProceedingsScopeLimitations(proceedingId);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    List<ScopeLimitationDetail> scopeLimitations = responseEntity.getBody();
+    assertFalse(scopeLimitations.isEmpty());
+  }
 }

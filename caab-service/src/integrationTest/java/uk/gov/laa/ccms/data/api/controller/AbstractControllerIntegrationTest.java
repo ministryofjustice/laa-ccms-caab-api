@@ -2,6 +2,9 @@ package uk.gov.laa.ccms.data.api.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_CLASS;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_CLASS;
 import static uk.gov.laa.ccms.caab.api.audit.AuditorAwareImpl.currentUserHolder;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -14,14 +17,38 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
+import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
+import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.web.context.WebApplicationContext;
+import uk.gov.laa.ccms.caab.api.CaabApiApplication;
 import uk.gov.laa.ccms.caab.api.entity.AuditTrail;
 import uk.gov.laa.ccms.caab.api.metric.ApplicationsMetricScheduler;
 import uk.gov.laa.ccms.caab.model.AuditDetail;
 import uk.gov.laa.ccms.data.api.OracleContainerIntegrationTest;
+import uk.gov.laa.springboot.auth.ClientCredential;
+import uk.gov.laa.springboot.auth.TokenDetailsManager;
 
+@SpringBootTest(classes = {CaabApiApplication.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(executionPhase = BEFORE_TEST_CLASS, scripts = "/sql/application_tables_create_schema.sql")
+@Sql(executionPhase = AFTER_TEST_CLASS, scripts = "/sql/application_tables_drop_schema.sql")
+@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/delete_data.sql")
+@SqlMergeMode(MergeMode.MERGE)
 public class AbstractControllerIntegrationTest extends OracleContainerIntegrationTest {
+
+  @Autowired
+  TokenDetailsManager tokenDetailsManager;
+
+  @Autowired
+  private WebApplicationContext webApplicationContext;
+
+  protected RestTestClient restClient;
 
   protected final String caabUserLoginId = "audit@user.com";
 
@@ -59,6 +86,12 @@ public class AbstractControllerIntegrationTest extends OracleContainerIntegratio
   @BeforeEach
   public void setup() {
     currentUserHolder.set(caabUserLoginId);
+    String authToken = tokenDetailsManager.getClientCredentials().stream()
+        .findFirst().map(ClientCredential::token).orElseThrow();
+    restClient = RestTestClient.bindToApplicationContext(webApplicationContext)
+        .defaultHeader("Caab-User-Login-Id", caabUserLoginId)
+        .defaultHeader("Authorization", authToken)
+        .build();
   }
 
   public static boolean areAllFieldsEqual(Object obj1, Object obj2, Class<?> clazz, List<String> fieldsToIgnore)
