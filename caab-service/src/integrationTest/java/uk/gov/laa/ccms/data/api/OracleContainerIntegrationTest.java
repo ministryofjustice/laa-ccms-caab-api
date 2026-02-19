@@ -16,4 +16,3 @@ public abstract class OracleContainerIntegrationTest {
             .withUsername("XXCCMS_PUI")
             .withPassword("XXCCMS_PUI");
 }
-
