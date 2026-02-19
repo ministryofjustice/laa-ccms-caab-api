@@ -1,23 +1,48 @@
 package uk.gov.laa.ccms.data.api.controller;
 
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import java.io.IOException;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
-import uk.gov.laa.ccms.caab.api.CaabApiApplication;
-import uk.gov.laa.ccms.data.api.IntegrationTestInterface;
+import uk.gov.laa.ccms.caab.api.controller.OpponentController;
+import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.model.OpponentDetail;
 
-@SpringBootTest(classes = CaabApiApplication.class)
-@SqlMergeMode(MERGE)
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
-public class OpponentControllerIntegrationTest extends BaseOpponentControllerIntegrationTest
-    implements IntegrationTestInterface {
+public class OpponentControllerIntegrationTest
+    extends AbstractControllerIntegrationTest {
 
-    //this runs all tests in BaseOpponentControllerIntegrationTest, do not add anything here
-    //running this class takes longer than the local version, but it is used for running tests in a pipeline
+  @Autowired
+  private OpponentController opponentController;
+
+  @Autowired
+  private ApplicationService applicationService;
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql"})
+  public void updateOpponent() throws IOException {
+    Long opponentId = 3L;
+
+    OpponentDetail updatedOpponent = loadObjectFromJson("/json/opponent_new.json", OpponentDetail.class);
+
+    ResponseEntity<Void> response = opponentController.updateOpponent(opponentId, caabUserLoginId, updatedOpponent);
+
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/opponent_insert.sql"})
+  public void removeOpponent() {
+    Long caseRef = 41L;
+    Long opponentId = 3L;
+
+    opponentController.removeOpponent(opponentId, caabUserLoginId);
+    List<OpponentDetail> opponents = applicationService.getOpponentsForApplication(caseRef);
+    assertEquals(0, opponents.size());
+  }
 
 }

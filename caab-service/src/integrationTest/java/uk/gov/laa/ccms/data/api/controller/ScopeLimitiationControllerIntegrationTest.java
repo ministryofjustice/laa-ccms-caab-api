@@ -13,7 +13,7 @@ import uk.gov.laa.ccms.caab.api.controller.ScopeLimitationController;
 import uk.gov.laa.ccms.caab.api.service.ProceedingService;
 import uk.gov.laa.ccms.caab.model.ScopeLimitationDetail;
 
-public abstract class BaseScopeLimitiationControllerIntegrationTest
+public class ScopeLimitiationControllerIntegrationTest
     extends AbstractControllerIntegrationTest {
 
   @Autowired

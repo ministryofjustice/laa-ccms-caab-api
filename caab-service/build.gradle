@@ -1,13 +1,12 @@
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
-dependencies {
-
-    constraints {
-        testImplementation('org.apache.commons:commons-compress:1.28.0') {
-            because '1.24.0 has a known security vulnerability (CVE-2024-25710)' +
-                    "Parent: org.testcontainers:testcontainers"
-        }
+configurations {
+    mockitoAgent {
+        transitive = false
     }
+}
+
+dependencies {
 
     implementation project(':caab-api')
 
@@ -35,11 +34,23 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-restclient'
+    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 
     //Used for integration tests
     testImplementation 'org.testcontainers:testcontainers'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:oracle-free'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers-oracle-free'
+
+    mockitoAgent "org.mockito:mockito-core"
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs(
+            "-javaagent:${configurations.mockitoAgent.asPath}",
+            "-Xshare:off"
+    )
 }
 
 test {

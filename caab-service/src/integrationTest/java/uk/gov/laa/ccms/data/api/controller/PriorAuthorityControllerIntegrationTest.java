@@ -1,24 +1,48 @@
 package uk.gov.laa.ccms.data.api.controller;
 
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import java.io.IOException;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
-import uk.gov.laa.ccms.caab.api.CaabApiApplication;
-import uk.gov.laa.ccms.data.api.IntegrationTestInterface;
+import uk.gov.laa.ccms.caab.api.controller.PriorAuthorityController;
+import uk.gov.laa.ccms.caab.api.service.ApplicationService;
+import uk.gov.laa.ccms.caab.model.PriorAuthorityDetail;
 
-@SpringBootTest(classes = CaabApiApplication.class)
-@SqlMergeMode(MERGE)
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/application_tables_create_schema.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/application_tables_drop_schema.sql")
 public class PriorAuthorityControllerIntegrationTest
-    extends BasePriorAuthorityControllerIntegrationTest
-    implements IntegrationTestInterface {
+    extends AbstractControllerIntegrationTest {
 
-    //this runs all tests in BasePriorAuthorityControllerIntegrationTest, do not add anything here
-    //running this class takes longer than the local version, but it is used for running tests in a pipeline
+  @Autowired
+  private PriorAuthorityController priorAuthorityController;
 
+  @Autowired
+  private ApplicationService applicationService;
+
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/prior_authority_insert.sql"})
+  public void updatePriorAuthority() throws IOException {
+    Long priorAuthorityId = 2L;
+
+    PriorAuthorityDetail updatedPriorAuthority = loadObjectFromJson("/json/prior_authority_new.json", PriorAuthorityDetail.class);
+
+    ResponseEntity<Void> response = priorAuthorityController.updatePriorAuthority(priorAuthorityId, caabUserLoginId, updatedPriorAuthority);
+
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+  }
+
+  @Test
+  @Sql(scripts = {"/sql/application_insert.sql", "/sql/prior_authority_insert.sql"})
+  public void deletePriorAuthority() {
+    Long caseRef = 41L;
+    Long priorAuthorityRef = 2L;
+
+    priorAuthorityController.removePriorAuthority(priorAuthorityRef, caabUserLoginId);
+    List<PriorAuthorityDetail> priorAuthorities = applicationService.getPriorAuthoritiesForApplication(caseRef);
+    assertEquals(0, priorAuthorities.size());
+  }
 }
